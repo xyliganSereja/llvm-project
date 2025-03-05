@@ -84,6 +84,7 @@ StringRef Triple::getArchTypeName(ArchType Kind) {
   case x86_64:         return "x86_64";
   case xcore:          return "xcore";
   case xtensa:         return "xtensa";
+  case use_arch_btw:   return "use_arch_btw";
   }
 
   llvm_unreachable("Invalid ArchType!");
@@ -171,83 +172,84 @@ StringRef Triple::getArchTypePrefix(ArchType Kind) {
 
   case aarch64:
   case aarch64_be:
-  case aarch64_32:  return "aarch64";
+  case aarch64_32:   return "aarch64";
 
-  case arc:         return "arc";
+  case arc:          return "arc";
 
   case arm:
   case armeb:
   case thumb:
-  case thumbeb:     return "arm";
+  case thumbeb:      return "arm";
 
-  case avr:         return "avr";
+  case avr:          return "avr";
 
   case ppc64:
   case ppc64le:
   case ppc:
-  case ppcle:       return "ppc";
+  case ppcle:        return "ppc";
 
-  case m68k:        return "m68k";
+  case m68k:         return "m68k";
 
   case mips:
   case mipsel:
   case mips64:
-  case mips64el:    return "mips";
+  case mips64el:     return "mips";
 
-  case hexagon:     return "hexagon";
+  case hexagon:      return "hexagon";
 
-  case amdgcn:      return "amdgcn";
-  case r600:        return "r600";
+  case amdgcn:       return "amdgcn";
+  case r600:         return "r600";
 
   case bpfel:
-  case bpfeb:       return "bpf";
+  case bpfeb:        return "bpf";
 
   case sparcv9:
   case sparcel:
-  case sparc:       return "sparc";
+  case sparc:        return "sparc";
 
-  case systemz:     return "s390";
+  case systemz:      return "s390";
 
   case x86:
-  case x86_64:      return "x86";
+  case x86_64:       return "x86";
 
-  case xcore:       return "xcore";
+  case xcore:        return "xcore";
 
   // NVPTX intrinsics are namespaced under nvvm.
-  case nvptx:       return "nvvm";
-  case nvptx64:     return "nvvm";
+  case nvptx:        return "nvvm";
+  case nvptx64:      return "nvvm";
 
   case amdil:
-  case amdil64:     return "amdil";
+  case amdil64:      return "amdil";
 
   case hsail:
-  case hsail64:     return "hsail";
+  case hsail64:      return "hsail";
 
   case spir:
-  case spir64:      return "spir";
+  case spir64:       return "spir";
 
   case spirv:
   case spirv32:
-  case spirv64:     return "spv";
+  case spirv64:      return "spv";
 
-  case kalimba:     return "kalimba";
-  case lanai:       return "lanai";
-  case shave:       return "shave";
+  case kalimba:      return "kalimba";
+  case lanai:        return "lanai";
+  case shave:        return "shave";
   case wasm32:
-  case wasm64:      return "wasm";
+  case wasm64:       return "wasm";
 
   case riscv32:
-  case riscv64:     return "riscv";
+  case riscv64:      return "riscv";
 
-  case ve:          return "ve";
-  case csky:        return "csky";
+  case ve:           return "ve";
+  case csky:         return "csky";
 
   case loongarch32:
-  case loongarch64: return "loongarch";
+  case loongarch64:  return "loongarch";
 
-  case dxil:        return "dx";
+  case dxil:         return "dx";
 
-  case xtensa:      return "xtensa";
+  case xtensa:       return "xtensa";
+  case use_arch_btw: return "use_arch_btw";
   }
 }
 
@@ -486,6 +488,7 @@ Triple::ArchType Triple::getArchTypeForLLVMName(StringRef Name) {
     .Case("loongarch64", loongarch64)
     .Case("dxil", dxil)
     .Case("xtensa", xtensa)
+    .Case("use_arch_btw", use_arch_btw)
     .Default(UnknownArch);
 }
 
@@ -632,6 +635,7 @@ static Triple::ArchType parseArch(StringRef ArchName) {
                  "dxilv1.4", "dxilv1.5", "dxilv1.6", "dxilv1.7", "dxilv1.8",
                  Triple::dxil)
           .Case("xtensa", Triple::xtensa)
+          .Case("use_arch_btw", Triple::use_arch_btw)
           .Default(Triple::UnknownArch);
 
   // Some architectures require special parsing logic just to compute the
@@ -972,6 +976,7 @@ static Triple::ObjectFormatType getDefaultFormat(const Triple &T) {
   case Triple::thumbeb:
   case Triple::ve:
   case Triple::xcore:
+  case Triple::use_arch_btw:
   case Triple::xtensa:
     return Triple::ELF;
 
@@ -1680,6 +1685,7 @@ unsigned Triple::getArchPointerBitWidth(llvm::Triple::ArchType Arch) {
   case llvm::Triple::wasm32:
   case llvm::Triple::x86:
   case llvm::Triple::xcore:
+  case llvm::Triple::use_arch_btw:
   case llvm::Triple::xtensa:
     return 32;
 
@@ -1790,6 +1796,7 @@ Triple Triple::get32BitArchVariant() const {
   case Triple::wasm32:
   case Triple::x86:
   case Triple::xcore:
+  case Triple::use_arch_btw:
   case Triple::xtensa:
     // Already 32-bit.
     break;
@@ -1841,6 +1848,7 @@ Triple Triple::get64BitArchVariant() const {
   case Triple::tce:
   case Triple::tcele:
   case Triple::xcore:
+  case Triple::use_arch_btw:
   case Triple::xtensa:
     T.setArch(UnknownArch);
     break;
@@ -1940,6 +1948,7 @@ Triple Triple::getBigEndianArchVariant() const {
   case Triple::xcore:
   case Triple::ve:
   case Triple::csky:
+  case Triple::use_arch_btw:
   case Triple::xtensa:
 
   // ARM is intentionally unsupported here, changing the architecture would
@@ -2049,6 +2058,7 @@ bool Triple::isLittleEndian() const {
   case Triple::x86:
   case Triple::x86_64:
   case Triple::xcore:
+  case Triple::use_arch_btw:
   case Triple::xtensa:
     return true;
   default:

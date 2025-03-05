@@ -1,0 +1,11 @@
+#ifndef LLVM_LIB_TARGET_USE_ARCH_BTW_TARGETINFO_USE_ARCH_BTWTARGETINFO_H
+#define LLVM_LIB_TARGET_USE_ARCH_BTW_TARGETINFO_USE_ARCH_BTWTARGETINFO_H
+
+namespace llvm {
+
+    class Target;
+    Target &getTheUse_arch_btwTarget();
+
+} // end namespace llvm
+
+#endif // LLVM_LIB_TARGET_USE_ARCH_BTW_TARGETINFO_USE_ARCH_BTWTARGETINFO_H
