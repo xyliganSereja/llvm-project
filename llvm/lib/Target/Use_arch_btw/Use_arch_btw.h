@@ -22,6 +22,20 @@
 namespace llvm {
 class Use_arch_btwTargetMachine;
 class FunctionPass;
+class Use_arch_btwSubtarget;
+class AsmPrinter;
+class InstructionSelector;
+class MCInst;
+class MCOperand;
+class MachineInstr;
+class MachineOperand;
+class PassRegistry;
+
+bool lowerUse_arch_btwMachineInstrToMCInst(const MachineInstr *MI,
+                                           MCInst &OutMI, AsmPrinter &AP);
+bool LowerUse_arch_btwMachineOperandToMCOperand(const MachineOperand &MO,
+                                                MCOperand &MCOp,
+                                                const AsmPrinter &AP);
 
 FunctionPass *createUse_arch_btwISelDag(Use_arch_btwTargetMachine &TM,
                                         CodeGenOptLevel OptLevel);
