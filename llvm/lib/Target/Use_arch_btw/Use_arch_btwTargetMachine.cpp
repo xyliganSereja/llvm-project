@@ -2,7 +2,10 @@
 #include "Use_arch_btw.h"
 #include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "llvm/MC/TargetRegistry.h"
+#include "llvm/CodeGen/TargetPassConfig.h"
+
 #include <optional>
+
 
 using namespace llvm;
 
@@ -23,4 +26,24 @@ Use_arch_btwTargetMachine::Use_arch_btwTargetMachine(const Target &T, const Trip
                         getEffectiveCodeModel(CM, CodeModel::Small), OL) {
   USE_ARCH_BTW_DUMP_CYAN
   initAsmInfo();
+}
+
+namespace {
+/// Use_arch_btw Code Generator Pass Configuration Options.
+class Use_arch_btwPassConfig : public TargetPassConfig {
+public:
+  Use_arch_btwPassConfig(Use_arch_btwTargetMachine &TM, PassManagerBase &PM)
+      : TargetPassConfig(TM, PM) {}
+
+  bool addInstSelector() override {
+    USE_ARCH_BTW_DUMP_CYAN
+    return false;
+  }
+};
+
+} // end anonymous namespace
+
+TargetPassConfig *Use_arch_btwTargetMachine::createPassConfig(PassManagerBase &PM) {
+  USE_ARCH_BTW_DUMP_CYAN
+  return new Use_arch_btwPassConfig(*this, PM);
 }
