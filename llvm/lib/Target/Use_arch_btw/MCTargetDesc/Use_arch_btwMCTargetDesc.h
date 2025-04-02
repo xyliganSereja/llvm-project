@@ -1,5 +1,14 @@
 
-#define LLVM_LIB_TARGET_USE_ARCH_BTW_MCTARGETDESC_USE_ARCH_BTWMCTARGETDESC_H
+#pragma once
+
+namespace llvm {
+class MCCodeEmitter;
+class MCContext;
+class MCInstrInfo;
+
+MCCodeEmitter *createUse_arch_btwMCCodeEmitter(const MCInstrInfo &MCII,
+                                               MCContext &Ctx);
+} // namespace llvm
 
 // Defines symbolic names for Use_arch_btw registers.  This defines a mapping
 // from register name to register number.
@@ -9,5 +18,3 @@
 
 #define GET_INSTRINFO_ENUM
 #include "Use_arch_btwGenInstrInfo.inc"
-
-#endif // LLVM_LIB_TARGET_USE_ARCH_BTW_MCTARGETDESC_SIMMCTARGETDESC_H

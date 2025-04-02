@@ -9,6 +9,7 @@ tablegen(LLVM Use_arch_btwGenMCPseudoLowering.inc -gen-pseudo-lowering)
 tablegen(LLVM Use_arch_btwGenDAGISel.inc -gen-dag-isel)
 tablegen(LLVM Use_arch_btwGenCallingConv.inc -gen-callingconv)
 tablegen(LLVM Use_arch_btwGenAsmWriter.inc -gen-asm-writer)
+tablegen(LLVM Use_arch_btwGenMCCodeEmitter.inc -gen-emitter)
  
 add_public_tablegen_target(Use_arch_btwCommonTableGen)
 
@@ -20,6 +21,7 @@ add_llvm_target(Use_arch_btwCodeGen
   Use_arch_btwAsmPrinter.cpp
   Use_arch_btwISelDagToDag.cpp
   Use_arch_btwISelLowering.cpp
+  Use_arch_btwMCInstLower.cpp
 
   LINK_COMPONENTS
   CodeGen
