@@ -7,6 +7,7 @@ tablegen(LLVM Use_arch_btwGenInstrInfo.inc -gen-instr-info)
 tablegen(LLVM Use_arch_btwGenSubtargetInfo.inc -gen-subtarget)
 tablegen(LLVM Use_arch_btwGenMCPseudoLowering.inc -gen-pseudo-lowering)
 tablegen(LLVM Use_arch_btwGenDAGISel.inc -gen-dag-isel)
+tablegen(LLVM Use_arch_btwGenCallingConv.inc -gen-callingconv)
  
 add_public_tablegen_target(Use_arch_btwCommonTableGen)
 
