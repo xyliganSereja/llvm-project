@@ -3,7 +3,9 @@
 #include "Use_arch_btw.h"
 #include "Use_arch_btwFrameLowering.h"
 #include "Use_arch_btwISelLowering.h"
+#include "Use_arch_btwInstrInfo.h"
 #include "Use_arch_btwRegisterInfo.h"
+#include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 
 #define GET_SUBTARGETINFO_HEADER
@@ -35,10 +37,20 @@ public:
     return &RegInfo;
   }
 
+  const Use_arch_btwInstrInfo *getInstrInfo() const override {
+    return &InstrInfo;
+  }
+  const SelectionDAGTargetInfo *getSelectionDAGInfo() const override {
+    USE_ARCH_BTW_DUMP_CYAN
+    return &TSInfo;
+  }
+
 private:
   Use_arch_btwTargetLowering TLInfo;
   Use_arch_btwFrameLowering FrameLowering;
   Use_arch_btwRegisterInfo RegInfo;
+  Use_arch_btwInstrInfo InstrInfo;
+  SelectionDAGTargetInfo TSInfo;
 };
 
 } // end namespace llvm
