@@ -7,4 +7,7 @@
 #define GET_REGINFO_ENUM
 #include "Use_arch_btwGenRegisterInfo.inc"
 
+#define GET_INSTRINFO_ENUM
+#include "Use_arch_btwGenInstrInfo.inc"
+
 #endif // LLVM_LIB_TARGET_USE_ARCH_BTW_MCTARGETDESC_SIMMCTARGETDESC_H

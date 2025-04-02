@@ -1,5 +1,7 @@
+#include "MCTargetDesc/Use_arch_btwInfo.h"
 #include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "Use_arch_btw.h"
+#include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCRegisterInfo.h"
 #include "llvm/MC/TargetRegistry.h"
 
@@ -7,6 +9,9 @@ using namespace llvm;
 
 #define GET_REGINFO_MC_DESC
 #include "Use_arch_btwGenRegisterInfo.inc"
+
+#define GET_INSTRINFO_ENUM
+#include "Use_arch_btwGenInstrInfo.inc"
 
 static MCRegisterInfo *createUse_arch_btwMCRegisterInfo(const Triple &TT) {
   USE_ARCH_BTW_DUMP_MAGENTA
@@ -22,4 +27,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwTargetMC() {
   // Register the MC register info.
   TargetRegistry::RegisterMCRegInfo(TheUse_arch_btwTarget,
                                     createUse_arch_btwMCRegisterInfo);
+  TargetRegistry::RegisterMCInstrInfo(TheUse_arch_btwTarget,
+                                      createUse_arch_btwMCInstrInfo);
 }

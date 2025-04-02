@@ -3,12 +3,14 @@ add_llvm_component_group(Use_arch_btw)
 set(LLVM_TARGET_DEFINITIONS Use_arch_btw.td)
  
 tablegen(LLVM Use_arch_btwGenRegisterInfo.inc -gen-register-info)
+tablegen(LLVM Use_arch_btwGenInstrInfo.inc -gen-instr-info)
  
 add_public_tablegen_target(Use_arch_btwCommonTableGen)
 
 add_llvm_target(Use_arch_btwCodeGen
   Use_arch_btwTargetMachine.cpp
   Use_arch_btwRegisterInfo.cpp
+  Use_arch_btwInstr.cpp
 
   LINK_COMPONENTS
   CodeGen
