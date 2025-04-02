@@ -15,6 +15,6 @@ Use_arch_btwSubtarget::Use_arch_btwSubtarget(const Triple &TT,
                                              const std::string &FS,
                                              const TargetMachine &TM)
     : Use_arch_btwGenSubtargetInfo(TT, CPU, /*TuneCPU=*/CPU, FS),
-      TLInfo(TM, *this) {
+      TLInfo(TM, *this), FrameLowering(*this) {
   USE_ARCH_BTW_DUMP_CYAN
 }

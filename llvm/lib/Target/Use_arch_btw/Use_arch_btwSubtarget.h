@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Use_arch_btw.h"
+#include "Use_arch_btwFrameLowering.h"
 #include "Use_arch_btwISelLowering.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 
@@ -22,6 +23,15 @@ public:
     USE_ARCH_BTW_DUMP_CYAN
     return &TLInfo;
   }
+
+  const Use_arch_btwFrameLowering *getFrameLowering() const override {
+    USE_ARCH_BTW_DUMP_CYAN
+    return &FrameLowering;
+  }
+
+private:
+  Use_arch_btwTargetLowering TLInfo;
+  Use_arch_btwFrameLowering FrameLowering;
 };
 
 } // end namespace llvm
