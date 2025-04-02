@@ -6,6 +6,7 @@ tablegen(LLVM Use_arch_btwGenRegisterInfo.inc -gen-register-info)
 tablegen(LLVM Use_arch_btwGenInstrInfo.inc -gen-instr-info)
 tablegen(LLVM Use_arch_btwGenSubtargetInfo.inc -gen-subtarget)
 tablegen(LLVM Use_arch_btwGenMCPseudoLowering.inc -gen-pseudo-lowering)
+tablegen(LLVM Use_arch_btwGenDAGISel.inc -gen-dag-isel)
  
 add_public_tablegen_target(Use_arch_btwCommonTableGen)
 
@@ -15,6 +16,7 @@ add_llvm_target(Use_arch_btwCodeGen
   Use_arch_btwInstr.cpp
   Use_arch_btwSubtarget.cpp
   Use_arch_btwMCAsmInfo.cpp
+  Use_arch_btwISelDagToDag.cpp
 
   LINK_COMPONENTS
   CodeGen
@@ -23,6 +25,7 @@ add_llvm_target(Use_arch_btwCodeGen
   Target
   Use_arch_btwInfo
   AsmPrinter
+  SelectionDAG
 
   ADD_TO_COMPONENT
   Use_arch_btw

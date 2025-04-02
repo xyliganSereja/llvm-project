@@ -1,8 +1,8 @@
-#ifndef LLVM_LIB_TARGET_USE_ARCH_BTW_USE_ARCH_BTW_H
-#define LLVM_LIB_TARGET_USE_ARCH_BTW_USE_ARCH_BTW_H
+#pragma once
 
 #include "MCTargetDesc/Use_arch_btw.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Target/TargetMachine.h"
 
 #define USE_ARCH_BTW_DUMP(Color)                                                        \
   {                                                                            \
@@ -19,4 +19,10 @@
 #define USE_ARCH_BTW_DUMP_MAGENTA USE_ARCH_BTW_DUMP(llvm::raw_ostream::MAGENTA)
 #define USE_ARCH_BTW_DUMP_WHITE USE_ARCH_BTW(llvm::raw_ostream::WHITE)
 
-#endif // LLVM_LIB_TARGET_USE_ARCH_BTW_USE_ARCH_BTW_H
+namespace llvm {
+  class Use_arch_btwTargetMachine;
+  class FunctionPass;
+  
+  FunctionPass *createUse_arch_btwISelDag(Use_arch_btwTargetMachine &TM, CodeGenOptLevel OptLevel);
+  
+} // namespace llvm

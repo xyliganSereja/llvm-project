@@ -35,8 +35,13 @@ public:
   Use_arch_btwPassConfig(Use_arch_btwTargetMachine &TM, PassManagerBase &PM)
       : TargetPassConfig(TM, PM) {}
 
+  Use_arch_btwTargetMachine &getUse_arch_btwTargetMachine() const {
+    return getTM<Use_arch_btwTargetMachine>();
+  }
+
   bool addInstSelector() override {
     USE_ARCH_BTW_DUMP_CYAN
+    addPass(createUse_arch_btwISelDag(getUse_arch_btwTargetMachine(), getOptLevel()));
     return false;
   }
 };
