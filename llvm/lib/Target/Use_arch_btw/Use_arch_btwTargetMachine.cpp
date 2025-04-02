@@ -22,4 +22,5 @@ Use_arch_btwTargetMachine::Use_arch_btwTargetMachine(const Target &T, const Trip
                         CPU, FS, Options, Reloc::Static,
                         getEffectiveCodeModel(CM, CodeModel::Small), OL) {
   USE_ARCH_BTW_DUMP_CYAN
+  initAsmInfo();
 }

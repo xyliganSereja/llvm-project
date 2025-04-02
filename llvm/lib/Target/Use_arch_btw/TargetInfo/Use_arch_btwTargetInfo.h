@@ -3,8 +3,8 @@
 
 namespace llvm {
 
-    class Target;
-    Target &getTheUse_arch_btwTarget();
+class Target;
+Target &getTheUse_arch_btwTarget();
 
 } // end namespace llvm
 
