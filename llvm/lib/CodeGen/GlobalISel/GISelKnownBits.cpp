@@ -200,7 +200,8 @@ void GISelKnownBits::computeKnownBitsImpl(Register R, KnownBits &Known,
     break;
   case TargetOpcode::G_BUILD_VECTOR: {
     // Collect the known bits that are shared by every demanded vector element.
-    Known.Zero.setAllBits(); Known.One.setAllBits();
+    Known.Zero.setAllBits();
+    Known.One.setAllBits();
     for (unsigned i = 0, e = MI.getNumOperands() - 1; i < e; ++i) {
       if (!DemandedElts[i])
         continue;
@@ -365,19 +366,19 @@ void GISelKnownBits::computeKnownBitsImpl(Register R, KnownBits &Known,
   }
   case TargetOpcode::G_UMIN: {
     KnownBits KnownRHS;
-    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known,
-                         DemandedElts, Depth + 1);
-    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS,
-                         DemandedElts, Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known, DemandedElts,
+                         Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS, DemandedElts,
+                         Depth + 1);
     Known = KnownBits::umin(Known, KnownRHS);
     break;
   }
   case TargetOpcode::G_UMAX: {
     KnownBits KnownRHS;
-    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known,
-                         DemandedElts, Depth + 1);
-    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS,
-                         DemandedElts, Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known, DemandedElts,
+                         Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS, DemandedElts,
+                         Depth + 1);
     Known = KnownBits::umax(Known, KnownRHS);
     break;
   }
@@ -557,8 +558,8 @@ void GISelKnownBits::computeKnownBitsImpl(Register R, KnownBits &Known,
   case TargetOpcode::G_CTPOP: {
     computeKnownBitsImpl(MI.getOperand(1).getReg(), Known2, DemandedElts,
                          Depth + 1);
-    // We can bound the space the count needs.  Also, bits known to be zero can't
-    // contribute to the population.
+    // We can bound the space the count needs.  Also, bits known to be zero
+    // can't contribute to the population.
     unsigned BitsPossiblySet = Known2.countMaxPopulation();
     unsigned LowBits = llvm::bit_width(BitsPossiblySet);
     Known.Zero.setBitsFrom(LowBits);
@@ -719,7 +720,8 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
     Register Src = MI.getOperand(1).getReg();
     unsigned SrcBits = MI.getOperand(2).getImm();
     unsigned InRegBits = TyBits - SrcBits + 1;
-    return std::max(computeNumSignBits(Src, DemandedElts, Depth + 1), InRegBits);
+    return std::max(computeNumSignBits(Src, DemandedElts, Depth + 1),
+                    InRegBits);
   }
   case TargetOpcode::G_LOAD: {
     GLoad *Ld = cast<GLoad>(&MI);
@@ -836,7 +838,7 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
   case TargetOpcode::G_INTRINSIC_CONVERGENT_W_SIDE_EFFECTS:
   default: {
     unsigned NumBits =
-      TL.computeNumSignBitsForTargetInstr(*this, R, DemandedElts, MRI, Depth);
+        TL.computeNumSignBitsForTargetInstr(*this, R, DemandedElts, MRI, Depth);
     if (NumBits > 1)
       FirstAnswer = std::max(FirstAnswer, NumBits);
     break;
@@ -847,9 +849,9 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
   // use this information.
   KnownBits Known = getKnownBits(R, DemandedElts, Depth);
   APInt Mask;
-  if (Known.isNonNegative()) {        // sign bit is 0
+  if (Known.isNonNegative()) { // sign bit is 0
     Mask = Known.Zero;
-  } else if (Known.isNegative()) {  // sign bit is 1;
+  } else if (Known.isNegative()) { // sign bit is 1;
     Mask = Known.One;
   } else {
     // Nothing known.

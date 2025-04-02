@@ -208,4 +208,4 @@ void MCSymbolELF::setMemtag(bool Tagged) {
   else
     setFlags(OtherFlags);
 }
-}
+} // namespace llvm

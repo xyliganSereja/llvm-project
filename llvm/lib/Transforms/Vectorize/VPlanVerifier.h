@@ -37,4 +37,4 @@ bool verifyVPlanIsValid(const VPlan &Plan);
 
 } // namespace llvm
 
-#endif //LLVM_TRANSFORMS_VECTORIZE_VPLANVERIFIER_H
+#endif // LLVM_TRANSFORMS_VECTORIZE_VPLANVERIFIER_H

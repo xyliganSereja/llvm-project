@@ -26,12 +26,12 @@
 using namespace llvm;
 
 namespace {
+using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
 using testing::Not;
 using testing::Return;
 using testing::WithArgs;
-using testing::_;
 
 /// A CRTP base for analysis mock handles
 ///
@@ -441,7 +441,7 @@ protected:
   MockAnalysisHandle<IRUnitT> AnalysisHandle;
 
   static PreservedAnalyses getAnalysisResult(IRUnitT &U, AnalysisManagerT &AM,
-                                             ExtraAnalysisArgTs &&... Args) {
+                                             ExtraAnalysisArgTs &&...Args) {
     (void)AM.template getResult<AnalysisT>(
         U, std::forward<ExtraAnalysisArgTs>(Args)...);
     return PreservedAnalyses::all();

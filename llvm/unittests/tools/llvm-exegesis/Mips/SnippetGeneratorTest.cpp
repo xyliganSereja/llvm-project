@@ -44,12 +44,14 @@ protected:
   SnippetGeneratorT Generator;
 };
 
-using MipsSerialSnippetGeneratorTest = MipsSnippetGeneratorTest<SerialSnippetGenerator>;
+using MipsSerialSnippetGeneratorTest =
+    MipsSnippetGeneratorTest<SerialSnippetGenerator>;
 
 using MipsParallelSnippetGeneratorTest =
     MipsSnippetGeneratorTest<ParallelSnippetGenerator>;
 
-TEST_F(MipsSerialSnippetGeneratorTest, ImplicitSelfDependencyThroughExplicitRegs) {
+TEST_F(MipsSerialSnippetGeneratorTest,
+       ImplicitSelfDependencyThroughExplicitRegs) {
   // - ADD
   // - Op0 Explicit Def RegClass(GPR32)
   // - Op1 Explicit Use RegClass(GPR32)

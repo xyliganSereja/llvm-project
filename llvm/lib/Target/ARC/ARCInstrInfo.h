@@ -83,7 +83,6 @@ public:
   bool
   reverseBranchCondition(SmallVectorImpl<MachineOperand> &Cond) const override;
 
-
   bool isPostIncrement(const MachineInstr &MI) const override;
 
   // ARC-specific

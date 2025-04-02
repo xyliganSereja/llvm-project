@@ -53,10 +53,9 @@ TEST_F(MipsBenchmarkResultTest, WriteToAndReadFromDisk) {
 
   Benchmark ToDisk;
 
-  ToDisk.Key.Instructions.push_back(MCInstBuilder(Mips::XOR)
-                                        .addReg(Mips::T0)
-                                        .addReg(Mips::T1)
-                                        .addReg(Mips::T2));
+  ToDisk.Key.Instructions.push_back(
+      MCInstBuilder(Mips::XOR).addReg(Mips::T0).addReg(Mips::T1).addReg(
+          Mips::T2));
   ToDisk.Key.Config = "config";
   ToDisk.Key.RegisterInitialValues = {
       RegisterValue{Mips::T1, APInt(8, "123", 10)},
@@ -89,8 +88,7 @@ TEST_F(MipsBenchmarkResultTest, WriteToAndReadFromDisk) {
 
   {
     // One-element version.
-    const auto FromDisk =
-        ExitOnErr(Benchmark::readYaml(State, *Buffer));
+    const auto FromDisk = ExitOnErr(Benchmark::readYaml(State, *Buffer));
 
     EXPECT_THAT(FromDisk.Key.Instructions,
                 Pointwise(EqMCInst(), ToDisk.Key.Instructions));
@@ -105,8 +103,7 @@ TEST_F(MipsBenchmarkResultTest, WriteToAndReadFromDisk) {
   }
   {
     // Vector version.
-    const auto FromDiskVector =
-        ExitOnErr(Benchmark::readYamls(State, *Buffer));
+    const auto FromDiskVector = ExitOnErr(Benchmark::readYamls(State, *Buffer));
     ASSERT_EQ(FromDiskVector.size(), size_t{1});
     const auto &FromDisk = FromDiskVector[0];
     EXPECT_THAT(FromDisk.Key.Instructions,

@@ -243,9 +243,10 @@ getOptionalElementCountLoopAttribute(const Loop *TheLoop);
 /// @param OrigLoopID The loop ID of the loop before the transformation.
 /// @param FollowupAttrs List of attribute names that contain attributes to be
 ///                      added to the new loop ID.
-/// @param InheritOptionsAttrsPrefix Selects which attributes should be inherited
-///                                  from the original loop. The following values
-///                                  are considered:
+/// @param InheritOptionsAttrsPrefix Selects which attributes should be
+/// inherited
+///                                  from the original loop. The following
+///                                  values are considered:
 ///        nullptr   : Inherit all attributes from @p OrigLoopID.
 ///        ""        : Do not inherit any attribute from @p OrigLoopID; only use
 ///                    those specified by a followup attribute.
@@ -270,7 +271,8 @@ makeFollowupLoopID(MDNode *OrigLoopID, ArrayRef<StringRef> FollowupAttrs,
 /// Look for the loop attribute that disables all transformation heuristic.
 bool hasDisableAllTransformsHint(const Loop *L);
 
-/// Look for the loop attribute that disables the LICM transformation heuristics.
+/// Look for the loop attribute that disables the LICM transformation
+/// heuristics.
 bool hasDisableLICMTransformsHint(const Loop *L);
 
 /// The mode sets how eager a transformation should be applied.
@@ -405,8 +407,7 @@ Value *getShuffleReduction(IRBuilderBase &Builder, Value *Src, unsigned Op,
 /// is described by the \p Opcode parameter. min/max reductions require
 /// additional information supplied in \p RdxKind.
 /// Fast-math-flags are propagated using the IRBuilder's setting.
-Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
-                             RecurKind RdxKind);
+Value *createSimpleReduction(IRBuilderBase &B, Value *Src, RecurKind RdxKind);
 /// Overloaded function to generate vector-predication intrinsics for
 /// reduction.
 Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
@@ -416,8 +417,7 @@ Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
 /// kind RecurKind::IAnyOf or RecurKind::FAnyOf. The reduction operation is
 /// described by \p Desc.
 Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
-                            const RecurrenceDescriptor &Desc,
-                            PHINode *OrigPhi);
+                            const RecurrenceDescriptor &Desc, PHINode *OrigPhi);
 
 /// Create a reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
@@ -538,8 +538,8 @@ void appendLoopsToWorklist(LoopInfo &, SmallPriorityWorklist<Loop *, 4> &);
 
 /// Recursively clone the specified loop and all of its children,
 /// mapping the blocks with the specified map.
-Loop *cloneLoop(Loop *L, Loop *PL, ValueToValueMapTy &VM,
-                LoopInfo *LI, LPPassManager *LPM);
+Loop *cloneLoop(Loop *L, Loop *PL, ValueToValueMapTy &VM, LoopInfo *LI,
+                LPPassManager *LPM);
 
 /// Add code that checks at runtime if the accessed arrays in \p PointerChecks
 /// overlap. Returns the final comparator value or NULL if no check is needed.

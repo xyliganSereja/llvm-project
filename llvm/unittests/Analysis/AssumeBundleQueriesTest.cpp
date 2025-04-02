@@ -88,12 +88,12 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
       [](Instruction *I) {
         auto *Assume = buildAssumeFromInst(I);
         Assume->insertBefore(I->getIterator());
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(0),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(1),
-                                       "()"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(0), "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(
+            hasMatchesExactlyAttributes(Assume, I->getOperand(1), "()"));
         ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(2),
-                                       "(align|noundef)"));
+                                                "(align|noundef)"));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
                                      Attribute::AttrKind::Dereferenceable, 16));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
@@ -110,14 +110,14 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
       [](Instruction *I) {
         auto *Assume = buildAssumeFromInst(I);
         Assume->insertBefore(I->getIterator());
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(0),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(1),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(2),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(3),
-                                       "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(0), "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(1), "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(2), "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(3), "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
                                      Attribute::AttrKind::Dereferenceable, 48));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
@@ -126,7 +126,8 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
                                      Attribute::AttrKind::Alignment, 64));
       }));
   Tests.push_back(std::make_pair(
-      "call void @func_many(i32* align 8 noundef %P1) cold\n", [](Instruction *I) {
+      "call void @func_many(i32* align 8 noundef %P1) cold\n",
+      [](Instruction *I) {
         ShouldPreserveAllAttributes.setValue(true);
         auto *Assume = buildAssumeFromInst(I);
         Assume->insertBefore(I->getIterator());
@@ -149,15 +150,14 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
       [](Instruction *I) {
         auto *Assume = buildAssumeFromInst(I);
         Assume->insertBefore(I->getIterator());
-        ASSERT_TRUE(hasMatchesExactlyAttributes(
-            Assume, I->getOperand(0),
-            "(align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(0),
+                                                "(align|dereferenceable)"));
         ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(1),
-                                       "(align|dereferenceable)"));
+                                                "(align|dereferenceable)"));
         ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(2),
-                                       "(align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(3),
-                                       "(nonnull|align|dereferenceable)"));
+                                                "(align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, I->getOperand(3), "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
                                      Attribute::AttrKind::Alignment, 32));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
@@ -188,15 +188,11 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
         I->getOperand(1)->dropDroppableUses();
         I->getOperand(2)->dropDroppableUses();
         I->getOperand(3)->dropDroppableUses();
-        ASSERT_TRUE(hasMatchesExactlyAttributes(
-            Assume, I->getOperand(0),
-            "(align|dereferenceable)"));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(1),
-                                       ""));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(2),
-                                       ""));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(3),
-                                       ""));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(0),
+                                                "(align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(1), ""));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(2), ""));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, I->getOperand(3), ""));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
                                      Attribute::AttrKind::Alignment, 32));
         ASSERT_TRUE(hasTheRightValue(Assume, I->getOperand(0),
@@ -211,18 +207,18 @@ TEST(AssumeQueryAPI, hasAttributeInAssume) {
         Value *New = I->getFunction()->getArg(3);
         Value *Old = I->getOperand(0);
         ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, New, ""));
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, Old,
-                                       "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, Old, "(nonnull|align|dereferenceable)"));
         Old->replaceAllUsesWith(New);
-        ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, New,
-                                       "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(hasMatchesExactlyAttributes(
+            Assume, New, "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(hasMatchesExactlyAttributes(Assume, Old, ""));
       }));
   RunTest(Head, Tail, Tests);
 }
 
 static bool FindExactlyAttributes(RetainedKnowledgeMap &Map, Value *WasOn,
-                                 StringRef AttrToMatch) {
+                                  StringRef AttrToMatch) {
   Regex Reg(AttrToMatch);
   SmallVector<StringRef, 1> Matches;
   for (StringRef Attr : {
@@ -269,17 +265,17 @@ TEST(AssumeQueryAPI, fillMapFromAssume) {
         RetainedKnowledgeMap Map;
         fillMapFromAssume(*Assume, Map);
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(0),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_FALSE(FindExactlyAttributes(Map, I->getOperand(1),
-                                       "(align)"));
+                                          "(nonnull|align|dereferenceable)"));
+        ASSERT_FALSE(FindExactlyAttributes(Map, I->getOperand(1), "(align)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(2),
-                                       "(align|dereferenceable)"));
+                                          "(align|dereferenceable)"));
         ASSERT_TRUE(MapHasRightValue(
-            Map, Assume, {I->getOperand(0), Attribute::Dereferenceable}, {16, 16}));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(0), Attribute::Alignment},
-                               {4, 4}));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(0), Attribute::Alignment},
-                               {4, 4}));
+            Map, Assume, {I->getOperand(0), Attribute::Dereferenceable},
+            {16, 16}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(0), Attribute::Alignment}, {4, 4}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(0), Attribute::Alignment}, {4, 4}));
       }));
   Tests.push_back(std::make_pair(
       "call void @func1(i32* nonnull align 32 dereferenceable(48) %P, i32* "
@@ -295,13 +291,13 @@ TEST(AssumeQueryAPI, fillMapFromAssume) {
         fillMapFromAssume(*Assume, Map);
 
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(0),
-                                       "(nonnull|align|dereferenceable)"));
+                                          "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(1),
-                                       "(nonnull|align|dereferenceable)"));
+                                          "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(2),
-                                       "(nonnull|align|dereferenceable)"));
+                                          "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(3),
-                                       "(nonnull|align|dereferenceable)"));
+                                          "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(MapHasRightValue(
             Map, Assume, {I->getOperand(0), Attribute::Dereferenceable},
             {48, 48}));
@@ -343,29 +339,33 @@ TEST(AssumeQueryAPI, fillMapFromAssume) {
         fillMapFromAssume(*Assume, Map);
 
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(0),
-                                    "(align|dereferenceable)"));
+                                          "(align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(1),
-                                    "(align|dereferenceable)"));
+                                          "(align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(2),
-                                       "(align|dereferenceable)"));
+                                          "(align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, I->getOperand(3),
-                                       "(nonnull|align|dereferenceable)"));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(0), Attribute::Alignment},
-                               {32, 32}));
+                                          "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(MapHasRightValue(
-            Map, Assume, {I->getOperand(0), Attribute::Dereferenceable}, {48, 48}));
+            Map, Assume, {I->getOperand(0), Attribute::Alignment}, {32, 32}));
         ASSERT_TRUE(MapHasRightValue(
-            Map, Assume, {I->getOperand(1), Attribute::Dereferenceable}, {28, 28}));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(1), Attribute::Alignment},
-                               {8, 8}));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(2), Attribute::Alignment},
-                               {64, 64}));
+            Map, Assume, {I->getOperand(0), Attribute::Dereferenceable},
+            {48, 48}));
         ASSERT_TRUE(MapHasRightValue(
-            Map, Assume, {I->getOperand(2), Attribute::Dereferenceable}, {4, 4}));
-        ASSERT_TRUE(MapHasRightValue(Map, Assume, {I->getOperand(3), Attribute::Alignment},
-                               {16, 16}));
+            Map, Assume, {I->getOperand(1), Attribute::Dereferenceable},
+            {28, 28}));
         ASSERT_TRUE(MapHasRightValue(
-            Map, Assume, {I->getOperand(3), Attribute::Dereferenceable}, {12, 12}));
+            Map, Assume, {I->getOperand(1), Attribute::Alignment}, {8, 8}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(2), Attribute::Alignment}, {64, 64}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(2), Attribute::Dereferenceable},
+            {4, 4}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(3), Attribute::Alignment}, {16, 16}));
+        ASSERT_TRUE(MapHasRightValue(
+            Map, Assume, {I->getOperand(3), Attribute::Dereferenceable},
+            {12, 12}));
       }));
 
   /// Keep this test last as it modifies the function.
@@ -382,13 +382,13 @@ TEST(AssumeQueryAPI, fillMapFromAssume) {
         Value *New = I->getFunction()->getArg(3);
         Value *Old = I->getOperand(0);
         ASSERT_TRUE(FindExactlyAttributes(Map, New, ""));
-        ASSERT_TRUE(FindExactlyAttributes(Map, Old,
-                                       "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(
+            FindExactlyAttributes(Map, Old, "(nonnull|align|dereferenceable)"));
         Old->replaceAllUsesWith(New);
         Map.clear();
         fillMapFromAssume(*Assume, Map);
-        ASSERT_TRUE(FindExactlyAttributes(Map, New,
-                                       "(nonnull|align|dereferenceable)"));
+        ASSERT_TRUE(
+            FindExactlyAttributes(Map, New, "(nonnull|align|dereferenceable)"));
         ASSERT_TRUE(FindExactlyAttributes(Map, Old, ""));
       }));
   Tests.push_back(std::make_pair(

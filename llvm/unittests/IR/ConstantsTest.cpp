@@ -234,7 +234,7 @@ TEST(ConstantsTest, AsInstructionsTest) {
   EXPECT_EQ(Poison16, ConstantExpr::getExtractElement(P6, Undef64));
 
   EXPECT_EQ(Elt, ConstantExpr::getExtractElement(
-                 ConstantExpr::getInsertElement(P6, Elt, One), One));
+                     ConstantExpr::getInsertElement(P6, Elt, One), One));
   EXPECT_EQ(PoisonV16, ConstantExpr::getInsertElement(P6, Elt, Two));
   EXPECT_EQ(PoisonV16, ConstantExpr::getInsertElement(P6, Elt, Big));
   EXPECT_EQ(PoisonV16, ConstantExpr::getInsertElement(P6, Elt, Undef64));

@@ -151,7 +151,7 @@ public:
 
   explicit SymbolStringPtr(NonOwningSymbolStringPtr Other);
 
-  SymbolStringPtr& operator=(const SymbolStringPtr &Other) {
+  SymbolStringPtr &operator=(const SymbolStringPtr &Other) {
     decRef();
     S = Other.S;
     incRef();
@@ -160,7 +160,7 @@ public:
 
   SymbolStringPtr(SymbolStringPtr &&Other) { std::swap(S, Other.S); }
 
-  SymbolStringPtr& operator=(SymbolStringPtr &&Other) {
+  SymbolStringPtr &operator=(SymbolStringPtr &&Other) {
     decRef();
     S = nullptr;
     std::swap(S, Other.S);
@@ -315,8 +315,7 @@ SymbolStringPool::getRefCount(const SymbolStringPtrBase &S) const {
 
 } // end namespace orc
 
-template <>
-struct DenseMapInfo<orc::SymbolStringPtr> {
+template <> struct DenseMapInfo<orc::SymbolStringPtr> {
 
   static orc::SymbolStringPtr getEmptyKey() {
     return orc::SymbolStringPtr::getEmptyVal();

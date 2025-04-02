@@ -137,8 +137,7 @@ static Module *getExternal(LLVMContext &Ctx, StringRef FuncName) {
   FunctionType *FTy = FunctionType::get(
       Type::getVoidTy(Ctx), PointerType::getUnqual(Ctx), false /*=isVarArgs*/);
 
-  Function *F =
-      Function::Create(FTy, Function::ExternalLinkage, FuncName, M);
+  Function *F = Function::Create(FTy, Function::ExternalLinkage, FuncName, M);
   F->setCallingConv(CallingConv::C);
 
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);
@@ -315,21 +314,23 @@ TEST_F(LinkModuleTest, RemangleIntrinsics) {
   // "struct.rtx_def" type. In the module loaded the second (Bar) this type will
   // be renamed to "struct.rtx_def.0". Check that the intrinsics which have this
   // type in the signature are properly remangled.
-  const char *FooStr =
-    "%struct.rtx_def = type { i16 }\n"
-    "define void @foo(%struct.rtx_def %a) {\n"
-    "  call %struct.rtx_def @llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def %a)\n"
-    "  ret void\n"
-    "}\n"
-    "declare %struct.rtx_def @llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def)\n";
+  const char *FooStr = "%struct.rtx_def = type { i16 }\n"
+                       "define void @foo(%struct.rtx_def %a) {\n"
+                       "  call %struct.rtx_def "
+                       "@llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def %a)\n"
+                       "  ret void\n"
+                       "}\n"
+                       "declare %struct.rtx_def "
+                       "@llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def)\n";
 
-  const char *BarStr =
-    "%struct.rtx_def = type { i16 }\n"
-    "define void @bar(%struct.rtx_def %a) {\n"
-    "  call %struct.rtx_def @llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def %a)\n"
-    "  ret void\n"
-    "}\n"
-    "declare %struct.rtx_def @llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def)\n";
+  const char *BarStr = "%struct.rtx_def = type { i16 }\n"
+                       "define void @bar(%struct.rtx_def %a) {\n"
+                       "  call %struct.rtx_def "
+                       "@llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def %a)\n"
+                       "  ret void\n"
+                       "}\n"
+                       "declare %struct.rtx_def "
+                       "@llvm.ssa.copy.s_struct.rtx_defs(%struct.rtx_def)\n";
 
   std::unique_ptr<Module> Foo = parseAssemblyString(FooStr, Err, C);
   assert(Foo);

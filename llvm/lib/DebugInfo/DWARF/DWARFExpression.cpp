@@ -212,8 +212,8 @@ bool DWARFExpression::Operation::extract(DataExtractor Data,
         Operands[Operand] = Data.getULEB128(&Offset);
         break;
       case 3: // global as uint32
-         Operands[Operand] = Data.getU32(&Offset);
-         break;
+        Operands[Operand] = Data.getU32(&Offset);
+        break;
       default:
         return false; // Unknown Wasm location
       }
@@ -344,7 +344,8 @@ bool DWARFExpression::Operation::print(raw_ostream &OS, DIDumpOptions DumpOpts,
       case 4:
         OS << format(" 0x%" PRIx64, Operands[Operand]);
         break;
-      default: assert(false);
+      default:
+        assert(false);
       }
     } else if (Size == Operation::SizeBlock) {
       uint64_t Offset = Operands[Operand];
@@ -353,8 +354,7 @@ bool DWARFExpression::Operation::print(raw_ostream &OS, DIDumpOptions DumpOpts,
     } else {
       if (Signed)
         OS << format(" %+" PRId64, (int64_t)Operands[Operand]);
-      else if (Opcode != DW_OP_entry_value &&
-               Opcode != DW_OP_GNU_entry_value)
+      else if (Opcode != DW_OP_entry_value && Opcode != DW_OP_GNU_entry_value)
         OS << format(" 0x%" PRIx64, Operands[Operand]);
     }
   }

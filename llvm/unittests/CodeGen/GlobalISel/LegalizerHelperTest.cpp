@@ -31,8 +31,8 @@ TEST_F(AArch64GISelMITest, LowerRotates) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
 
   LLT S32 = LLT::scalar(32);
   auto Src = B.buildTrunc(S32, Copies[0]);
@@ -84,8 +84,8 @@ TEST_F(AArch64GISelMITest, LowerRotatesNonPow2) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
 
   LLT S24 = LLT::scalar(24);
   auto Src = B.buildTrunc(S24, Copies[0]);
@@ -141,8 +141,8 @@ TEST_F(AArch64GISelMITest, LowerRotatesVector) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder({G_ROTR, G_ROTL}).lower(); });
 
   LLT S32 = LLT::scalar(32);
   LLT V4S32 = LLT::fixed_vector(4, S32);
@@ -220,9 +220,8 @@ TEST_F(AArch64GISelMITest, LowerBitCountingCTTZ1) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTLZ).legalFor({{s64, s64}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTLZ).legalFor({{s64, s64}}); });
   // Build Instr
   auto MIBCTTZ =
       B.buildInstr(TargetOpcode::G_CTTZ, {LLT::scalar(64)}, {Copies[0]});
@@ -254,9 +253,8 @@ TEST_F(AArch64GISelMITest, NarrowScalarCTLZ) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTLZ).legalFor({{s32, s32}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTLZ).legalFor({{s32, s32}}); });
   // Build Instr
   auto CTLZ =
       B.buildInstr(TargetOpcode::G_CTLZ, {LLT::scalar(32)}, {Copies[0]});
@@ -289,9 +287,8 @@ TEST_F(AArch64GISelMITest, NarrowScalarCTTZ) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTTZ).legalFor({{s32, s64}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTTZ).legalFor({{s32, s64}}); });
   // Build Instr
   auto CTTZ =
       B.buildInstr(TargetOpcode::G_CTTZ, {LLT::scalar(32)}, {Copies[0]});
@@ -324,9 +321,8 @@ TEST_F(AArch64GISelMITest, LowerBitCountingCTTZ2) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTPOP).legalFor({{s64, s64}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTPOP).legalFor({{s64, s64}}); });
   // Build
   auto MIBCTTZ =
       B.buildInstr(TargetOpcode::G_CTTZ, {LLT::scalar(64)}, {Copies[0]});
@@ -357,9 +353,8 @@ TEST_F(AArch64GISelMITest, WidenBitCountingCTPOP1) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-      getActionDefinitionsBuilder(G_CTPOP).legalFor({{s16, s16}});
-    });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTPOP).legalFor({{s16, s16}}); });
 
   // Build
   // Trunc it to s8.
@@ -391,9 +386,8 @@ TEST_F(AArch64GISelMITest, WidenBitCountingCTPOP2) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-      getActionDefinitionsBuilder(G_CTPOP).legalFor({{s32, s16}});
-    });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTPOP).legalFor({{s32, s16}}); });
 
   // Build
   // Trunc it to s8.
@@ -426,9 +420,8 @@ TEST_F(AArch64GISelMITest, LowerBitCountingCTTZ3) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTTZ).legalFor({{s64, s64}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTTZ).legalFor({{s64, s64}}); });
   // Build
   auto MIBCTTZ = B.buildInstr(TargetOpcode::G_CTTZ_ZERO_UNDEF,
                               {LLT::scalar(64)}, {Copies[0]});
@@ -515,9 +508,8 @@ TEST_F(AArch64GISelMITest, LowerBitCountingCTLZ1) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTPOP).legalFor({{s8, s8}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTPOP).legalFor({{s8, s8}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -556,9 +548,8 @@ TEST_F(AArch64GISelMITest, WidenBitCountingCTLZ) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTLZ).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTLZ).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -627,9 +618,8 @@ TEST_F(AArch64GISelMITest, WidenBitCountingCTPOP) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTPOP).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTPOP).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -694,9 +684,8 @@ TEST_F(AArch64GISelMITest, WidenBitCountingCTTZ) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_CTTZ).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_CTTZ).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -728,9 +717,8 @@ TEST_F(AArch64GISelMITest, WidenUADDO) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -767,9 +755,8 @@ TEST_F(AArch64GISelMITest, WidenUSUBO) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_SUB).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_SUB).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -806,9 +793,8 @@ TEST_F(AArch64GISelMITest, WidenSADDO) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -845,9 +831,8 @@ TEST_F(AArch64GISelMITest, WidenSSUBO) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_SUB).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_SUB).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -883,9 +868,8 @@ TEST_F(AArch64GISelMITest, WidenUADDE) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_UADDE).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_UADDE).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -923,9 +907,8 @@ TEST_F(AArch64GISelMITest, WidenUSUBE) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_USUBE).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_USUBE).legalFor({{s16, s16}}); });
   // Build
   // Trunc it to s8.
   LLT s8{LLT::scalar(8)};
@@ -1043,16 +1026,14 @@ TEST_F(AArch64GISelMITest, WidenUMULOCondition) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_ADD).legalFor({{s16, s16}}); });
 
   LLT s32 = LLT::scalar(32);
   LLT s64 = LLT::scalar(64);
 
-  auto UMulo =
-    B.buildInstr(TargetOpcode::G_UMULO, {s64, LLT::scalar(1)},
-                 {Copies[0], Copies[1]});
+  auto UMulo = B.buildInstr(TargetOpcode::G_UMULO, {s64, LLT::scalar(1)},
+                            {Copies[0], Copies[1]});
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
   LegalizerHelper Helper(*MF, Info, Observer, B);
@@ -1385,10 +1366,8 @@ TEST_F(AArch64GISelMITest, FewerElementsAnd) {
   const LLT V5S32 = LLT::fixed_vector(5, 32);
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_AND)
-      .legalFor({s32});
-  });
+  DefineLegalizerInfo(A,
+                      { getActionDefinitionsBuilder(G_AND).legalFor({s32}); });
 
   auto Op0 = B.buildUndef(V5S32);
   auto Op1 = B.buildUndef(V5S32);
@@ -1433,8 +1412,8 @@ TEST_F(AArch64GISelMITest, MoreElementsAnd) {
 
   LegalizerInfo LI;
   LI.getActionDefinitionsBuilder(TargetOpcode::G_AND)
-    .legalFor({v6s32})
-    .clampMinNumElements(0, s32, 6);
+      .legalFor({v6s32})
+      .clampMinNumElements(0, s32, 6);
   LI.getLegacyLegalizerInfo().computeTables();
 
   DummyGISelObserver Observer;
@@ -1485,8 +1464,8 @@ TEST_F(AArch64GISelMITest, FewerElementsPhi) {
 
   LegalizerInfo LI;
   LI.getActionDefinitionsBuilder(TargetOpcode::G_PHI)
-    .legalFor({v2s32})
-    .clampMinNumElements(0, s32, 2);
+      .legalFor({v2s32})
+      .clampMinNumElements(0, s32, 2);
   LI.getLegacyLegalizerInfo().computeTables();
 
   LLT PhiTy = v5s32;
@@ -1510,7 +1489,6 @@ TEST_F(AArch64GISelMITest, FewerElementsPhi) {
   B.buildBrCond(ICmp.getReg(0), *MidMBB);
   B.buildBr(*EndMBB);
 
-
   B.setMBB(*MidMBB);
   auto MidVal = B.buildUndef(PhiTy);
   auto MidOtherVal = B.buildConstant(s64, 345);
@@ -1518,20 +1496,20 @@ TEST_F(AArch64GISelMITest, FewerElementsPhi) {
 
   B.setMBB(*EndMBB);
   auto Phi = B.buildInstr(TargetOpcode::G_PHI)
-    .addDef(MRI->createGenericVirtualRegister(PhiTy))
-    .addUse(InitVal.getReg(0))
-    .addMBB(EntryMBB)
-    .addUse(MidVal.getReg(0))
-    .addMBB(MidMBB);
+                 .addDef(MRI->createGenericVirtualRegister(PhiTy))
+                 .addUse(InitVal.getReg(0))
+                 .addMBB(EntryMBB)
+                 .addUse(MidVal.getReg(0))
+                 .addMBB(MidMBB);
 
   // Insert another irrelevant phi to make sure the rebuild is inserted after
   // it.
   B.buildInstr(TargetOpcode::G_PHI)
-    .addDef(MRI->createGenericVirtualRegister(s64))
-    .addUse(InitOtherVal.getReg(0))
-    .addMBB(EntryMBB)
-    .addUse(MidOtherVal.getReg(0))
-    .addMBB(MidMBB);
+      .addDef(MRI->createGenericVirtualRegister(s64))
+      .addUse(InitOtherVal.getReg(0))
+      .addMBB(EntryMBB)
+      .addUse(MidOtherVal.getReg(0))
+      .addMBB(MidMBB);
 
   // Add some use instruction after the phis.
   B.buildAnd(PhiTy, Phi.getReg(0), Phi.getReg(0));
@@ -1575,24 +1553,20 @@ TEST_F(AArch64GISelMITest, LowerFNEG) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FSUB).legalFor({s64});
-  });
+  DefineLegalizerInfo(A,
+                      { getActionDefinitionsBuilder(G_FSUB).legalFor({s64}); });
 
   // Build Instr. Make sure FMF are preserved.
-  auto FAdd =
-    B.buildInstr(TargetOpcode::G_FADD, {LLT::scalar(64)}, {Copies[0], Copies[1]},
-                 MachineInstr::MIFlag::FmNsz);
+  auto FAdd = B.buildInstr(TargetOpcode::G_FADD, {LLT::scalar(64)},
+                           {Copies[0], Copies[1]}, MachineInstr::MIFlag::FmNsz);
 
   // Should not propagate the flags of src instruction.
-  auto FNeg0 =
-    B.buildInstr(TargetOpcode::G_FNEG, {LLT::scalar(64)}, {FAdd.getReg(0)},
-                 {MachineInstr::MIFlag::FmArcp});
+  auto FNeg0 = B.buildInstr(TargetOpcode::G_FNEG, {LLT::scalar(64)},
+                            {FAdd.getReg(0)}, {MachineInstr::MIFlag::FmArcp});
 
   // Preserve the one flag.
-  auto FNeg1 =
-    B.buildInstr(TargetOpcode::G_FNEG, {LLT::scalar(64)}, {Copies[0]},
-                 MachineInstr::MIFlag::FmNoInfs);
+  auto FNeg1 = B.buildInstr(TargetOpcode::G_FNEG, {LLT::scalar(64)},
+                            {Copies[0]}, MachineInstr::MIFlag::FmNoInfs);
 
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
@@ -1768,7 +1742,7 @@ TEST_F(AArch64GISelMITest, LowerMergeValues) {
 
   DefineLegalizerInfo(A, {
     getActionDefinitionsBuilder(G_UNMERGE_VALUES)
-      .widenScalarIf(typeIs(1, LLT::scalar(3)), changeTo(1, LLT::scalar(9)));
+        .widenScalarIf(typeIs(1, LLT::scalar(3)), changeTo(1, LLT::scalar(9)));
   });
 
   AInfo Info(MF->getSubtarget());
@@ -1969,8 +1943,9 @@ TEST_F(AArch64GISelMITest, NarrowSEXTINREG2) {
     GTEST_SKIP();
 
   // Declare your legalization info, these aren't actually relevant to the test.
-  DefineLegalizerInfo(
-      A, { getActionDefinitionsBuilder(G_SEXT_INREG).legalForTypeWithAnyImm({s64}); });
+  DefineLegalizerInfo(A, {
+    getActionDefinitionsBuilder(G_SEXT_INREG).legalForTypeWithAnyImm({s64});
+  });
   // Build Instr
   auto MIB = B.buildInstr(
       TargetOpcode::G_SEXT_INREG, {LLT::scalar(32)},
@@ -2003,8 +1978,9 @@ TEST_F(AArch64GISelMITest, LowerSEXTINREG) {
     GTEST_SKIP();
 
   // Declare your legalization info, these aren't actually relevant to the test.
-  DefineLegalizerInfo(
-      A, { getActionDefinitionsBuilder(G_SEXT_INREG).legalForTypeWithAnyImm({s64}); });
+  DefineLegalizerInfo(A, {
+    getActionDefinitionsBuilder(G_SEXT_INREG).legalForTypeWithAnyImm({s64});
+  });
   // Build Instr
   auto MIB = B.buildInstr(
       TargetOpcode::G_SEXT_INREG, {LLT::scalar(32)},
@@ -2043,20 +2019,18 @@ TEST_F(AArch64GISelMITest, LibcallFPExt) {
   LLT S32{LLT::scalar(32)};
   LLT S128{LLT::scalar(128)};
   auto MIBTrunc = B.buildTrunc(S16, Copies[0]);
-  auto MIBFPExt1 =
-      B.buildInstr(TargetOpcode::G_FPEXT, {S32}, {MIBTrunc});
+  auto MIBFPExt1 = B.buildInstr(TargetOpcode::G_FPEXT, {S32}, {MIBTrunc});
 
-  auto MIBFPExt2 =
-      B.buildInstr(TargetOpcode::G_FPEXT, {S128}, {Copies[1]});
+  auto MIBFPExt2 = B.buildInstr(TargetOpcode::G_FPEXT, {S128}, {Copies[1]});
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
   LegalizerHelper Helper(*MF, Info, Observer, B);
   LostDebugLocObserver DummyLocObserver("");
   EXPECT_EQ(LegalizerHelper::LegalizeResult::Legalized,
-              Helper.libcall(*MIBFPExt1, DummyLocObserver));
+            Helper.libcall(*MIBFPExt1, DummyLocObserver));
 
   EXPECT_EQ(LegalizerHelper::LegalizeResult::Legalized,
-              Helper.libcall(*MIBFPExt2, DummyLocObserver));
+            Helper.libcall(*MIBFPExt2, DummyLocObserver));
   auto CheckStr = R"(
   CHECK: [[TRUNC:%[0-9]+]]:_(s16) = G_TRUNC
   CHECK: $h0 = COPY [[TRUNC]]
@@ -2076,7 +2050,8 @@ TEST_F(AArch64GISelMITest, LibcallFPTrunc) {
 
   // Declare your legalization info
   DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FPTRUNC).libcallFor({{s16, s32}, {s64, s128}});
+    getActionDefinitionsBuilder(G_FPTRUNC).libcallFor(
+        {{s16, s32}, {s64, s128}});
   });
 
   LLT S16{LLT::scalar(16)};
@@ -2084,13 +2059,11 @@ TEST_F(AArch64GISelMITest, LibcallFPTrunc) {
   LLT S64{LLT::scalar(64)};
   LLT S128{LLT::scalar(128)};
   auto MIBTrunc = B.buildTrunc(S32, Copies[0]);
-  auto MIBFPTrunc1 =
-      B.buildInstr(TargetOpcode::G_FPTRUNC, {S16}, {MIBTrunc});
+  auto MIBFPTrunc1 = B.buildInstr(TargetOpcode::G_FPTRUNC, {S16}, {MIBTrunc});
 
   auto MIBMerge = B.buildMergeLikeInstr(S128, {Copies[1], Copies[2]});
 
-  auto MIBFPTrunc2 =
-      B.buildInstr(TargetOpcode::G_FPTRUNC, {S64}, {MIBMerge});
+  auto MIBFPTrunc2 = B.buildInstr(TargetOpcode::G_FPTRUNC, {S64}, {MIBMerge});
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
   LostDebugLocObserver DummyLocObserver("");
@@ -2118,9 +2091,8 @@ TEST_F(AArch64GISelMITest, LibcallSimple) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FADD).libcallFor({s16});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FADD).libcallFor({s16}); });
 
   LLT S16{LLT::scalar(16)};
   auto MIBTrunc = B.buildTrunc(S16, Copies[0]);
@@ -2142,9 +2114,8 @@ TEST_F(AArch64GISelMITest, LibcallMul) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_MUL).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_MUL).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2156,8 +2127,7 @@ TEST_F(AArch64GISelMITest, LibcallMul) {
       B.buildInstr(TargetOpcode::G_MUL, {S32}, {MIBTrunc, MIBTrunc});
   auto MIBMul64 =
       B.buildInstr(TargetOpcode::G_MUL, {S64}, {Copies[0], Copies[0]});
-  auto MIBMul128 =
-      B.buildInstr(TargetOpcode::G_MUL, {S128}, {MIBExt, MIBExt});
+  auto MIBMul128 = B.buildInstr(TargetOpcode::G_MUL, {S128}, {MIBExt, MIBExt});
 
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
@@ -2200,9 +2170,8 @@ TEST_F(AArch64GISelMITest, LibcallSRem) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_SREM).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_SREM).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2258,9 +2227,8 @@ TEST_F(AArch64GISelMITest, LibcallURem) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_UREM).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_UREM).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2370,9 +2338,8 @@ TEST_F(AArch64GISelMITest, LibcallFAdd) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FADD).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FADD).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2423,9 +2390,8 @@ TEST_F(AArch64GISelMITest, LibcallFSub) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FSUB).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FSUB).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2476,9 +2442,8 @@ TEST_F(AArch64GISelMITest, LibcallFMul) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FMUL).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FMUL).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2529,9 +2494,8 @@ TEST_F(AArch64GISelMITest, LibcallFDiv) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FDIV).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FDIV).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2582,9 +2546,8 @@ TEST_F(AArch64GISelMITest, LibcallFExp) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FEXP).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FEXP).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2678,9 +2641,8 @@ TEST_F(AArch64GISelMITest, LibcallFRem) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FREM).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FREM).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2726,9 +2688,8 @@ TEST_F(AArch64GISelMITest, LibcallFPow) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FPOW).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FPOW).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -2774,9 +2735,8 @@ TEST_F(AArch64GISelMITest, LibcallFMa) {
     GTEST_SKIP();
 
   // Declare your legalization info
-  DefineLegalizerInfo(A, {
-    getActionDefinitionsBuilder(G_FMA).libcallFor({s32, s64, s128});
-  });
+  DefineLegalizerInfo(
+      A, { getActionDefinitionsBuilder(G_FMA).libcallFor({s32, s64, s128}); });
 
   LLT S32{LLT::scalar(32)};
   LLT S64{LLT::scalar(64)};
@@ -3304,7 +3264,8 @@ TEST_F(AArch64GISelMITest, LowerFFloor) {
   // Declare your legalization info
   DefineLegalizerInfo(A, {});
   // Build Instr
-  auto Floor = B.buildFFloor(LLT::scalar(64), Copies[0], MachineInstr::MIFlag::FmNoInfs);
+  auto Floor =
+      B.buildFFloor(LLT::scalar(64), Copies[0], MachineInstr::MIFlag::FmNoInfs);
   AInfo Info(MF->getSubtarget());
   DummyGISelObserver Observer;
   LegalizerHelper Helper(*MF, Info, Observer, B);

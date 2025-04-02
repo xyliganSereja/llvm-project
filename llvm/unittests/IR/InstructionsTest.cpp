@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/IR/Instructions.h"
+#include "llvm-c/Core.h"
 #include "llvm/ADT/CombinationGenerator.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -27,7 +28,6 @@
 #include "llvm/IR/Operator.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm-c/Core.h"
 #include "gmock/gmock-matchers.h"
 #include "gtest/gtest.h"
 #include <memory>
@@ -49,13 +49,13 @@ TEST(InstructionsTest, ReturnInst) {
   LLVMContext C;
 
   // test for PR6589
-  const ReturnInst* r0 = ReturnInst::Create(C);
+  const ReturnInst *r0 = ReturnInst::Create(C);
   EXPECT_EQ(r0->getNumOperands(), 0U);
   EXPECT_EQ(r0->op_begin(), r0->op_end());
 
-  IntegerType* Int1 = IntegerType::get(C, 1);
-  Constant* One = ConstantInt::get(Int1, 1, true);
-  const ReturnInst* r1 = ReturnInst::Create(C, One);
+  IntegerType *Int1 = IntegerType::get(C, 1);
+  Constant *One = ConstantInt::get(Int1, 1, true);
+  const ReturnInst *r1 = ReturnInst::Create(C, One);
   EXPECT_EQ(1U, r1->getNumOperands());
   User::const_op_iterator b(r1->op_begin());
   EXPECT_NE(r1->op_end(), b);
@@ -134,11 +134,11 @@ TEST(InstructionsTest, BranchInst) {
   LLVMContext C;
 
   // Make a BasicBlocks
-  BasicBlock* bb0 = BasicBlock::Create(C);
-  BasicBlock* bb1 = BasicBlock::Create(C);
+  BasicBlock *bb0 = BasicBlock::Create(C);
+  BasicBlock *bb1 = BasicBlock::Create(C);
 
   // Mandatory BranchInst
-  const BranchInst* b0 = BranchInst::Create(bb0);
+  const BranchInst *b0 = BranchInst::Create(bb0);
 
   EXPECT_TRUE(b0->isUnconditional());
   EXPECT_FALSE(b0->isConditional());
@@ -152,11 +152,11 @@ TEST(InstructionsTest, BranchInst) {
 
   EXPECT_EQ(b0->op_end(), std::next(b0->op_begin()));
 
-  IntegerType* Int1 = IntegerType::get(C, 1);
-  Constant* One = ConstantInt::get(Int1, 1, true);
+  IntegerType *Int1 = IntegerType::get(C, 1);
+  Constant *One = ConstantInt::get(Int1, 1, true);
 
   // Conditional BranchInst
-  BranchInst* b1 = BranchInst::Create(bb0, bb1, One);
+  BranchInst *b1 = BranchInst::Create(bb0, bb1, One);
 
   EXPECT_FALSE(b1->isUnconditional());
   EXPECT_TRUE(b1->isConditional());
@@ -232,8 +232,8 @@ TEST(InstructionsTest, CastInst) {
   Type *VScaleV2PtrTy = ScalableVectorType::get(PtrTy, 2);
   Type *VScaleV4PtrTy = ScalableVectorType::get(PtrTy, 4);
 
-  const Constant* c8 = Constant::getNullValue(V8x8Ty);
-  const Constant* c64 = Constant::getNullValue(V8x64Ty);
+  const Constant *c8 = Constant::getNullValue(V8x8Ty);
+  const Constant *c64 = Constant::getNullValue(V8x64Ty);
 
   const Constant *v2ptr32 = Constant::getNullValue(V2PtrTy);
 
@@ -450,8 +450,8 @@ TEST(InstructionsTest, VectorGep) {
   // and GEPs which use this type.
   ConstantInt *Ci32a = ConstantInt::get(C, APInt(32, 1492));
   ConstantInt *Ci32b = ConstantInt::get(C, APInt(32, 1948));
-  std::vector<Constant*> ConstVa(2, Ci32a);
-  std::vector<Constant*> ConstVb(2, Ci32b);
+  std::vector<Constant *> ConstVa(2, Ci32a);
+  std::vector<Constant *> ConstVb(2, Ci32b);
   Constant *C2xi32a = ConstantVector::get(ConstVa);
   Constant *C2xi32b = ConstantVector::get(ConstVb);
 
@@ -462,7 +462,7 @@ TEST(InstructionsTest, VectorGep) {
   ICmpInst *ICmp1 = new ICmpInst(ICmpInst::ICMP_ULT, PtrVecA, PtrVecB);
   EXPECT_NE(ICmp0, ICmp1); // suppress warning.
 
-  BasicBlock* BB0 = BasicBlock::Create(C);
+  BasicBlock *BB0 = BasicBlock::Create(C);
   // Test InsertAtEnd ICmpInst constructor.
   ICmpInst *ICmp2 = new ICmpInst(BB0, ICmpInst::ICMP_SGE, PtrVecA, PtrVecB);
   EXPECT_NE(ICmp0, ICmp2); // suppress warning.
@@ -608,46 +608,41 @@ TEST(InstructionTest, ConstrainedTrans) {
 TEST(InstructionsTest, isEliminableCastPair) {
   LLVMContext C;
 
-  Type* Int16Ty = Type::getInt16Ty(C);
-  Type* Int32Ty = Type::getInt32Ty(C);
-  Type* Int64Ty = Type::getInt64Ty(C);
+  Type *Int16Ty = Type::getInt16Ty(C);
+  Type *Int32Ty = Type::getInt32Ty(C);
+  Type *Int64Ty = Type::getInt64Ty(C);
   Type *Int64PtrTy = PointerType::get(C, 0);
 
   // Source and destination pointers have same size -> bitcast.
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::PtrToInt,
-                                           CastInst::IntToPtr,
-                                           Int64PtrTy, Int64Ty, Int64PtrTy,
-                                           Int32Ty, nullptr, Int32Ty),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::PtrToInt, CastInst::IntToPtr, Int64PtrTy, Int64Ty,
+                Int64PtrTy, Int32Ty, nullptr, Int32Ty),
             CastInst::BitCast);
 
   // Source and destination have unknown sizes, but the same address space and
   // the intermediate int is the maximum pointer size -> bitcast
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::PtrToInt,
-                                           CastInst::IntToPtr,
-                                           Int64PtrTy, Int64Ty, Int64PtrTy,
-                                           nullptr, nullptr, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::PtrToInt, CastInst::IntToPtr, Int64PtrTy, Int64Ty,
+                Int64PtrTy, nullptr, nullptr, nullptr),
             CastInst::BitCast);
 
   // Source and destination have unknown sizes, but the same address space and
   // the intermediate int is not the maximum pointer size -> nothing
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::PtrToInt,
-                                           CastInst::IntToPtr,
-                                           Int64PtrTy, Int32Ty, Int64PtrTy,
-                                           nullptr, nullptr, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::PtrToInt, CastInst::IntToPtr, Int64PtrTy, Int32Ty,
+                Int64PtrTy, nullptr, nullptr, nullptr),
             0U);
 
   // Middle pointer big enough -> bitcast.
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::IntToPtr,
-                                           CastInst::PtrToInt,
-                                           Int64Ty, Int64PtrTy, Int64Ty,
-                                           nullptr, Int64Ty, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::IntToPtr, CastInst::PtrToInt, Int64Ty, Int64PtrTy,
+                Int64Ty, nullptr, Int64Ty, nullptr),
             CastInst::BitCast);
 
   // Middle pointer too small -> fail.
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::IntToPtr,
-                                           CastInst::PtrToInt,
-                                           Int64Ty, Int64PtrTy, Int64Ty,
-                                           nullptr, Int32Ty, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::IntToPtr, CastInst::PtrToInt, Int64Ty, Int64PtrTy,
+                Int64Ty, nullptr, Int32Ty, nullptr),
             0U);
 
   // Test that we don't eliminate bitcasts between different address spaces,
@@ -664,25 +659,22 @@ TEST(InstructionsTest, isEliminableCastPair) {
 
   // Cannot simplify inttoptr, addrspacecast
   EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::IntToPtr,
-                                           CastInst::AddrSpaceCast,
-                                           Int16Ty, Int64PtrTyAS1, Int64PtrTyAS2,
+                                           CastInst::AddrSpaceCast, Int16Ty,
+                                           Int64PtrTyAS1, Int64PtrTyAS2,
                                            nullptr, Int16SizePtr, Int64SizePtr),
             0U);
 
   // Cannot simplify addrspacecast, ptrtoint
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::AddrSpaceCast,
-                                           CastInst::PtrToInt,
-                                           Int64PtrTyAS1, Int64PtrTyAS2, Int16Ty,
-                                           Int64SizePtr, Int16SizePtr, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::AddrSpaceCast, CastInst::PtrToInt, Int64PtrTyAS1,
+                Int64PtrTyAS2, Int16Ty, Int64SizePtr, Int16SizePtr, nullptr),
             0U);
 
   // Pass since the bitcast address spaces are the same
-  EXPECT_EQ(CastInst::isEliminableCastPair(CastInst::IntToPtr,
-                                           CastInst::BitCast,
-                                           Int16Ty, Int64PtrTyAS1, Int64PtrTyAS1,
-                                           nullptr, nullptr, nullptr),
+  EXPECT_EQ(CastInst::isEliminableCastPair(
+                CastInst::IntToPtr, CastInst::BitCast, Int16Ty, Int64PtrTyAS1,
+                Int64PtrTyAS1, nullptr, nullptr, nullptr),
             CastInst::IntToPtr);
-
 }
 
 TEST(InstructionsTest, CloneCall) {
@@ -691,11 +683,8 @@ TEST(InstructionsTest, CloneCall) {
   Type *ArgTys[] = {Int32Ty, Int32Ty, Int32Ty};
   FunctionType *FnTy = FunctionType::get(Int32Ty, ArgTys, /*isVarArg=*/false);
   Value *Callee = Constant::getNullValue(PointerType::getUnqual(C));
-  Value *Args[] = {
-    ConstantInt::get(Int32Ty, 1),
-    ConstantInt::get(Int32Ty, 2),
-    ConstantInt::get(Int32Ty, 3)
-  };
+  Value *Args[] = {ConstantInt::get(Int32Ty, 1), ConstantInt::get(Int32Ty, 2),
+                   ConstantInt::get(Int32Ty, 3)};
   std::unique_ptr<CallInst> Call(
       CallInst::Create(FnTy, Callee, Args, "result"));
 
@@ -845,10 +834,8 @@ TEST(InstructionsTest, GEPIndices) {
   IRBuilder<NoFolder> Builder(Context);
   Type *ElementTy = Builder.getInt8Ty();
   Type *ArrTy = ArrayType::get(ArrayType::get(ElementTy, 64), 64);
-  Value *Indices[] = {
-    Builder.getInt32(0),
-    Builder.getInt32(13),
-    Builder.getInt32(42) };
+  Value *Indices[] = {Builder.getInt32(0), Builder.getInt32(13),
+                      Builder.getInt32(42)};
 
   Value *V = Builder.CreateGEP(
       ArrTy, UndefValue::get(PointerType::getUnqual(Context)), Indices);
@@ -971,7 +958,7 @@ TEST(InstructionsTest, SwitchInstProfUpdateWrapper) {
   SI->addCase(ConstantInt::get(Int32Ty, 1), BB1.get());
   SI->addCase(ConstantInt::get(Int32Ty, 2), BB2.get());
   SI->setMetadata(LLVMContext::MD_prof,
-                  MDBuilder(C).createBranchWeights({ 9, 1, 22 }));
+                  MDBuilder(C).createBranchWeights({9, 1, 22}));
 
   {
     SwitchInstProfUpdateWrapper SIW(*SI);
@@ -1156,8 +1143,8 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   Constant *V1 = ConstantVector::get({C3, C2, C1, C0});
 
   // Identity with undef elts.
-  ShuffleVectorInst *Id1 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C0, C1, CU, CU}));
+  ShuffleVectorInst *Id1 =
+      new ShuffleVectorInst(V0, V1, ConstantVector::get({C0, C1, CU, CU}));
   EXPECT_TRUE(Id1->isIdentity());
   EXPECT_FALSE(Id1->isIdentityWithPadding());
   EXPECT_FALSE(Id1->isIdentityWithExtract());
@@ -1165,8 +1152,8 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id1;
 
   // Result has less elements than operands.
-  ShuffleVectorInst *Id2 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C0, C1, C2}));
+  ShuffleVectorInst *Id2 =
+      new ShuffleVectorInst(V0, V1, ConstantVector::get({C0, C1, C2}));
   EXPECT_FALSE(Id2->isIdentity());
   EXPECT_FALSE(Id2->isIdentityWithPadding());
   EXPECT_TRUE(Id2->isIdentityWithExtract());
@@ -1174,17 +1161,18 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id2;
 
   // Result has less elements than operands; choose from Op1.
-  ShuffleVectorInst *Id3 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C4, CU, C6}));
+  ShuffleVectorInst *Id3 =
+      new ShuffleVectorInst(V0, V1, ConstantVector::get({C4, CU, C6}));
   EXPECT_FALSE(Id3->isIdentity());
   EXPECT_FALSE(Id3->isIdentityWithPadding());
   EXPECT_TRUE(Id3->isIdentityWithExtract());
   EXPECT_FALSE(Id3->isConcat());
   delete Id3;
 
-  // Result has less elements than operands; choose from Op0 and Op1 is not identity.
-  ShuffleVectorInst *Id4 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C4, C1, C6}));
+  // Result has less elements than operands; choose from Op0 and Op1 is not
+  // identity.
+  ShuffleVectorInst *Id4 =
+      new ShuffleVectorInst(V0, V1, ConstantVector::get({C4, C1, C6}));
   EXPECT_FALSE(Id4->isIdentity());
   EXPECT_FALSE(Id4->isIdentityWithPadding());
   EXPECT_FALSE(Id4->isIdentityWithExtract());
@@ -1192,17 +1180,18 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id4;
 
   // Result has more elements than operands, and extra elements are undef.
-  ShuffleVectorInst *Id5 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({CU, C1, C2, C3, CU, CU}));
+  ShuffleVectorInst *Id5 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({CU, C1, C2, C3, CU, CU}));
   EXPECT_FALSE(Id5->isIdentity());
   EXPECT_TRUE(Id5->isIdentityWithPadding());
   EXPECT_FALSE(Id5->isIdentityWithExtract());
   EXPECT_FALSE(Id5->isConcat());
   delete Id5;
 
-  // Result has more elements than operands, and extra elements are undef; choose from Op1.
-  ShuffleVectorInst *Id6 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C4, C5, C6, CU, CU, CU}));
+  // Result has more elements than operands, and extra elements are undef;
+  // choose from Op1.
+  ShuffleVectorInst *Id6 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C4, C5, C6, CU, CU, CU}));
   EXPECT_FALSE(Id6->isIdentity());
   EXPECT_TRUE(Id6->isIdentityWithPadding());
   EXPECT_FALSE(Id6->isIdentityWithExtract());
@@ -1210,26 +1199,28 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id6;
 
   // Result has more elements than operands, but extra elements are not undef.
-  ShuffleVectorInst *Id7 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C0, C1, C2, C3, CU, C1}));
+  ShuffleVectorInst *Id7 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C0, C1, C2, C3, CU, C1}));
   EXPECT_FALSE(Id7->isIdentity());
   EXPECT_FALSE(Id7->isIdentityWithPadding());
   EXPECT_FALSE(Id7->isIdentityWithExtract());
   EXPECT_FALSE(Id7->isConcat());
   delete Id7;
 
-  // Result has more elements than operands; choose from Op0 and Op1 is not identity.
-  ShuffleVectorInst *Id8 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C4, CU, C2, C3, CU, CU}));
+  // Result has more elements than operands; choose from Op0 and Op1 is not
+  // identity.
+  ShuffleVectorInst *Id8 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C4, CU, C2, C3, CU, CU}));
   EXPECT_FALSE(Id8->isIdentity());
   EXPECT_FALSE(Id8->isIdentityWithPadding());
   EXPECT_FALSE(Id8->isIdentityWithExtract());
   EXPECT_FALSE(Id8->isConcat());
   delete Id8;
 
-  // Result has twice as many elements as operands; choose consecutively from Op0 and Op1 is concat.
-  ShuffleVectorInst *Id9 = new ShuffleVectorInst(V0, V1,
-                                                 ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7}));
+  // Result has twice as many elements as operands; choose consecutively from
+  // Op0 and Op1 is concat.
+  ShuffleVectorInst *Id9 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7}));
   EXPECT_FALSE(Id9->isIdentity());
   EXPECT_FALSE(Id9->isIdentityWithPadding());
   EXPECT_FALSE(Id9->isIdentityWithExtract());
@@ -1237,8 +1228,8 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id9;
 
   // Result has less than twice as many elements as operands, so not a concat.
-  ShuffleVectorInst *Id10 = new ShuffleVectorInst(V0, V1,
-                                                  ConstantVector::get({C0, CU, C2, C3, CU, CU, C6}));
+  ShuffleVectorInst *Id10 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C0, CU, C2, C3, CU, CU, C6}));
   EXPECT_FALSE(Id10->isIdentity());
   EXPECT_FALSE(Id10->isIdentityWithPadding());
   EXPECT_FALSE(Id10->isIdentityWithExtract());
@@ -1246,8 +1237,8 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id10;
 
   // Result has more than twice as many elements as operands, so not a concat.
-  ShuffleVectorInst *Id11 = new ShuffleVectorInst(V0, V1,
-                                                  ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7, CU}));
+  ShuffleVectorInst *Id11 = new ShuffleVectorInst(
+      V0, V1, ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7, CU}));
   EXPECT_FALSE(Id11->isIdentity());
   EXPECT_FALSE(Id11->isIdentityWithPadding());
   EXPECT_FALSE(Id11->isIdentityWithExtract());
@@ -1255,9 +1246,11 @@ TEST(InstructionsTest, ShuffleMaskQueries) {
   delete Id11;
 
   // If an input is undef, it's not a concat.
-  // TODO: IdentityWithPadding should be true here even though the high mask values are not undef.
-  ShuffleVectorInst *Id12 = new ShuffleVectorInst(V0, ConstantVector::get({CU, CU, CU, CU}),
-                                                  ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7}));
+  // TODO: IdentityWithPadding should be true here even though the high mask
+  // values are not undef.
+  ShuffleVectorInst *Id12 = new ShuffleVectorInst(
+      V0, ConstantVector::get({CU, CU, CU, CU}),
+      ConstantVector::get({C0, CU, C2, C3, CU, CU, C6, C7}));
   EXPECT_FALSE(Id12->isIdentity());
   EXPECT_FALSE(Id12->isIdentityWithPadding());
   EXPECT_FALSE(Id12->isIdentityWithExtract());
@@ -1406,11 +1399,11 @@ TEST(InstructionsTest, GetSplat) {
   Constant *C1 = ConstantInt::get(Int32Ty, 1);
 
   Constant *Splat0 = ConstantVector::get({C0, C0, C0, C0});
-  Constant *Splat1 = ConstantVector::get({C1, C1, C1, C1 ,C1});
+  Constant *Splat1 = ConstantVector::get({C1, C1, C1, C1, C1});
   Constant *Splat0Undef = ConstantVector::get({C0, CU, C0, CU});
   Constant *Splat1Undef = ConstantVector::get({CU, CU, C1, CU});
-  Constant *NotSplat = ConstantVector::get({C1, C1, C0, C1 ,C1});
-  Constant *NotSplatUndef = ConstantVector::get({CU, C1, CU, CU ,C0});
+  Constant *NotSplat = ConstantVector::get({C1, C1, C0, C1, C1});
+  Constant *NotSplatUndef = ConstantVector::get({CU, C1, CU, CU, C0});
   Constant *Splat0Poison = ConstantVector::get({C0, CP, C0, CP});
   Constant *Splat1Poison = ConstantVector::get({CP, CP, C1, CP});
   Constant *NotSplatPoison = ConstantVector::get({CP, C1, CP, CP, C0});

@@ -156,15 +156,15 @@ AMDGPUSubtarget::getDefaultFlatWorkGroupSize(CallingConv::ID CC) const {
   }
 }
 
-std::pair<unsigned, unsigned> AMDGPUSubtarget::getFlatWorkGroupSizes(
-  const Function &F) const {
+std::pair<unsigned, unsigned>
+AMDGPUSubtarget::getFlatWorkGroupSizes(const Function &F) const {
   // Default minimum/maximum flat work group sizes.
   std::pair<unsigned, unsigned> Default =
-    getDefaultFlatWorkGroupSize(F.getCallingConv());
+      getDefaultFlatWorkGroupSize(F.getCallingConv());
 
   // Requested minimum/maximum flat work group sizes.
   std::pair<unsigned, unsigned> Requested = AMDGPU::getIntegerPairAttribute(
-    F, "amdgpu-flat-work-group-size", Default);
+      F, "amdgpu-flat-work-group-size", Default);
 
   // Make sure requested minimum is less than requested maximum.
   if (Requested.first > Requested.second)
@@ -190,7 +190,7 @@ std::pair<unsigned, unsigned> AMDGPUSubtarget::getEffectiveWavesPerEU(
   // number of waves per execution unit to values implied by requested
   // minimum/maximum flat work group sizes.
   unsigned MinImpliedByFlatWorkGroupSize =
-    getWavesPerEUForWorkGroup(FlatWorkGroupSizes.second);
+      getWavesPerEUForWorkGroup(FlatWorkGroupSizes.second);
   Default.first = MinImpliedByFlatWorkGroupSize;
 
   // Make sure requested minimum is less than requested maximum.
@@ -390,13 +390,16 @@ AMDGPUDwarfFlavour AMDGPUSubtarget::getAMDGPUDwarfFlavour() const {
 
 const AMDGPUSubtarget &AMDGPUSubtarget::get(const MachineFunction &MF) {
   if (MF.getTarget().getTargetTriple().getArch() == Triple::amdgcn)
-    return static_cast<const AMDGPUSubtarget&>(MF.getSubtarget<GCNSubtarget>());
+    return static_cast<const AMDGPUSubtarget &>(
+        MF.getSubtarget<GCNSubtarget>());
   return static_cast<const AMDGPUSubtarget &>(MF.getSubtarget<R600Subtarget>());
 }
 
-const AMDGPUSubtarget &AMDGPUSubtarget::get(const TargetMachine &TM, const Function &F) {
+const AMDGPUSubtarget &AMDGPUSubtarget::get(const TargetMachine &TM,
+                                            const Function &F) {
   if (TM.getTargetTriple().getArch() == Triple::amdgcn)
-    return static_cast<const AMDGPUSubtarget&>(TM.getSubtarget<GCNSubtarget>(F));
+    return static_cast<const AMDGPUSubtarget &>(
+        TM.getSubtarget<GCNSubtarget>(F));
   return static_cast<const AMDGPUSubtarget &>(
       TM.getSubtarget<R600Subtarget>(F));
 }

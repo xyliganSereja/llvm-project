@@ -37,7 +37,7 @@ class BPFMCCodeEmitter : public MCCodeEmitter {
 public:
   BPFMCCodeEmitter(const MCInstrInfo &, const MCRegisterInfo &mri,
                    bool IsLittleEndian)
-      : MRI(mri), IsLittleEndian(IsLittleEndian) { }
+      : MRI(mri), IsLittleEndian(IsLittleEndian) {}
   BPFMCCodeEmitter(const BPFMCCodeEmitter &) = delete;
   void operator=(const BPFMCCodeEmitter &) = delete;
   ~BPFMCCodeEmitter() override = default;
@@ -96,7 +96,8 @@ unsigned BPFMCCodeEmitter::getMachineOpValue(const MCInst &MI,
   else if (MI.getOpcode() == BPF::LD_imm64)
     Fixups.push_back(MCFixup::create(0, Expr, FK_SecRel_8));
   else if (MI.getOpcode() == BPF::JMPL)
-    Fixups.push_back(MCFixup::create(0, Expr, (MCFixupKind)BPF::FK_BPF_PCRel_4));
+    Fixups.push_back(
+        MCFixup::create(0, Expr, (MCFixupKind)BPF::FK_BPF_PCRel_4));
   else
     // bb label
     Fixups.push_back(MCFixup::create(0, Expr, FK_PCRel_2));
@@ -104,8 +105,7 @@ unsigned BPFMCCodeEmitter::getMachineOpValue(const MCInst &MI,
   return 0;
 }
 
-static uint8_t SwapBits(uint8_t Val)
-{
+static uint8_t SwapBits(uint8_t Val) {
   return (Val & 0x0F) << 4 | (Val & 0xF0) >> 4;
 }
 

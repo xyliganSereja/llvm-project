@@ -66,6 +66,6 @@ void expandAtomicMemCpyAsLoop(AtomicMemCpyInst *AtomicMemCpy,
                               const TargetTransformInfo &TTI,
                               ScalarEvolution *SE);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

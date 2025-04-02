@@ -48,11 +48,13 @@ TYPED_TEST(STLForwardCompatRemoveCVRefTest, RemoveCVRefT) {
 TEST(TransformTest, TransformStd) {
   std::optional<int> A;
 
-  std::optional<int> B = llvm::transformOptional(A, [&](int N) { return N + 1; });
+  std::optional<int> B =
+      llvm::transformOptional(A, [&](int N) { return N + 1; });
   EXPECT_FALSE(B.has_value());
 
   A = 3;
-  std::optional<int> C = llvm::transformOptional(A, [&](int N) { return N + 1; });
+  std::optional<int> C =
+      llvm::transformOptional(A, [&](int N) { return N + 1; });
   EXPECT_TRUE(C.has_value());
   EXPECT_EQ(4, *C);
 }

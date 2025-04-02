@@ -142,7 +142,7 @@ std::string ARM_MC::ParseARMTriple(const Triple &TT, StringRef CPU) {
   std::string ARMArchFeature;
 
   ARM::ArchKind ArchID = ARM::parseArch(TT.getArchName());
-  if (ArchID != ARM::ArchKind::INVALID &&  (CPU.empty() || CPU == "generic"))
+  if (ArchID != ARM::ArchKind::INVALID && (CPU.empty() || CPU == "generic"))
     ARMArchFeature = (ARMArchFeature + "+" + ARM::getArchName(ArchID)).str();
 
   if (TT.isThumb()) {
@@ -400,14 +400,16 @@ public:
 
   bool isUnconditionalBranch(const MCInst &Inst) const override {
     // BCCs with the "always" predicate are unconditional branches.
-    if (Inst.getOpcode() == ARM::Bcc && Inst.getOperand(1).getImm()==ARMCC::AL)
+    if (Inst.getOpcode() == ARM::Bcc &&
+        Inst.getOperand(1).getImm() == ARMCC::AL)
       return true;
     return MCInstrAnalysis::isUnconditionalBranch(Inst);
   }
 
   bool isConditionalBranch(const MCInst &Inst) const override {
     // BCCs with the "always" predicate are unconditional branches.
-    if (Inst.getOpcode() == ARM::Bcc && Inst.getOperand(1).getImm()==ARMCC::AL)
+    if (Inst.getOpcode() == ARM::Bcc &&
+        Inst.getOperand(1).getImm() == ARMCC::AL)
       return false;
     return MCInstrAnalysis::isConditionalBranch(Inst);
   }

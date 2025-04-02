@@ -147,9 +147,9 @@ int64_t MCRegisterInfo::getDwarfRegNum(MCRegister RegNum, bool isEH) const {
 
   if (!M)
     return -1;
-  DwarfLLVMRegPair Key = { RegNum, 0 };
-  const DwarfLLVMRegPair *I = std::lower_bound(M, M+Size, Key);
-  if (I == M+Size || I->FromReg != RegNum)
+  DwarfLLVMRegPair Key = {RegNum, 0};
+  const DwarfLLVMRegPair *I = std::lower_bound(M, M + Size, Key);
+  if (I == M + Size || I->FromReg != RegNum)
     return -1;
   // Consumers need to be able to detect -1 and -2, but at various points
   // the numbers move between unsigned and signed representations, as well as
@@ -166,7 +166,7 @@ std::optional<MCRegister> MCRegisterInfo::getLLVMRegNum(uint64_t RegNum,
   if (!M)
     return std::nullopt;
   DwarfLLVMRegPair Key = {unsigned(RegNum), 0};
-  const DwarfLLVMRegPair *I = std::lower_bound(M, M+Size, Key);
+  const DwarfLLVMRegPair *I = std::lower_bound(M, M + Size, Key);
   if (I != M + Size && I->FromReg == RegNum)
     return MCRegister::from(I->ToReg);
   return std::nullopt;
@@ -193,7 +193,8 @@ int64_t MCRegisterInfo::getDwarfRegNumFromDwarfEHRegNum(uint64_t RegNum) const {
 
 int MCRegisterInfo::getSEHRegNum(MCRegister RegNum) const {
   const DenseMap<MCRegister, int>::const_iterator I = L2SEHRegs.find(RegNum);
-  if (I == L2SEHRegs.end()) return (int)RegNum;
+  if (I == L2SEHRegs.end())
+    return (int)RegNum;
   return I->second;
 }
 

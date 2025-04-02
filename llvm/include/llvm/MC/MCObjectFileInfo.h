@@ -199,7 +199,7 @@ protected:
   MCSection *TLSTLVSection = nullptr; // Defaults to ".tlv".
 
   /// Section for thread local data initialization functions.
-   // Defaults to ".thread_init_func".
+  // Defaults to ".thread_init_func".
   const MCSection *TLSThreadInitSection = nullptr;
 
   MCSection *CStringSection = nullptr;
@@ -345,9 +345,7 @@ public:
   MCSection *getCOFFDebugSymbolsSection() const {
     return COFFDebugSymbolsSection;
   }
-  MCSection *getCOFFDebugTypesSection() const {
-    return COFFDebugTypesSection;
-  }
+  MCSection *getCOFFDebugTypesSection() const { return COFFDebugTypesSection; }
   MCSection *getCOFFGlobalTypeHashesSection() const {
     return COFFGlobalTypeHashesSection;
   }

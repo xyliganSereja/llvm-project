@@ -60,6 +60,6 @@ std::unique_ptr<Module> parseIR(MemoryBufferRef Buffer, SMDiagnostic &Err,
 std::unique_ptr<Module> parseIRFile(StringRef Filename, SMDiagnostic &Err,
                                     LLVMContext &Context,
                                     ParserCallbacks Callbacks = {});
-}
+} // namespace llvm
 
 #endif

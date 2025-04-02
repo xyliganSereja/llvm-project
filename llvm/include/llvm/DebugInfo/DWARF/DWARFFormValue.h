@@ -177,7 +177,7 @@ inline std::optional<const char *>
 toString(const std::optional<DWARFFormValue> &V) {
   if (!V)
     return std::nullopt;
-  Expected<const char*> E = V->getAsCString();
+  Expected<const char *> E = V->getAsCString();
   if (!E) {
     consumeError(E.takeError());
     return std::nullopt;

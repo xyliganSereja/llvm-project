@@ -46,7 +46,7 @@ class Value;
 /// instruction. If \p Updates is specified, collect all necessary DT updates
 /// into this vector. If \p KeepOneInputPHIs is true, one-input Phis in
 /// successors of blocks being deleted will be preserved.
-void detachDeadBlocks(ArrayRef <BasicBlock *> BBs,
+void detachDeadBlocks(ArrayRef<BasicBlock *> BBs,
                       SmallVectorImpl<DominatorTree::UpdateType> *Updates,
                       bool KeepOneInputPHIs = false);
 
@@ -60,8 +60,7 @@ void DeleteDeadBlock(BasicBlock *BB, DomTreeUpdater *DTU = nullptr,
 /// relevant loop info updates should be done before this function is called.
 /// If \p KeepOneInputPHIs is true, one-input Phis in successors of blocks
 /// being deleted will be preserved.
-void DeleteDeadBlocks(ArrayRef <BasicBlock *> BBs,
-                      DomTreeUpdater *DTU = nullptr,
+void DeleteDeadBlocks(ArrayRef<BasicBlock *> BBs, DomTreeUpdater *DTU = nullptr,
                       bool KeepOneInputPHIs = false);
 
 /// Delete all basic blocks from \p F that are not reachable from its entry
@@ -280,14 +279,14 @@ BasicBlock *ehAwareSplitEdge(BasicBlock *BB, BasicBlock *Succ,
 /// branch. The new block with name \p BBName is returned.
 ///
 /// FIXME: deprecated, switch to the DomTreeUpdater-based one.
-BasicBlock *SplitBlock(BasicBlock *Old, BasicBlock::iterator SplitPt, DominatorTree *DT,
-                       LoopInfo *LI = nullptr,
+BasicBlock *SplitBlock(BasicBlock *Old, BasicBlock::iterator SplitPt,
+                       DominatorTree *DT, LoopInfo *LI = nullptr,
                        MemorySSAUpdater *MSSAU = nullptr,
                        const Twine &BBName = "", bool Before = false);
-inline BasicBlock *SplitBlock(BasicBlock *Old, Instruction *SplitPt, DominatorTree *DT,
-                       LoopInfo *LI = nullptr,
-                       MemorySSAUpdater *MSSAU = nullptr,
-                       const Twine &BBName = "", bool Before = false) {
+inline BasicBlock *SplitBlock(BasicBlock *Old, Instruction *SplitPt,
+                              DominatorTree *DT, LoopInfo *LI = nullptr,
+                              MemorySSAUpdater *MSSAU = nullptr,
+                              const Twine &BBName = "", bool Before = false) {
   return SplitBlock(Old, SplitPt->getIterator(), DT, LI, MSSAU, BBName, Before);
 }
 
@@ -304,10 +303,12 @@ BasicBlock *SplitBlock(BasicBlock *Old, BasicBlock::iterator SplitPt,
                        MemorySSAUpdater *MSSAU = nullptr,
                        const Twine &BBName = "", bool Before = false);
 inline BasicBlock *SplitBlock(BasicBlock *Old, Instruction *SplitPt,
-                       DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr,
-                       MemorySSAUpdater *MSSAU = nullptr,
-                       const Twine &BBName = "", bool Before = false) {
-  return SplitBlock(Old, SplitPt->getIterator(), DTU, LI, MSSAU, BBName, Before);
+                              DomTreeUpdater *DTU = nullptr,
+                              LoopInfo *LI = nullptr,
+                              MemorySSAUpdater *MSSAU = nullptr,
+                              const Twine &BBName = "", bool Before = false) {
+  return SplitBlock(Old, SplitPt->getIterator(), DTU, LI, MSSAU, BBName,
+                    Before);
 }
 
 /// Split the specified block at the specified instruction \p SplitPt.
@@ -319,8 +320,9 @@ BasicBlock *splitBlockBefore(BasicBlock *Old, BasicBlock::iterator SplitPt,
                              DomTreeUpdater *DTU, LoopInfo *LI,
                              MemorySSAUpdater *MSSAU, const Twine &BBName = "");
 inline BasicBlock *splitBlockBefore(BasicBlock *Old, Instruction *SplitPt,
-                             DomTreeUpdater *DTU, LoopInfo *LI,
-                             MemorySSAUpdater *MSSAU, const Twine &BBName = "") {
+                                    DomTreeUpdater *DTU, LoopInfo *LI,
+                                    MemorySSAUpdater *MSSAU,
+                                    const Twine &BBName = "") {
   return splitBlockBefore(Old, SplitPt->getIterator(), DTU, LI, MSSAU, BBName);
 }
 
@@ -413,19 +415,17 @@ ReturnInst *FoldReturnIntoUncondBranch(ReturnInst *RI, BasicBlock *BB,
 /// Returns the NewBasicBlock's terminator.
 ///
 /// Updates DTU and LI if given.
-Instruction *SplitBlockAndInsertIfThen(Value *Cond, BasicBlock::iterator SplitBefore,
-                                       bool Unreachable,
-                                       MDNode *BranchWeights = nullptr,
-                                       DomTreeUpdater *DTU = nullptr,
-                                       LoopInfo *LI = nullptr,
-                                       BasicBlock *ThenBlock = nullptr);
+Instruction *
+SplitBlockAndInsertIfThen(Value *Cond, BasicBlock::iterator SplitBefore,
+                          bool Unreachable, MDNode *BranchWeights = nullptr,
+                          DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr,
+                          BasicBlock *ThenBlock = nullptr);
 
-inline Instruction *SplitBlockAndInsertIfThen(Value *Cond, Instruction *SplitBefore,
-                                       bool Unreachable,
-                                       MDNode *BranchWeights = nullptr,
-                                       DomTreeUpdater *DTU = nullptr,
-                                       LoopInfo *LI = nullptr,
-                                       BasicBlock *ThenBlock = nullptr) {
+inline Instruction *
+SplitBlockAndInsertIfThen(Value *Cond, Instruction *SplitBefore,
+                          bool Unreachable, MDNode *BranchWeights = nullptr,
+                          DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr,
+                          BasicBlock *ThenBlock = nullptr) {
   return SplitBlockAndInsertIfThen(Cond, SplitBefore->getIterator(),
                                    Unreachable, BranchWeights, DTU, LI,
                                    ThenBlock);
@@ -433,19 +433,17 @@ inline Instruction *SplitBlockAndInsertIfThen(Value *Cond, Instruction *SplitBef
 
 /// Similar to SplitBlockAndInsertIfThen, but the inserted block is on the false
 /// path of the branch.
-Instruction *SplitBlockAndInsertIfElse(Value *Cond, BasicBlock::iterator SplitBefore,
-                                       bool Unreachable,
-                                       MDNode *BranchWeights = nullptr,
-                                       DomTreeUpdater *DTU = nullptr,
-                                       LoopInfo *LI = nullptr,
-                                       BasicBlock *ElseBlock = nullptr);
+Instruction *
+SplitBlockAndInsertIfElse(Value *Cond, BasicBlock::iterator SplitBefore,
+                          bool Unreachable, MDNode *BranchWeights = nullptr,
+                          DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr,
+                          BasicBlock *ElseBlock = nullptr);
 
-inline Instruction *SplitBlockAndInsertIfElse(Value *Cond, Instruction *SplitBefore,
-                                       bool Unreachable,
-                                       MDNode *BranchWeights = nullptr,
-                                       DomTreeUpdater *DTU = nullptr,
-                                       LoopInfo *LI = nullptr,
-                                       BasicBlock *ElseBlock = nullptr) {
+inline Instruction *
+SplitBlockAndInsertIfElse(Value *Cond, Instruction *SplitBefore,
+                          bool Unreachable, MDNode *BranchWeights = nullptr,
+                          DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr,
+                          BasicBlock *ElseBlock = nullptr) {
   return SplitBlockAndInsertIfElse(Cond, SplitBefore->getIterator(),
                                    Unreachable, BranchWeights, DTU, LI,
                                    ElseBlock);
@@ -467,23 +465,19 @@ inline Instruction *SplitBlockAndInsertIfElse(Value *Cond, Instruction *SplitBef
 ///   Tail
 ///
 /// Updates DT if given.
-void SplitBlockAndInsertIfThenElse(Value *Cond,
-                                   BasicBlock::iterator SplitBefore,
-                                   Instruction **ThenTerm,
-                                   Instruction **ElseTerm,
-                                   MDNode *BranchWeights = nullptr,
-                                   DomTreeUpdater *DTU = nullptr,
-                                   LoopInfo *LI = nullptr);
+void SplitBlockAndInsertIfThenElse(
+    Value *Cond, BasicBlock::iterator SplitBefore, Instruction **ThenTerm,
+    Instruction **ElseTerm, MDNode *BranchWeights = nullptr,
+    DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr);
 
 inline void SplitBlockAndInsertIfThenElse(Value *Cond, Instruction *SplitBefore,
-                                   Instruction **ThenTerm,
-                                   Instruction **ElseTerm,
-                                   MDNode *BranchWeights = nullptr,
-                                   DomTreeUpdater *DTU = nullptr,
-                                   LoopInfo *LI = nullptr)
-{
+                                          Instruction **ThenTerm,
+                                          Instruction **ElseTerm,
+                                          MDNode *BranchWeights = nullptr,
+                                          DomTreeUpdater *DTU = nullptr,
+                                          LoopInfo *LI = nullptr) {
   SplitBlockAndInsertIfThenElse(Cond, SplitBefore->getIterator(), ThenTerm,
-                               ElseTerm, BranchWeights, DTU, LI);
+                                ElseTerm, BranchWeights, DTU, LI);
 }
 
 /// Split the containing block at the specified instruction - everything before
@@ -513,33 +507,27 @@ inline void SplitBlockAndInsertIfThenElse(Value *Cond, Instruction *SplitBefore,
 /// caller must ensure that Tail is reachable from Head.
 /// Returns the newly created blocks in \p ThenBlock and \p ElseBlock.
 /// Updates DTU and LI if given.
-void SplitBlockAndInsertIfThenElse(Value *Cond,
-                                   BasicBlock::iterator SplitBefore,
-                                   BasicBlock **ThenBlock,
-                                   BasicBlock **ElseBlock,
-                                   bool UnreachableThen = false,
-                                   bool UnreachableElse = false,
-                                   MDNode *BranchWeights = nullptr,
-                                   DomTreeUpdater *DTU = nullptr,
-                                   LoopInfo *LI = nullptr);
+void SplitBlockAndInsertIfThenElse(
+    Value *Cond, BasicBlock::iterator SplitBefore, BasicBlock **ThenBlock,
+    BasicBlock **ElseBlock, bool UnreachableThen = false,
+    bool UnreachableElse = false, MDNode *BranchWeights = nullptr,
+    DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr);
 
-inline void SplitBlockAndInsertIfThenElse(Value *Cond, Instruction *SplitBefore,
-                                   BasicBlock **ThenBlock,
-                                   BasicBlock **ElseBlock,
-                                   bool UnreachableThen = false,
-                                   bool UnreachableElse = false,
-                                   MDNode *BranchWeights = nullptr,
-                                   DomTreeUpdater *DTU = nullptr,
-                                   LoopInfo *LI = nullptr) {
+inline void SplitBlockAndInsertIfThenElse(
+    Value *Cond, Instruction *SplitBefore, BasicBlock **ThenBlock,
+    BasicBlock **ElseBlock, bool UnreachableThen = false,
+    bool UnreachableElse = false, MDNode *BranchWeights = nullptr,
+    DomTreeUpdater *DTU = nullptr, LoopInfo *LI = nullptr) {
   SplitBlockAndInsertIfThenElse(Cond, SplitBefore->getIterator(), ThenBlock,
-    ElseBlock, UnreachableThen, UnreachableElse, BranchWeights, DTU, LI);
+                                ElseBlock, UnreachableThen, UnreachableElse,
+                                BranchWeights, DTU, LI);
 }
 
 /// Insert a for (int i = 0; i < End; i++) loop structure (with the exception
 /// that \p End is assumed > 0, and thus not checked on entry) at \p
 /// SplitBefore.  Returns the first insert point in the loop body, and the
 /// PHINode for the induction variable (i.e. "i" above).
-std::pair<Instruction*, Value*>
+std::pair<Instruction *, Value *>
 SplitBlockAndInsertSimpleForLoop(Value *End, BasicBlock::iterator SplitBefore);
 
 /// Utility function for performing a given action on each lane of a vector

@@ -110,9 +110,7 @@ public:
   ///         file position.
   uint64_t tell();
 
-  llvm::raw_pwrite_stream &get_stream() {
-    return OS;
-  }
+  llvm::raw_pwrite_stream &get_stream() { return OS; }
 
   llvm::endianness getByteOrder() const { return ByteOrder; }
 

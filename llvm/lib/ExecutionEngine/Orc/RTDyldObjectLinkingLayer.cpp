@@ -22,7 +22,8 @@ public:
                               SymbolDependenceMap &Deps)
       : MR(MR), Deps(Deps) {}
 
-  void lookup(const LookupSet &Symbols, OnResolvedFunction OnResolved) override {
+  void lookup(const LookupSet &Symbols,
+              OnResolvedFunction OnResolved) override {
     auto &ES = MR.getTargetJITDylib().getExecutionSession();
     SymbolLookupSet InternedSymbols;
 

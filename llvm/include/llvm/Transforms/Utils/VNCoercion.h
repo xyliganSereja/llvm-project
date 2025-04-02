@@ -75,7 +75,7 @@ int analyzeLoadFromClobberingMemInst(Type *LoadTy, Value *LoadPtr,
 /// It inserts instructions to do so at InsertPt, and returns the extracted
 /// value.
 Value *getValueForLoad(Value *SrcVal, unsigned Offset, Type *LoadTy,
-                            Instruction *InsertPt, const DataLayout &DL);
+                       Instruction *InsertPt, const DataLayout &DL);
 // This is the same as getValueForLoad, except it performs no insertion.
 // It only allows constant inputs.
 Constant *getConstantValueForLoad(Constant *SrcVal, unsigned Offset,
@@ -92,6 +92,6 @@ Value *getMemInstValueForLoad(MemIntrinsic *SrcInst, unsigned Offset,
 // It returns nullptr if it cannot produce a constant.
 Constant *getConstantMemInstValueForLoad(MemIntrinsic *SrcInst, unsigned Offset,
                                          Type *LoadTy, const DataLayout &DL);
-}
-}
+} // namespace VNCoercion
+} // namespace llvm
 #endif

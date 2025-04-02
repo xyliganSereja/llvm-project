@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/ADT/STLExtras.h"
-#include "llvm/Support/Debug.h"
 #include "llvm/Support/Automaton.h"
+#include "llvm/Support/Debug.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -60,17 +60,13 @@ TEST(Automata, SimpleAutomatonAcceptsSequences) {
 TEST(Automata, TupleAutomatonAccepts) {
   Automaton<TupleAutomatonAction> A{ArrayRef(TupleAutomatonTransitions)};
   A.reset();
-  EXPECT_TRUE(
-      A.add(TupleAutomatonAction{SK_a, SK_b, "yeet"}));
+  EXPECT_TRUE(A.add(TupleAutomatonAction{SK_a, SK_b, "yeet"}));
   A.reset();
-  EXPECT_FALSE(
-      A.add(TupleAutomatonAction{SK_a, SK_a, "yeet"}));
+  EXPECT_FALSE(A.add(TupleAutomatonAction{SK_a, SK_a, "yeet"}));
   A.reset();
-  EXPECT_FALSE(
-      A.add(TupleAutomatonAction{SK_a, SK_b, "feet"}));
+  EXPECT_FALSE(A.add(TupleAutomatonAction{SK_a, SK_b, "feet"}));
   A.reset();
-  EXPECT_TRUE(
-      A.add(TupleAutomatonAction{SK_b, SK_b, "foo"}));
+  EXPECT_TRUE(A.add(TupleAutomatonAction{SK_b, SK_b, "foo"}));
 }
 
 TEST(Automata, NfaAutomatonAccepts) {
@@ -124,7 +120,8 @@ TEST(Automata, BinPackerAutomatonAccepts) {
   EXPECT_FALSE(A.add(BRK_0_to_6_dbl));
 }
 
-// The state we defined in TableGen uses the least significant 6 bits to represent a bin state.
+// The state we defined in TableGen uses the least significant 6 bits to
+// represent a bin state.
 #define BINS(a, b, c, d, e, f)                                                 \
   ((a << 5) | (b << 4) | (c << 3) | (d << 2) | (e << 1) | (f << 0))
 

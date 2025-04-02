@@ -27,8 +27,10 @@ private:
     // If all 7 bits are set, turn this into -1. If the number of bits grows,
     // this must be updated. This is intended to provide some forward binary
     // compatibility insurance for the meaning of 'fast' in case bits are added.
-    if (F == 0x7F) Flags = ~0U;
-    else Flags = F;
+    if (F == 0x7F)
+      Flags = ~0U;
+    else
+      Flags = F;
   }
 
 public:
@@ -37,13 +39,13 @@ public:
   // WARNING: We're out of space. SubclassOptionalData only has 7 bits. New
   // functionality will require a change in how this information is stored.
   enum {
-    AllowReassoc    = (1 << 0),
-    NoNaNs          = (1 << 1),
-    NoInfs          = (1 << 2),
-    NoSignedZeros   = (1 << 3),
+    AllowReassoc = (1 << 0),
+    NoNaNs = (1 << 1),
+    NoInfs = (1 << 2),
+    NoSignedZeros = (1 << 3),
     AllowReciprocal = (1 << 4),
-    AllowContract   = (1 << 5),
-    ApproxFunc      = (1 << 6)
+    AllowContract = (1 << 5),
+    ApproxFunc = (1 << 6)
   };
 
   FastMathFlags() = default;
@@ -59,29 +61,25 @@ public:
   bool all() const { return Flags == ~0U; }
 
   void clear() { Flags = 0; }
-  void set()   { Flags = ~0U; }
+  void set() { Flags = ~0U; }
 
   /// Flag queries
-  bool allowReassoc() const    { return 0 != (Flags & AllowReassoc); }
-  bool noNaNs() const          { return 0 != (Flags & NoNaNs); }
-  bool noInfs() const          { return 0 != (Flags & NoInfs); }
-  bool noSignedZeros() const   { return 0 != (Flags & NoSignedZeros); }
+  bool allowReassoc() const { return 0 != (Flags & AllowReassoc); }
+  bool noNaNs() const { return 0 != (Flags & NoNaNs); }
+  bool noInfs() const { return 0 != (Flags & NoInfs); }
+  bool noSignedZeros() const { return 0 != (Flags & NoSignedZeros); }
   bool allowReciprocal() const { return 0 != (Flags & AllowReciprocal); }
-  bool allowContract() const   { return 0 != (Flags & AllowContract); }
-  bool approxFunc() const      { return 0 != (Flags & ApproxFunc); }
+  bool allowContract() const { return 0 != (Flags & AllowContract); }
+  bool approxFunc() const { return 0 != (Flags & ApproxFunc); }
   /// 'Fast' means all bits are set.
-  bool isFast() const          { return all(); }
+  bool isFast() const { return all(); }
 
   /// Flag setters
   void setAllowReassoc(bool B = true) {
     Flags = (Flags & ~AllowReassoc) | B * AllowReassoc;
   }
-  void setNoNaNs(bool B = true) {
-    Flags = (Flags & ~NoNaNs) | B * NoNaNs;
-  }
-  void setNoInfs(bool B = true) {
-    Flags = (Flags & ~NoInfs) | B * NoInfs;
-  }
+  void setNoNaNs(bool B = true) { Flags = (Flags & ~NoNaNs) | B * NoNaNs; }
+  void setNoInfs(bool B = true) { Flags = (Flags & ~NoInfs) | B * NoInfs; }
   void setNoSignedZeros(bool B = true) {
     Flags = (Flags & ~NoSignedZeros) | B * NoSignedZeros;
   }

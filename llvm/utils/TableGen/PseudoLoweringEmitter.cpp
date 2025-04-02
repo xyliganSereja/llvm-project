@@ -27,8 +27,8 @@ class PseudoLoweringEmitter {
     enum MapKind { Operand, Imm, Reg };
     MapKind Kind;
     union {
-      unsigned Operand; // Operand number mapped to.
-      uint64_t Imm;     // Integer immedate value.
+      unsigned Operand;  // Operand number mapped to.
+      uint64_t Imm;      // Integer immedate value.
       const Record *Reg; // Physical register.
     } Data;
   };

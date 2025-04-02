@@ -41,7 +41,7 @@ enum ExceptionBehavior : uint8_t {
   ebStrict   ///< This corresponds to "fpexcept.strict".
 };
 
-}
+} // namespace fp
 
 /// Returns a valid RoundingMode enumerator when given a string
 /// that is valid as input in constrained intrinsic rounding mode
@@ -83,5 +83,5 @@ inline bool canRoundingModeBe(RoundingMode RM, RoundingMode QRM) {
 inline bool canIgnoreSNaN(fp::ExceptionBehavior EB, FastMathFlags FMF) {
   return (EB == fp::ebIgnore || FMF.noNaNs());
 }
-}
+} // namespace llvm
 #endif

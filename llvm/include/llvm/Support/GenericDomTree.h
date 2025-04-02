@@ -42,13 +42,11 @@
 
 namespace llvm {
 
-template <typename NodeT, bool IsPostDom>
-class DominatorTreeBase;
+template <typename NodeT, bool IsPostDom> class DominatorTreeBase;
 
 namespace DomTreeBuilder {
-template <typename DomTreeT>
-struct SemiNCAInfo;
-}  // namespace DomTreeBuilder
+template <typename DomTreeT> struct SemiNCAInfo;
+} // namespace DomTreeBuilder
 
 /// Base class for the actual dominator tree node.
 template <class NodeT> class DomTreeNodeBase {
@@ -65,7 +63,7 @@ template <class NodeT> class DomTreeNodeBase {
   mutable unsigned DFSNumIn = ~0;
   mutable unsigned DFSNumOut = ~0;
 
- public:
+public:
   DomTreeNodeBase(NodeT *BB, DomTreeNodeBase *iDom)
       : TheBB(BB), IDom(iDom), Level(IDom ? IDom->Level + 1 : 0) {}
 
@@ -101,7 +99,8 @@ template <class NodeT> class DomTreeNodeBase {
     if (getNumChildren() != Other->getNumChildren())
       return true;
 
-    if (Level != Other->Level) return true;
+    if (Level != Other->Level)
+      return true;
 
     SmallPtrSet<const NodeT *, 4> OtherChildren;
     for (const DomTreeNodeBase *I : *Other) {
@@ -119,7 +118,8 @@ template <class NodeT> class DomTreeNodeBase {
 
   void setIDom(DomTreeNodeBase *NewIDom) {
     assert(IDom && "No immediate dominator?");
-    if (IDom == NewIDom) return;
+    if (IDom == NewIDom)
+      return;
 
     auto I = find(IDom->Children, this);
     assert(I != IDom->Children.end() &&
@@ -150,7 +150,8 @@ private:
 
   void UpdateLevel() {
     assert(IDom);
-    if (Level == IDom->Level + 1) return;
+    if (Level == IDom->Level + 1)
+      return;
 
     SmallVector<DomTreeNodeBase *, 64> WorkStack = {this};
 
@@ -160,7 +161,8 @@ private:
 
       for (DomTreeNodeBase *C : *Current) {
         assert(C->IDom);
-        if (C->Level != C->IDom->Level + 1) WorkStack.push_back(C);
+        if (C->Level != C->IDom->Level + 1)
+          WorkStack.push_back(C);
       }
     }
   }
@@ -189,8 +191,7 @@ void PrintDomTree(const DomTreeNodeBase<NodeT> *N, raw_ostream &O,
 
 namespace DomTreeBuilder {
 // The routines below are provided in a separate header but referenced here.
-template <typename DomTreeT>
-void Calculate(DomTreeT &DT);
+template <typename DomTreeT> void Calculate(DomTreeT &DT);
 
 template <typename DomTreeT>
 void CalculateWithUpdates(DomTreeT &DT,
@@ -213,7 +214,7 @@ void ApplyUpdates(DomTreeT &DT,
 
 template <typename DomTreeT>
 bool Verify(const DomTreeT &DT, typename DomTreeT::VerificationLevel VL);
-}  // namespace DomTreeBuilder
+} // namespace DomTreeBuilder
 
 /// Default DomTreeNode traits for NodeT. The default implementation assume a
 /// Function-like NodeT. Can be specialized to support different node types.
@@ -233,9 +234,8 @@ template <typename NodeT> struct DomTreeNodeTraits {
 ///
 /// This class is a generic template over graph nodes. It is instantiated for
 /// various graphs in the LLVM IR or in the code generator.
-template <typename NodeT, bool IsPostDom>
-class DominatorTreeBase {
- public:
+template <typename NodeT, bool IsPostDom> class DominatorTreeBase {
+public:
   static_assert(std::is_pointer_v<typename GraphTraits<NodeT *>::NodeRef>,
                 "Currently DominatorTreeBase supports only pointer nodes");
   using NodeTrait = DomTreeNodeTraits<NodeT>;
@@ -275,7 +275,7 @@ protected:
 
   friend struct DomTreeBuilder::SemiNCAInfo<DominatorTreeBase>;
 
- public:
+public:
   DominatorTreeBase() = default;
 
   DominatorTreeBase(DominatorTreeBase &&Arg)
@@ -333,7 +333,8 @@ protected:
   /// compare - Return false if the other dominator tree base matches this
   /// dominator tree base. Otherwise return true.
   bool compare(const DominatorTreeBase &Other) const {
-    if (Parent != Other.Parent) return true;
+    if (Parent != Other.Parent)
+      return true;
 
     if (Roots.size() != Other.Roots.size())
       return true;
@@ -478,12 +479,15 @@ public:
     if (!isReachableFromEntry(A))
       return false;
 
-    if (B->getIDom() == A) return true;
+    if (B->getIDom() == A)
+      return true;
 
-    if (A->getIDom() == B) return false;
+    if (A->getIDom() == B)
+      return false;
 
     // A can only dominate B if it is higher in the tree.
-    if (A->getLevel() >= B->getLevel()) return false;
+    if (A->getLevel() >= B->getLevel())
+      return false;
 
     // Compare the result of the tree walk and the dfs numbers, if expensive
     // checks are enabled.
@@ -538,7 +542,8 @@ public:
     // Use level information to go up the tree until the levels match. Then
     // continue going up til we arrive at the same node.
     while (NodeA != NodeB) {
-      if (NodeA->getLevel() < NodeB->getLevel()) std::swap(NodeA, NodeB);
+      if (NodeA->getLevel() < NodeB->getLevel())
+        std::swap(NodeA, NodeB);
 
       NodeA = NodeA->IDom;
     }
@@ -758,7 +763,8 @@ public:
     if constexpr (!GraphHasNodeNumbers<NodeT *>)
       NodeNumberMap.erase(BB);
 
-    if (!IsPostDom) return;
+    if (!IsPostDom)
+      return;
 
     // Remember to update PostDominatorTree roots.
     auto RIt = llvm::find(Roots, BB);
@@ -790,7 +796,8 @@ public:
     O << "\n";
 
     // The postdom tree can have a null root if there are no returns.
-    if (getRootNode()) PrintDomTree<NodeT>(getRootNode(), O, 1);
+    if (getRootNode())
+      PrintDomTree<NodeT>(getRootNode(), O, 1);
     O << "Roots: ";
     for (const NodePtr Block : Roots) {
       Block->printAsOperand(O, false);
@@ -810,7 +817,8 @@ public:
 
     SmallVector<std::pair<const DomTreeNodeBase<NodeT> *,
                           typename DomTreeNodeBase<NodeT>::const_iterator>,
-                32> WorkStack;
+                32>
+        WorkStack;
 
     const DomTreeNodeBase<NodeT> *ThisRoot = getRootNode();
     assert((!Parent || ThisRoot) && "Empty constructed DomTree");
@@ -933,8 +941,7 @@ protected:
 
   // NewBB is split and now it has one successor. Update dominator tree to
   // reflect this change.
-  template <class N>
-  void Split(typename GraphTraits<N>::NodeRef NewBB) {
+  template <class N> void Split(typename GraphTraits<N>::NodeRef NewBB) {
     using GraphT = GraphTraits<N>;
     using NodeRef = typename GraphT::NodeRef;
     assert(llvm::hasSingleElement(children<N>(NewBB)) &&
@@ -967,7 +974,8 @@ protected:
     // It's possible that none of the predecessors of NewBB are reachable;
     // in that case, NewBB itself is unreachable, so nothing needs to be
     // changed.
-    if (!NewBBIDom) return;
+    if (!NewBBIDom)
+      return;
 
     for (i = i + 1; i < PredBlocks.size(); ++i) {
       if (isReachableFromEntry(PredBlocks[i]))
@@ -985,7 +993,7 @@ protected:
     }
   }
 
- private:
+private:
   bool dominatedBySlowTreeWalk(const DomTreeNodeBase<NodeT> *A,
                                const DomTreeNodeBase<NodeT> *B) const {
     assert(A != B);
@@ -998,7 +1006,7 @@ protected:
     // Don't walk nodes above A's subtree. When we reach A's level, we must
     // either find A or be in some other subtree not dominated by A.
     while ((IDom = B->getIDom()) != nullptr && IDom->getLevel() >= ALevel)
-      B = IDom;  // Walk up the tree
+      B = IDom; // Walk up the tree
 
     return B == A;
   }
@@ -1016,11 +1024,9 @@ protected:
   }
 };
 
-template <typename T>
-using DomTreeBase = DominatorTreeBase<T, false>;
+template <typename T> using DomTreeBase = DominatorTreeBase<T, false>;
 
-template <typename T>
-using PostDomTreeBase = DominatorTreeBase<T, true>;
+template <typename T> using PostDomTreeBase = DominatorTreeBase<T, true>;
 
 // These two functions are declared out of line as a workaround for building
 // with old (< r147295) versions of clang because of pr11642.

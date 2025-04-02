@@ -9,8 +9,8 @@
 #ifndef LLVM_SUPPORT_FORMATVARIADICDETAILS_H
 #define LLVM_SUPPORT_FORMATVARIADICDETAILS_H
 
-#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <type_traits>
@@ -104,9 +104,8 @@ struct uses_format_member
 // will only be true if there is not ALSO a format member.
 template <typename T>
 struct uses_format_provider
-    : public std::integral_constant<
-          bool, !uses_format_member<T>::value && has_FormatProvider<T>::value> {
-};
+    : public std::integral_constant<bool, !uses_format_member<T>::value &&
+                                              has_FormatProvider<T>::value> {};
 
 // Simple template that decides whether a type T should use the operator<<
 // based format() invocation.  This takes last priority.

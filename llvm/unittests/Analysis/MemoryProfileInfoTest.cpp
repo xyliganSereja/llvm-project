@@ -102,22 +102,25 @@ TEST_F(MemoryProfileInfoTest, GetAllocType) {
 
   // Test Cold
   // Long lived with less accesses per byte per sec than cold threshold is cold.
-  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold - 1, AllocCount,
-                         ColdTotalLifetimeThreshold + 1),
+  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold - 1,
+                         AllocCount, ColdTotalLifetimeThreshold + 1),
             AllocationType::Cold);
-  
+
   // Test NotCold
-  // Long lived with more accesses per byte per sec than cold threshold is not cold.
-  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold + 1, AllocCount,
-                         ColdTotalLifetimeThreshold + 1),
-            AllocationType::NotCold);  
-  // Short lived with more accesses per byte per sec than cold threshold is not cold.
-  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold + 1, AllocCount,
-                         ColdTotalLifetimeThreshold - 1),
+  // Long lived with more accesses per byte per sec than cold threshold is not
+  // cold.
+  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold + 1,
+                         AllocCount, ColdTotalLifetimeThreshold + 1),
             AllocationType::NotCold);
-  // Short lived with less accesses per byte per sec than cold threshold is not cold.
-  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold - 1, AllocCount,
-                         ColdTotalLifetimeThreshold - 1),
+  // Short lived with more accesses per byte per sec than cold threshold is not
+  // cold.
+  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold + 1,
+                         AllocCount, ColdTotalLifetimeThreshold - 1),
+            AllocationType::NotCold);
+  // Short lived with less accesses per byte per sec than cold threshold is not
+  // cold.
+  EXPECT_EQ(getAllocType(ColdTotalLifetimeAccessDensityThreshold - 1,
+                         AllocCount, ColdTotalLifetimeThreshold - 1),
             AllocationType::NotCold);
 }
 

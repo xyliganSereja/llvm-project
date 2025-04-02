@@ -36,7 +36,9 @@ std::string teardownProfiler() {
 TEST(TimeProfiler, Scope_Smoke) {
   setupProfiler();
 
-  { TimeTraceScope scope("event", "detail"); }
+  {
+    TimeTraceScope scope("event", "detail");
+  }
 
   std::string json = teardownProfiler();
   ASSERT_TRUE(json.find(R"("name":"event")") != std::string::npos);

@@ -178,7 +178,8 @@ inline std::string utohexstr(uint64_t X, bool LowerCase = false,
   char Buffer[17];
   char *BufPtr = std::end(Buffer);
 
-  if (X == 0) *--BufPtr = '0';
+  if (X == 0)
+    *--BufPtr = '0';
 
   for (unsigned i = 0; Width ? (i < Width) : X; ++i) {
     unsigned char Mod = static_cast<unsigned char>(X) & 15;
@@ -198,7 +199,7 @@ inline void toHex(ArrayRef<uint8_t> Input, bool LowerCase,
 
   for (size_t i = 0; i < Length; i++) {
     const uint8_t c = Input[i];
-    Output[i * 2    ] = hexdigit(c >> 4, LowerCase);
+    Output[i * 2] = hexdigit(c >> 4, LowerCase);
     Output[i * 2 + 1] = hexdigit(c & 15, LowerCase);
   }
 }
@@ -293,7 +294,8 @@ template <typename N> bool to_integer(StringRef S, N &Num, unsigned Base = 0) {
 
 namespace detail {
 template <typename N>
-inline bool to_float(const Twine &T, N &Num, N (*StrTo)(const char *, char **)) {
+inline bool to_float(const Twine &T, N &Num,
+                     N (*StrTo)(const char *, char **)) {
   SmallString<32> Storage;
   StringRef S = T.toNullTerminatedStringRef(Storage);
   char *End;
@@ -303,7 +305,7 @@ inline bool to_float(const Twine &T, N &Num, N (*StrTo)(const char *, char **)) 
   Num = Temp;
   return true;
 }
-}
+} // namespace detail
 
 inline bool to_float(const Twine &T, float &Num) {
   return detail::to_float(T, Num, strtof);
@@ -321,14 +323,16 @@ inline std::string utostr(uint64_t X, bool isNeg = false) {
   char Buffer[21];
   char *BufPtr = std::end(Buffer);
 
-  if (X == 0) *--BufPtr = '0';  // Handle special case...
+  if (X == 0)
+    *--BufPtr = '0'; // Handle special case...
 
   while (X) {
     *--BufPtr = '0' + char(X % 10);
     X /= 10;
   }
 
-  if (isNeg) *--BufPtr = '-';   // Add negative sign...
+  if (isNeg)
+    *--BufPtr = '-'; // Add negative sign...
   return std::string(BufPtr, std::end(Buffer));
 }
 
@@ -368,8 +372,7 @@ std::pair<StringRef, StringRef> getToken(StringRef Source,
 
 /// SplitString - Split up the specified string according to the specified
 /// delimiters, appending the result fragments to the output list.
-void SplitString(StringRef Source,
-                 SmallVectorImpl<StringRef> &OutFragments,
+void SplitString(StringRef Source, SmallVectorImpl<StringRef> &OutFragments,
                  StringRef Delimiters = " \t\n\v\f\r");
 
 /// Returns the English suffix for an ordinal integer (-st, -nd, -rd, -th).
@@ -383,10 +386,14 @@ inline StringRef getOrdinalSuffix(unsigned Val) {
     return "th";
   default:
     switch (Val % 10) {
-      case 1: return "st";
-      case 2: return "nd";
-      case 3: return "rd";
-      default: return "th";
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
     }
   }
 }
@@ -464,7 +471,7 @@ inline void join_items_impl(std::string &Result, Sep Separator,
 
 template <typename Sep, typename Arg1, typename... Args>
 inline void join_items_impl(std::string &Result, Sep Separator, const Arg1 &A1,
-                            Args &&... Items) {
+                            Args &&...Items) {
   Result += A1;
   Result += Separator;
   join_items_impl(Result, Separator, std::forward<Args>(Items)...);
@@ -503,7 +510,7 @@ inline std::string join(Range &&R, StringRef Separator) {
 /// std::string, or there should be an overload of std::string::operator+=()
 /// that accepts the argument explicitly.
 template <typename Sep, typename... Args>
-inline std::string join_items(Sep Separator, Args &&... Items) {
+inline std::string join_items(Sep Separator, Args &&...Items) {
   std::string Result;
   if (sizeof...(Items) == 0)
     return Result;
@@ -606,7 +613,8 @@ public:
 ///
 /// Note that the passed string must remain valid throuhgout lifetime
 /// of the iterators.
-inline iterator_range<SplittingIterator> split(StringRef Str, StringRef Separator) {
+inline iterator_range<SplittingIterator> split(StringRef Str,
+                                               StringRef Separator) {
   return {SplittingIterator(Str, Separator),
           SplittingIterator(StringRef(), Separator)};
 }

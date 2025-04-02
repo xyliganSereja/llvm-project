@@ -55,6 +55,6 @@ enum class PassSummaryAction {
   Export, ///< Export information to summary.
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

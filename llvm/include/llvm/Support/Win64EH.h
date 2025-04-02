@@ -118,12 +118,8 @@ union UnwindCode {
   } u;
   support::ulittle16_t FrameOffset;
 
-  uint8_t getUnwindOp() const {
-    return u.UnwindOpAndOpInfo & 0x0F;
-  }
-  uint8_t getOpInfo() const {
-    return (u.UnwindOpAndOpInfo >> 4) & 0x0F;
-  }
+  uint8_t getUnwindOp() const { return u.UnwindOpAndOpInfo & 0x0F; }
+  uint8_t getOpInfo() const { return (u.UnwindOpAndOpInfo >> 4) & 0x0F; }
   /// Gets the offset for an UOP_Epilog unwind code.
   uint32_t getEpilogOffset() const {
     assert(getUnwindOp() == UOP_Epilog);
@@ -158,15 +154,9 @@ struct UnwindInfo {
   uint8_t FrameRegisterAndOffset;
   UnwindCode UnwindCodes[1];
 
-  uint8_t getVersion() const {
-    return VersionAndFlags & 0x07;
-  }
-  uint8_t getFlags() const {
-    return (VersionAndFlags >> 3) & 0x1f;
-  }
-  uint8_t getFrameRegister() const {
-    return FrameRegisterAndOffset & 0x0f;
-  }
+  uint8_t getVersion() const { return VersionAndFlags & 0x07; }
+  uint8_t getFlags() const { return (VersionAndFlags >> 3) & 0x1f; }
+  uint8_t getFrameRegister() const { return FrameRegisterAndOffset & 0x0f; }
   uint8_t getFrameOffset() const {
     return (FrameRegisterAndOffset >> 4) & 0x0f;
   }
@@ -181,7 +171,7 @@ struct UnwindInfo {
 
   /// Return pointer to language specific data part of UnwindInfo.
   void *getLanguageSpecificData() {
-    return reinterpret_cast<void *>(&UnwindCodes[(NumCodes+1) & ~1]);
+    return reinterpret_cast<void *>(&UnwindCodes[(NumCodes + 1) & ~1]);
   }
 
   /// Return pointer to language specific data part of UnwindInfo.
@@ -192,7 +182,7 @@ struct UnwindInfo {
   /// Return image-relative offset of language-specific exception handler.
   uint32_t getLanguageSpecificHandlerOffset() const {
     return *reinterpret_cast<const support::ulittle32_t *>(
-               getLanguageSpecificData());
+        getLanguageSpecificData());
   }
 
   /// Set image-relative offset of language-specific exception handler.
@@ -203,8 +193,8 @@ struct UnwindInfo {
 
   /// Return pointer to exception-specific data.
   void *getExceptionData() {
-    return reinterpret_cast<void *>(reinterpret_cast<uint32_t *>(
-                                                  getLanguageSpecificData())+1);
+    return reinterpret_cast<void *>(
+        reinterpret_cast<uint32_t *>(getLanguageSpecificData()) + 1);
   }
 
   /// Return pointer to chained unwind info.
@@ -217,7 +207,6 @@ struct UnwindInfo {
     return reinterpret_cast<const RuntimeFunction *>(getLanguageSpecificData());
   }
 };
-
 
 } // End of namespace Win64EH
 } // End of namespace llvm

@@ -109,9 +109,7 @@ class AArch64TargetAsmStreamer : public AArch64TargetStreamer {
   void emitARM64WinCFIClearUnwoundToCall() override {
     OS << "\t.seh_clear_unwound_to_call\n";
   }
-  void emitARM64WinCFIPACSignLR() override {
-    OS << "\t.seh_pac_sign_lr\n";
-  }
+  void emitARM64WinCFIPACSignLR() override { OS << "\t.seh_pac_sign_lr\n"; }
 
   void emitARM64WinCFISaveAnyRegI(unsigned Reg, int Offset) override {
     OS << "\t.seh_save_any_reg\tx" << Reg << ", " << Offset << "\n";
@@ -376,17 +374,13 @@ public:
   }
 
   void emitFill(const MCExpr &NumBytes, uint64_t FillValue,
-                                  SMLoc Loc) override {
+                SMLoc Loc) override {
     emitDataMappingSymbol();
     MCObjectStreamer::emitFill(NumBytes, FillValue, Loc);
   }
 
 private:
-  enum ElfMappingSymbol {
-    EMS_None,
-    EMS_A64,
-    EMS_Data
-  };
+  enum ElfMappingSymbol { EMS_None, EMS_A64, EMS_Data };
 
   void emitDataMappingSymbol() {
     if (LastEMS == EMS_Data)

@@ -95,25 +95,25 @@ MCOperand WebAssemblyMCInstLower::lowerSymbolOperand(const MachineOperand &MO,
   unsigned TargetFlags = MO.getTargetFlags();
 
   switch (TargetFlags) {
-    case WebAssemblyII::MO_NO_FLAG:
-      break;
-    case WebAssemblyII::MO_GOT_TLS:
-      Kind = MCSymbolRefExpr::VK_WASM_GOT_TLS;
-      break;
-    case WebAssemblyII::MO_GOT:
-      Kind = MCSymbolRefExpr::VK_GOT;
-      break;
-    case WebAssemblyII::MO_MEMORY_BASE_REL:
-      Kind = MCSymbolRefExpr::VK_WASM_MBREL;
-      break;
-    case WebAssemblyII::MO_TLS_BASE_REL:
-      Kind = MCSymbolRefExpr::VK_WASM_TLSREL;
-      break;
-    case WebAssemblyII::MO_TABLE_BASE_REL:
-      Kind = MCSymbolRefExpr::VK_WASM_TBREL;
-      break;
-    default:
-      llvm_unreachable("Unknown target flag on GV operand");
+  case WebAssemblyII::MO_NO_FLAG:
+    break;
+  case WebAssemblyII::MO_GOT_TLS:
+    Kind = MCSymbolRefExpr::VK_WASM_GOT_TLS;
+    break;
+  case WebAssemblyII::MO_GOT:
+    Kind = MCSymbolRefExpr::VK_GOT;
+    break;
+  case WebAssemblyII::MO_MEMORY_BASE_REL:
+    Kind = MCSymbolRefExpr::VK_WASM_MBREL;
+    break;
+  case WebAssemblyII::MO_TLS_BASE_REL:
+    Kind = MCSymbolRefExpr::VK_WASM_TLSREL;
+    break;
+  case WebAssemblyII::MO_TABLE_BASE_REL:
+    Kind = MCSymbolRefExpr::VK_WASM_TBREL;
+    break;
+  default:
+    llvm_unreachable("Unknown target flag on GV operand");
   }
 
   const MCExpr *Expr = MCSymbolRefExpr::create(Sym, Kind, Ctx);

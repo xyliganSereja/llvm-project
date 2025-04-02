@@ -25,7 +25,6 @@ protected:
                         const MCFixup &Fixup, bool IsPCRel) const override;
 };
 
-
 } // end anonymous namespace
 
 AMDGPUELFObjectWriter::AMDGPUELFObjectWriter(bool Is64Bit, uint8_t OSABI,
@@ -70,7 +69,8 @@ unsigned AMDGPUELFObjectWriter::getRelocType(MCContext &Ctx,
   if (Kind >= FirstLiteralRelocationKind)
     return Kind - FirstLiteralRelocationKind;
   switch (Kind) {
-  default: break;
+  default:
+    break;
   case FK_PCRel_4:
     return ELF::R_AMDGPU_REL32;
   case FK_Data_4:

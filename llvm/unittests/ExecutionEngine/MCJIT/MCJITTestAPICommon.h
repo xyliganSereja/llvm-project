@@ -27,19 +27,17 @@
 // Used to skip tests on unsupported architectures and operating systems.
 // To skip a test, add this macro at the top of a test-case in a suite that
 // inherits from MCJITTestBase. See MCJITTest.cpp for examples.
-#define SKIP_UNSUPPORTED_PLATFORM \
-  do \
-    if (!ArchSupportsMCJIT() || !OSSupportsMCJIT() || !HostCanBeTargeted()) \
-      GTEST_SKIP(); \
-  while(0)
+#define SKIP_UNSUPPORTED_PLATFORM                                              \
+  do                                                                           \
+    if (!ArchSupportsMCJIT() || !OSSupportsMCJIT() || !HostCanBeTargeted())    \
+      GTEST_SKIP();                                                            \
+  while (0)
 
 namespace llvm {
 
 class MCJITTestAPICommon {
 protected:
-  MCJITTestAPICommon()
-    : HostTriple(sys::getProcessTriple())
-  {
+  MCJITTestAPICommon() : HostTriple(sys::getProcessTriple()) {
     InitializeNativeTarget();
     InitializeNativeTargetAsmPrinter();
 
@@ -72,7 +70,7 @@ protected:
 
     // If ARCH has sub-arch support, find it
     SmallVectorImpl<std::string>::const_iterator I = SupportedSubArchs.begin();
-    for(; I != SupportedSubArchs.end(); ++I)
+    for (; I != SupportedSubArchs.end(); ++I)
       if (Host.getArchName().starts_with(*I))
         return true;
 
@@ -104,4 +102,3 @@ protected:
 } // namespace llvm
 
 #endif
-

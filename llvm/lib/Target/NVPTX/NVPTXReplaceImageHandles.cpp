@@ -38,18 +38,19 @@ public:
   StringRef getPassName() const override {
     return "NVPTX Replace Image Handles";
   }
+
 private:
   bool processInstr(MachineInstr &MI);
   bool replaceImageHandle(MachineOperand &Op, MachineFunction &MF);
   bool findIndexForHandle(MachineOperand &Op, MachineFunction &MF,
                           unsigned &Idx);
 };
-}
+} // namespace
 
 char NVPTXReplaceImageHandles::ID = 0;
 
 NVPTXReplaceImageHandles::NVPTXReplaceImageHandles()
-  : MachineFunctionPass(ID) {}
+    : MachineFunctionPass(ID) {}
 
 bool NVPTXReplaceImageHandles::runOnMachineFunction(MachineFunction &MF) {
   bool Changed = false;
@@ -1758,7 +1759,8 @@ bool NVPTXReplaceImageHandles::processInstr(MachineInstr &MI) {
     return true;
   } else if (MCID.TSFlags & NVPTXII::IsSuldMask) {
     unsigned VecSize =
-      1 << (((MCID.TSFlags & NVPTXII::IsSuldMask) >> NVPTXII::IsSuldShift) - 1);
+        1 << (((MCID.TSFlags & NVPTXII::IsSuldMask) >> NVPTXII::IsSuldShift) -
+              1);
 
     // For a surface load of vector size N, the Nth operand will be the surfref
     MachineOperand &SurfHandle = MI.getOperand(VecSize);
@@ -1798,8 +1800,9 @@ bool NVPTXReplaceImageHandles::replaceImageHandle(MachineOperand &Op,
   return false;
 }
 
-bool NVPTXReplaceImageHandles::
-findIndexForHandle(MachineOperand &Op, MachineFunction &MF, unsigned &Idx) {
+bool NVPTXReplaceImageHandles::findIndexForHandle(MachineOperand &Op,
+                                                  MachineFunction &MF,
+                                                  unsigned &Idx) {
   const MachineRegisterInfo &MRI = MF.getRegInfo();
   NVPTXMachineFunctionInfo *MFI = MF.getInfo<NVPTXMachineFunctionInfo>();
 
@@ -1824,7 +1827,7 @@ findIndexForHandle(MachineOperand &Op, MachineFunction &MF, unsigned &Idx) {
     std::string ParamBaseName = std::string(MF.getName());
     ParamBaseName += "_param_";
     assert(Sym.starts_with(ParamBaseName) && "Invalid symbol reference");
-    unsigned Param = atoi(Sym.data()+ParamBaseName.size());
+    unsigned Param = atoi(Sym.data() + ParamBaseName.size());
     std::string NewSym;
     raw_string_ostream NewSymStr(NewSym);
     NewSymStr << MF.getName() << "_param_" << Param;

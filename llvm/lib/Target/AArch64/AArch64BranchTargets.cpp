@@ -62,9 +62,8 @@ bool AArch64BranchTargets::runOnMachineFunction(MachineFunction &MF) {
   if (!MF.getInfo<AArch64FunctionInfo>()->branchTargetEnforcement())
     return false;
 
-  LLVM_DEBUG(
-      dbgs() << "********** AArch64 Branch Targets  **********\n"
-             << "********** Function: " << MF.getName() << '\n');
+  LLVM_DEBUG(dbgs() << "********** AArch64 Branch Targets  **********\n"
+                    << "********** Function: " << MF.getName() << '\n');
 
   // LLVM does not consider basic blocks which are the targets of jump tables
   // to be address-taken (the address can't escape anywhere else), but they are

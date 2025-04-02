@@ -129,8 +129,7 @@ private:
                                               TTI::TargetCostKind CostKind,
                                               int Index,
                                               FixedVectorType *SubVTy) {
-    assert(VTy && SubVTy &&
-           "Can only extract subvectors from vectors");
+    assert(VTy && SubVTy && "Can only extract subvectors from vectors");
     int NumSubElts = SubVTy->getNumElements();
     assert((!isa<FixedVectorType>(VTy) ||
             (Index + NumSubElts) <=
@@ -157,8 +156,7 @@ private:
                                              TTI::TargetCostKind CostKind,
                                              int Index,
                                              FixedVectorType *SubVTy) {
-    assert(VTy && SubVTy &&
-           "Can only insert subvectors into vectors");
+    assert(VTy && SubVTy && "Can only insert subvectors into vectors");
     int NumSubElts = SubVTy->getNumElements();
     assert((!isa<FixedVectorType>(VTy) ||
             (Index + NumSubElts) <=
@@ -191,16 +189,16 @@ private:
 
   static ISD::MemIndexedMode getISDIndexedMode(TTI::MemIndexedMode M) {
     switch (M) {
-      case TTI::MIM_Unindexed:
-        return ISD::UNINDEXED;
-      case TTI::MIM_PreInc:
-        return ISD::PRE_INC;
-      case TTI::MIM_PreDec:
-        return ISD::PRE_DEC;
-      case TTI::MIM_PostInc:
-        return ISD::POST_INC;
-      case TTI::MIM_PostDec:
-        return ISD::POST_DEC;
+    case TTI::MIM_Unindexed:
+      return ISD::UNINDEXED;
+    case TTI::MIM_PreInc:
+      return ISD::PRE_INC;
+    case TTI::MIM_PreDec:
+      return ISD::PRE_DEC;
+    case TTI::MIM_PostInc:
+      return ISD::POST_INC;
+    case TTI::MIM_PostDec:
+      return ISD::POST_DEC;
     }
     llvm_unreachable("Unexpected MemIndexedMode");
   }
@@ -327,9 +325,7 @@ public:
     return false;
   }
 
-  bool addrspacesMayAlias(unsigned AS0, unsigned AS1) const {
-    return true;
-  }
+  bool addrspacesMayAlias(unsigned AS0, unsigned AS1) const { return true; }
 
   unsigned getFlatAddressSpace() {
     // Return an invalid address space.
@@ -530,7 +526,8 @@ public:
         return N;
       uint64_t Range =
           (MaxCaseVal - MinCaseVal)
-              .getLimitedValue(std::numeric_limits<uint64_t>::max() - 1) + 1;
+              .getLimitedValue(std::numeric_limits<uint64_t>::max() - 1) +
+          1;
       // Check whether a range of clusters is dense enough for a jump table
       if (TLI->isSuitableForJumpTable(&SI, N, Range, PSI, BFI)) {
         JumpTableSize = Range;
@@ -578,9 +575,7 @@ public:
            TLI->isOperationLegalOrCustom(ISD::FSQRT, VT);
   }
 
-  bool isFCmpOrdCheaperThanFCmpZero(Type *Ty) {
-    return true;
-  }
+  bool isFCmpOrdCheaperThanFCmpZero(Type *Ty) { return true; }
 
   InstructionCost getFPOpCost(Type *Ty) {
     // Check whether FADD is available, as a proxy for floating-point in
@@ -700,8 +695,7 @@ public:
   }
 
   bool isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
-                                AssumptionCache &AC,
-                                TargetLibraryInfo *LibInfo,
+                                AssumptionCache &AC, TargetLibraryInfo *LibInfo,
                                 HardwareLoopInfo &HWLoopInfo) {
     return BaseT::isHardwareLoopProfitable(L, SE, AC, LibInfo, HWLoopInfo);
   }
@@ -720,7 +714,7 @@ public:
   }
 
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
-                                               IntrinsicInst &II) {
+                                                    IntrinsicInst &II) {
     return BaseT::instCombineIntrinsic(IC, II);
   }
 
@@ -878,7 +872,7 @@ public:
     assert(Args.size() == Tys.size() && "Expected matching Args and Tys");
 
     InstructionCost Cost = 0;
-    SmallPtrSet<const Value*, 4> UniqueOperands;
+    SmallPtrSet<const Value *, 4> UniqueOperands;
     for (int I = 0, E = Args.size(); I != E; I++) {
       // Disregard things like metadata arguments.
       const Value *A = Args[I];
@@ -967,9 +961,8 @@ public:
 
     // TODO: Handle more cost kinds.
     if (CostKind != TTI::TCK_RecipThroughput)
-      return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind,
-                                           Opd1Info, Opd2Info,
-                                           Args, CxtI);
+      return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
+                                           Opd2Info, Args, CxtI);
 
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
 
@@ -1019,8 +1012,8 @@ public:
     // similarly to what getCastInstrCost() does.
     if (auto *VTy = dyn_cast<FixedVectorType>(Ty)) {
       InstructionCost Cost = thisT()->getArithmeticInstrCost(
-          Opcode, VTy->getScalarType(), CostKind, Opd1Info, Opd2Info,
-          Args, CxtI);
+          Opcode, VTy->getScalarType(), CostKind, Opd1Info, Opd2Info, Args,
+          CxtI);
       // Return the cost of multiple scalar invocation plus the cost of
       // inserting and extracting the values.
       SmallVector<Type *> Tys(Args.size(), Ty);
@@ -1164,7 +1157,7 @@ public:
         EVT ExtVT = EVT::getEVT(Dst);
         EVT LoadVT = EVT::getEVT(Src);
         unsigned LType =
-          ((Opcode == Instruction::ZExt) ? ISD::ZEXTLOAD : ISD::SEXTLOAD);
+            ((Opcode == Instruction::ZExt) ? ISD::ZEXTLOAD : ISD::SEXTLOAD);
         if (DstLT.first == SrcLT.first &&
             TLI->isLoadExtLegal(LType, ExtVT, LoadVT))
           return 0;
@@ -1406,14 +1399,14 @@ public:
     return Cost;
   }
 
-  InstructionCost
-  getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                  unsigned AddressSpace, TTI::TargetCostKind CostKind,
-                  TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
-                  const Instruction *I = nullptr) {
+  InstructionCost getMemoryOpCost(
+      unsigned Opcode, Type *Src, MaybeAlign Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind,
+      TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
+      const Instruction *I = nullptr) {
     assert(!Src->isVoidTy() && "Invalid type");
     // Assume types, such as structs, are expensive.
-    if (getTLI()->getValueType(DL, Src,  true) == MVT::Other)
+    if (getTLI()->getValueType(DL, Src, true) == MVT::Other)
       return 4;
     std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
 
@@ -1867,10 +1860,10 @@ public:
       const TTI::OperandValueInfo OpInfoX = TTI::getOperandInfo(X);
       const TTI::OperandValueInfo OpInfoY = TTI::getOperandInfo(Y);
       const TTI::OperandValueInfo OpInfoZ = TTI::getOperandInfo(Z);
-      const TTI::OperandValueInfo OpInfoBW =
-        {TTI::OK_UniformConstantValue,
-         isPowerOf2_32(RetTy->getScalarSizeInBits()) ? TTI::OP_PowerOf2
-         : TTI::OP_None};
+      const TTI::OperandValueInfo OpInfoBW = {
+          TTI::OK_UniformConstantValue,
+          isPowerOf2_32(RetTy->getScalarSizeInBits()) ? TTI::OP_PowerOf2
+                                                      : TTI::OP_None};
 
       // fshl: (X << (Z % BW)) | (Y >> (BW - (Z % BW)))
       // fshr: (X << (BW - (Z % BW))) | (Y >> (Z % BW))
@@ -1879,12 +1872,12 @@ public:
           thisT()->getArithmeticInstrCost(BinaryOperator::Or, RetTy, CostKind);
       Cost +=
           thisT()->getArithmeticInstrCost(BinaryOperator::Sub, RetTy, CostKind);
-      Cost += thisT()->getArithmeticInstrCost(
-          BinaryOperator::Shl, RetTy, CostKind, OpInfoX,
-          {OpInfoZ.Kind, TTI::OP_None});
-      Cost += thisT()->getArithmeticInstrCost(
-          BinaryOperator::LShr, RetTy, CostKind, OpInfoY,
-          {OpInfoZ.Kind, TTI::OP_None});
+      Cost += thisT()->getArithmeticInstrCost(BinaryOperator::Shl, RetTy,
+                                              CostKind, OpInfoX,
+                                              {OpInfoZ.Kind, TTI::OP_None});
+      Cost += thisT()->getArithmeticInstrCost(BinaryOperator::LShr, RetTy,
+                                              CostKind, OpInfoY,
+                                              {OpInfoZ.Kind, TTI::OP_None});
       // Non-constant shift amounts requires a modulo.
       if (!OpInfoZ.isConstant())
         Cost += thisT()->getArithmeticInstrCost(BinaryOperator::URem, RetTy,
@@ -1892,12 +1885,10 @@ public:
       // For non-rotates (X != Y) we must add shift-by-zero handling costs.
       if (X != Y) {
         Type *CondTy = RetTy->getWithNewBitWidth(1);
-        Cost +=
-            thisT()->getCmpSelInstrCost(BinaryOperator::ICmp, RetTy, CondTy,
-                                        CmpInst::ICMP_EQ, CostKind);
-        Cost +=
-            thisT()->getCmpSelInstrCost(BinaryOperator::Select, RetTy, CondTy,
-                                        CmpInst::ICMP_EQ, CostKind);
+        Cost += thisT()->getCmpSelInstrCost(BinaryOperator::ICmp, RetTy, CondTy,
+                                            CmpInst::ICMP_EQ, CostKind);
+        Cost += thisT()->getCmpSelInstrCost(BinaryOperator::Select, RetTy,
+                                            CondTy, CmpInst::ICMP_EQ, CostKind);
       }
       return Cost;
     }
@@ -2382,9 +2373,9 @@ public:
     }
     case Intrinsic::experimental_constrained_fmuladd: {
       IntrinsicCostAttributes FMulAttrs(
-        Intrinsic::experimental_constrained_fmul, RetTy, Tys);
+          Intrinsic::experimental_constrained_fmul, RetTy, Tys);
       IntrinsicCostAttributes FAddAttrs(
-        Intrinsic::experimental_constrained_fadd, RetTy, Tys);
+          Intrinsic::experimental_constrained_fadd, RetTy, Tys);
       return thisT()->getIntrinsicInstrCost(FMulAttrs, CostKind) +
              thisT()->getIntrinsicInstrCost(FAddAttrs, CostKind);
     }
@@ -2657,7 +2648,8 @@ public:
           Ty = Ty->getScalarType();
         ScalarTys.push_back(Ty);
       }
-      IntrinsicCostAttributes Attrs(IID, RetTy->getScalarType(), ScalarTys, FMF);
+      IntrinsicCostAttributes Attrs(IID, RetTy->getScalarType(), ScalarTys,
+                                    FMF);
       InstructionCost ScalarCost =
           thisT()->getIntrinsicInstrCost(Attrs, CostKind);
       for (Type *Ty : Tys) {

@@ -187,7 +187,7 @@ struct IRInstructionData
   /// in a greater than form. Otherwise, the predicate is unchanged.
   ///
   /// \param CI - The comparison operation to find a consistent preidcate for.
-  /// \return the consistent comparison predicate. 
+  /// \return the consistent comparison predicate.
   static CmpInst::Predicate predicateForConsistency(CmpInst *CI);
 
   /// For an IRInstructionData containing a branch, finds the
@@ -511,8 +511,7 @@ struct IRInstructionMapper {
                static_cast<unsigned>(-2) &&
            "DenseMapInfo<unsigned>'s tombstone key isn't -2!");
 
-    IDL = new (IDLAllocator->Allocate())
-        IRInstructionDataList();
+    IDL = new (IDLAllocator->Allocate()) IRInstructionDataList();
   }
 
   /// Custom InstVisitor to classify different instructions for whether it can
@@ -527,7 +526,7 @@ struct IRInstructionMapper {
         return Legal;
       return Illegal;
     }
-    InstrType visitPHINode(PHINode &PN) { 
+    InstrType visitPHINode(PHINode &PN) {
       if (EnableBranches)
         return Legal;
       return Illegal;
@@ -598,7 +597,7 @@ struct IRInstructionMapper {
     // Flag that lets the classifier know whether we should allow intrinsics to
     // be checked for similarity.
     bool EnableIntrinsics = false;
-  
+
     // Flag that lets the classifier know whether we should allow tail calls to
     // be checked for similarity.
     bool EnableMustTailCalls = false;
@@ -724,8 +723,8 @@ public:
     /// The operand values to be analyzed.
     ArrayRef<Value *> &OperVals;
 
-    /// The current mapping of global value numbers from one IRSimilarityCandidate
-    /// to another IRSimilarityCandidate.
+    /// The current mapping of global value numbers from one
+    /// IRSimilarityCandidate to another IRSimilarityCandidate.
     DenseMap<unsigned, DenseSet<unsigned>> &ValueNumberMapping;
   };
 
@@ -775,9 +774,9 @@ public:
   /// \param InstValA - The assignment GVN from the first IRSimilarityCandidate.
   /// \param InstValB - The assignment GVN from the second
   /// IRSimilarityCandidate.
-  /// \param [in,out] ValueNumberMappingA - A mapping of value numbers from 
+  /// \param [in,out] ValueNumberMappingA - A mapping of value numbers from
   /// candidate \p A to candidate \B.
-  /// \param [in,out] ValueNumberMappingB - A mapping of value numbers from 
+  /// \param [in,out] ValueNumberMappingB - A mapping of value numbers from
   /// candidate \p B to candidate \A.
   /// \returns true if the IRSimilarityCandidates assignments are compatible.
   static bool compareAssignmentMapping(
@@ -849,7 +848,7 @@ public:
       IRSimilarityCandidate &SourceCand,
       DenseMap<unsigned, DenseSet<unsigned>> &ToSourceMapping,
       DenseMap<unsigned, DenseSet<unsigned>> &FromSourceMapping);
-  
+
   /// Create a mapping for the value numbering of the calling
   /// IRSimilarityCandidate, to a different separate set of numbers, based on
   /// the canonical ordering in \p SourceCand. These are defined based on the
@@ -869,11 +868,10 @@ public:
   /// \param FromSourceMapping - The mapping of value numbers from \p SoureCand
   /// to this candidate.
   void createCanonicalRelationFrom(
-      IRSimilarityCandidate &SourceCand,
-      DenseMap<unsigned, unsigned> &OneToOne,
+      IRSimilarityCandidate &SourceCand, DenseMap<unsigned, unsigned> &OneToOne,
       DenseMap<unsigned, DenseSet<unsigned>> &ToSourceMapping,
       DenseMap<unsigned, DenseSet<unsigned>> &FromSourceMapping);
-  
+
   /// Create a mapping for the value numbering of the calling
   /// IRSimilarityCandidate, to a different separate set of numbers, based on
   /// the canonical ordering in \p SourceCand. These are defined based on the
@@ -888,10 +886,9 @@ public:
   /// \p SourceCand.
   /// \param TargetCandLarge -  The IRSimilarityCandidate fully containing
   /// this Candidate.
-  void createCanonicalRelationFrom(
-      IRSimilarityCandidate &SourceCand,
-      IRSimilarityCandidate &SourceCandLarge,
-      IRSimilarityCandidate &TargetCandLarge);
+  void createCanonicalRelationFrom(IRSimilarityCandidate &SourceCand,
+                                   IRSimilarityCandidate &SourceCandLarge,
+                                   IRSimilarityCandidate &TargetCandLarge);
 
   /// \param [in,out] BBSet - The set to track the basic blocks.
   void getBasicBlocks(DenseSet<BasicBlock *> &BBSet) const {

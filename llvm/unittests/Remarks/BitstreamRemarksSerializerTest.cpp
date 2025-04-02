@@ -101,7 +101,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileNoOptionals) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 
@@ -130,7 +130,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileNoOptionalsSeparateStrTab) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'function\\x00pass\\x00remark\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n",
         std::move(StrTab));
 }
@@ -161,7 +161,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileDebugLoc) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00path\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 
@@ -188,7 +188,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileHotness) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 
@@ -217,7 +217,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileArgNoDebugLoc) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00key\\x00value\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 
@@ -251,7 +251,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileArgDebugLoc) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00key\\x00value\\x00path\\x00'\n"
         "  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 
@@ -292,7 +292,7 @@ TEST(BitstreamRemarkSerializer, SeparateRemarkFileAll) {
         "  <String table codeid=3 abbrevid=5/> blob data = "
         "'remark\\x00pass\\x00function\\x00path\\x00key\\x00value\\x00argpa"
         "th\\x00'\n  <External File codeid=4 abbrevid=6/> blob data = "
-        "'" EXTERNALFILETESTPATH"'\n"
+        "'" EXTERNALFILETESTPATH "'\n"
         "</Meta>\n");
 }
 

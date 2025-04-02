@@ -698,7 +698,6 @@ bool findVCToolChainViaSetupConfig(vfs::FileSystem &VFS,
     ToolsVersion = ToolsVersionFile->get()->getBuffer().rtrim();
   }
 
-
   SmallString<256> ToolchainPath(VCRootPath);
   sys::path::append(ToolchainPath, "Tools", "MSVC", ToolsVersion);
   auto Status = VFS.status(ToolchainPath);

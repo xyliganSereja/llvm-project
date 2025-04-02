@@ -334,7 +334,7 @@ TEST(ValueMapperTest, mapValueLocalInArgList) {
   Argument &A = *F->arg_begin();
 
   auto *LAM = LocalAsMetadata::get(&A);
-  std::vector<ValueAsMetadata*> Elts;
+  std::vector<ValueAsMetadata *> Elts;
   Elts.push_back(LAM);
   auto *ArgList = DIArgList::get(C, Elts);
   auto *MAV = MetadataAsValue::get(C, ArgList);
@@ -350,7 +350,7 @@ TEST(ValueMapperTest, mapValueLocalInArgList) {
   // poison for uses in a DIArgList.
   auto *N0 = PoisonValue::get(Type::getInt8Ty(C));
   auto *N0AM = ValueAsMetadata::get(N0);
-  std::vector<ValueAsMetadata*> N0Elts;
+  std::vector<ValueAsMetadata *> N0Elts;
   N0Elts.push_back(N0AM);
   auto *N0ArgList = DIArgList::get(C, N0Elts);
   auto *N0AV = MetadataAsValue::get(C, N0ArgList);
@@ -400,8 +400,9 @@ TEST(ValueMapperTest, mapValueLocalAsMetadataToConstant) {
 // Type remapper which remaps all types to same destination.
 class TestTypeRemapper : public ValueMapTypeRemapper {
 public:
-  TestTypeRemapper(Type *Ty) : DstTy(Ty) { }
+  TestTypeRemapper(Type *Ty) : DstTy(Ty) {}
   Type *remapType(Type *srcTy) { return DstTy; }
+
 private:
   Type *DstTy;
 };

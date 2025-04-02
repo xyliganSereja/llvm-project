@@ -30,8 +30,7 @@
 
 namespace llvm {
 
-template <class BlockT>
-class DFCalculateWorkObject {
+template <class BlockT> class DFCalculateWorkObject {
 public:
   using DomTreeNodeT = DomTreeNodeBase<BlockT>;
 

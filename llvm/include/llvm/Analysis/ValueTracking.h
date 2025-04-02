@@ -19,8 +19,8 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/FMF.h"
-#include "llvm/IR/Instructions.h"
 #include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/IR/Intrinsics.h"
 #include <cassert>
 #include <cstdint>
@@ -277,64 +277,42 @@ struct KnownFPClass {
 
   bool isKnownAlways(FPClassTest Mask) const { return isKnownNever(~Mask); }
 
-  bool isUnknown() const {
-    return KnownFPClasses == fcAllFlags && !SignBit;
-  }
+  bool isUnknown() const { return KnownFPClasses == fcAllFlags && !SignBit; }
 
   /// Return true if it's known this can never be a nan.
-  bool isKnownNeverNaN() const {
-    return isKnownNever(fcNan);
-  }
+  bool isKnownNeverNaN() const { return isKnownNever(fcNan); }
 
   /// Return true if it's known this must always be a nan.
   bool isKnownAlwaysNaN() const { return isKnownAlways(fcNan); }
 
   /// Return true if it's known this can never be an infinity.
-  bool isKnownNeverInfinity() const {
-    return isKnownNever(fcInf);
-  }
+  bool isKnownNeverInfinity() const { return isKnownNever(fcInf); }
 
   /// Return true if it's known this can never be +infinity.
-  bool isKnownNeverPosInfinity() const {
-    return isKnownNever(fcPosInf);
-  }
+  bool isKnownNeverPosInfinity() const { return isKnownNever(fcPosInf); }
 
   /// Return true if it's known this can never be -infinity.
-  bool isKnownNeverNegInfinity() const {
-    return isKnownNever(fcNegInf);
-  }
+  bool isKnownNeverNegInfinity() const { return isKnownNever(fcNegInf); }
 
   /// Return true if it's known this can never be a subnormal
-  bool isKnownNeverSubnormal() const {
-    return isKnownNever(fcSubnormal);
-  }
+  bool isKnownNeverSubnormal() const { return isKnownNever(fcSubnormal); }
 
   /// Return true if it's known this can never be a positive subnormal
-  bool isKnownNeverPosSubnormal() const {
-    return isKnownNever(fcPosSubnormal);
-  }
+  bool isKnownNeverPosSubnormal() const { return isKnownNever(fcPosSubnormal); }
 
   /// Return true if it's known this can never be a negative subnormal
-  bool isKnownNeverNegSubnormal() const {
-    return isKnownNever(fcNegSubnormal);
-  }
+  bool isKnownNeverNegSubnormal() const { return isKnownNever(fcNegSubnormal); }
 
   /// Return true if it's known this can never be a zero. This means a literal
   /// [+-]0, and does not include denormal inputs implicitly treated as [+-]0.
-  bool isKnownNeverZero() const {
-    return isKnownNever(fcZero);
-  }
+  bool isKnownNeverZero() const { return isKnownNever(fcZero); }
 
   /// Return true if it's known this can never be a literal positive zero.
-  bool isKnownNeverPosZero() const {
-    return isKnownNever(fcPosZero);
-  }
+  bool isKnownNeverPosZero() const { return isKnownNever(fcPosZero); }
 
   /// Return true if it's known this can never be a negative zero. This means a
   /// literal -0 and does not include denormal inputs implicitly treated as -0.
-  bool isKnownNeverNegZero() const {
-    return isKnownNever(fcNegZero);
-  }
+  bool isKnownNeverNegZero() const { return isKnownNever(fcNegZero); }
 
   /// Return true if it's know this can never be interpreted as a zero. This
   /// extends isKnownNeverZero to cover the case where the assumed
@@ -416,9 +394,7 @@ struct KnownFPClass {
   }
 
   /// Return true if the sign bit must be 0, ignoring the sign of nans.
-  bool signBitIsZeroOrNaN() const {
-    return isKnownNever(fcNegative);
-  }
+  bool signBitIsZeroOrNaN() const { return isKnownNever(fcNegative); }
 
   /// Assume the sign bit is zero.
   void signBitMustBeZero() {
@@ -1098,8 +1074,7 @@ bool isGuaranteedNotToBeUndef(const Value *V, AssumptionCache *AC = nullptr,
 /// be added at a location which is control equivalent with OnPathTo (such as
 /// immediately before it) without introducing UB which didn't previously
 /// exist.  Note that a false result conveys no information.
-bool mustExecuteUBIfPoisonOnPathTo(Instruction *Root,
-                                   Instruction *OnPathTo,
+bool mustExecuteUBIfPoisonOnPathTo(Instruction *Root, Instruction *OnPathTo,
                                    DominatorTree *DT);
 
 /// Convert an integer comparison with a constant RHS into an equivalent

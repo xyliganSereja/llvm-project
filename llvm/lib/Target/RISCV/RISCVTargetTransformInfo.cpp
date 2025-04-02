@@ -32,9 +32,8 @@ static cl::opt<unsigned> RVVRegisterWidthLMUL(
 
 static cl::opt<unsigned> SLPMaxVF(
     "riscv-v-slp-max-vf",
-    cl::desc(
-        "Overrides result used for getMaximumVF query which is used "
-        "exclusively by SLP vectorizer."),
+    cl::desc("Overrides result used for getMaximumVF query which is used "
+             "exclusively by SLP vectorizer."),
     cl::Hidden);
 
 InstructionCost
@@ -336,7 +335,7 @@ RISCVTTIImpl::getRegisterBitWidth(TargetTransformInfo::RegisterKind K) const {
 }
 
 InstructionCost
-RISCVTTIImpl::getConstantPoolLoadCost(Type *Ty,  TTI::TargetCostKind CostKind) {
+RISCVTTIImpl::getConstantPoolLoadCost(Type *Ty, TTI::TargetCostKind CostKind) {
   // Add a cost of address generation + the cost of the load. The address
   // is expected to be a PC relative offset to a constant pool entry
   // using auipc/addi.
@@ -369,7 +368,8 @@ static bool isRepeatedConcatMask(ArrayRef<int> Mask, int &SubVectorSize) {
 static VectorType *getVRGatherIndexType(MVT DataVT, const RISCVSubtarget &ST,
                                         LLVMContext &C) {
   assert((DataVT.getScalarSizeInBits() != 8 ||
-          DataVT.getVectorNumElements() <= 256) && "unhandled case in lowering");
+          DataVT.getVectorNumElements() <= 256) &&
+         "unhandled case in lowering");
   MVT IndexVT = DataVT.changeTypeToInteger();
   if (IndexVT.getScalarType().bitsGT(ST.getXLenVT()))
     IndexVT = IndexVT.changeVectorElementType(MVT::i16);
@@ -446,7 +446,8 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
       if (LT.second.isFixedLengthVector() && LT.first == 1 &&
           (LT.second.getScalarSizeInBits() != 8 ||
            LT.second.getVectorNumElements() <= 256)) {
-        VectorType *IdxTy = getVRGatherIndexType(LT.second, *ST, Tp->getContext());
+        VectorType *IdxTy =
+            getVRGatherIndexType(LT.second, *ST, Tp->getContext());
         InstructionCost IndexCost = getConstantPoolLoadCost(IdxTy, CostKind);
         return IndexCost +
                getRISCVInstructionCost(RISCV::VRGATHER_VV, LT.second, CostKind);
@@ -1238,11 +1239,10 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   }
 
   if (ST->hasVInstructions() && RetTy->isVectorTy()) {
-    if (auto LT = getTypeLegalizationCost(RetTy);
-        LT.second.isVector()) {
+    if (auto LT = getTypeLegalizationCost(RetTy); LT.second.isVector()) {
       MVT EltTy = LT.second.getVectorElementType();
-      if (const auto *Entry = CostTableLookup(VectorIntrinsicCostTable,
-                                              ICA.getID(), EltTy))
+      if (const auto *Entry =
+              CostTableLookup(VectorIntrinsicCostTable, ICA.getID(), EltTy))
         return LT.first * Entry->Cost;
     }
   }
@@ -1727,13 +1727,12 @@ InstructionCost RISCVTTIImpl::getStoreImmCost(Type *Ty,
 
   if (OpInfo.isUniform())
     // vmv.v.i, vmv.v.x, or vfmv.v.f
-    // We ignore the cost of the scalar constant materialization to be consistent
-    // with how we treat scalar constants themselves just above.
+    // We ignore the cost of the scalar constant materialization to be
+    // consistent with how we treat scalar constants themselves just above.
     return 1;
 
   return getConstantPoolLoadCost(Ty, CostKind);
 }
-
 
 InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
                                               MaybeAlign Alignment,
@@ -1766,7 +1765,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
     if (Src->isVectorTy() && LT.second.isVector() &&
         TypeSize::isKnownLT(DL.getTypeStoreSizeInBits(Src),
                             LT.second.getSizeInBits()))
-        return Cost;
+      return Cost;
 
     return BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                                   CostKind, OpInfo, I);
@@ -1778,7 +1777,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   if (LT.second.isVector() && CostKind != TTI::TCK_CodeSize)
     BaseCost *= TLI->getLMULCost(LT.second);
   return Cost + BaseCost;
-
 }
 
 InstructionCost RISCVTTIImpl::getCmpSelInstrCost(
@@ -1992,27 +1990,23 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   // Mask vector extract/insert is expanded via e8.
   if (Val->getScalarSizeInBits() == 1) {
     VectorType *WideTy =
-      VectorType::get(IntegerType::get(Val->getContext(), 8),
-                      cast<VectorType>(Val)->getElementCount());
+        VectorType::get(IntegerType::get(Val->getContext(), 8),
+                        cast<VectorType>(Val)->getElementCount());
     if (Opcode == Instruction::ExtractElement) {
-      InstructionCost ExtendCost
-        = getCastInstrCost(Instruction::ZExt, WideTy, Val,
-                           TTI::CastContextHint::None, CostKind);
-      InstructionCost ExtractCost
-        = getVectorInstrCost(Opcode, WideTy, CostKind, Index, nullptr, nullptr);
+      InstructionCost ExtendCost = getCastInstrCost(
+          Instruction::ZExt, WideTy, Val, TTI::CastContextHint::None, CostKind);
+      InstructionCost ExtractCost =
+          getVectorInstrCost(Opcode, WideTy, CostKind, Index, nullptr, nullptr);
       return ExtendCost + ExtractCost;
     }
-    InstructionCost ExtendCost
-      = getCastInstrCost(Instruction::ZExt, WideTy, Val,
-                         TTI::CastContextHint::None, CostKind);
-    InstructionCost InsertCost
-      = getVectorInstrCost(Opcode, WideTy, CostKind, Index, nullptr, nullptr);
-    InstructionCost TruncCost
-      = getCastInstrCost(Instruction::Trunc, Val, WideTy,
-                         TTI::CastContextHint::None, CostKind);
+    InstructionCost ExtendCost = getCastInstrCost(
+        Instruction::ZExt, WideTy, Val, TTI::CastContextHint::None, CostKind);
+    InstructionCost InsertCost =
+        getVectorInstrCost(Opcode, WideTy, CostKind, Index, nullptr, nullptr);
+    InstructionCost TruncCost = getCastInstrCost(
+        Instruction::Trunc, Val, WideTy, TTI::CastContextHint::None, CostKind);
     return ExtendCost + InsertCost + TruncCost;
   }
-
 
   // In RVV, we could use vslidedown + vmv.x.s to extract element from vector
   // and vslideup + vmv.s.x to insert element to vector.
@@ -2280,7 +2274,6 @@ void RISCVTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
   // TODO: More tuning on benchmarks and metrics with changes as needed
   //       would apply to all settings below to enable performance.
 
-
   if (ST->enableDefaultUnroll())
     return BasicTTIImplBase::getUnrollingPreferences(L, SE, UP, ORE);
 
@@ -2386,7 +2379,7 @@ unsigned RISCVTTIImpl::getMaximumVF(unsigned ElemWidth, unsigned Opcode) const {
   // lane type, but we don't have enough information to do that without
   // some additional plumbing which hasn't been justified yet.
   TypeSize RegWidth =
-    getRegisterBitWidth(TargetTransformInfo::RGK_FixedWidthVector);
+      getRegisterBitWidth(TargetTransformInfo::RGK_FixedWidthVector);
   // If no vector registers, or absurd element widths, disable
   // vectorization by returning 1.
   return std::max<unsigned>(1U, RegWidth.getFixedValue() / ElemWidth);
@@ -2408,12 +2401,10 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
   // we need at least one extra temporary register.
   unsigned C1NumRegs = C1.NumRegs + (C1.NumBaseAdds != 0);
   unsigned C2NumRegs = C2.NumRegs + (C2.NumBaseAdds != 0);
-  return std::tie(C1.Insns, C1NumRegs, C1.AddRecCost,
-                  C1.NumIVMuls, C1.NumBaseAdds,
-                  C1.ScaleCost, C1.ImmCost, C1.SetupCost) <
-         std::tie(C2.Insns, C2NumRegs, C2.AddRecCost,
-                  C2.NumIVMuls, C2.NumBaseAdds,
-                  C2.ScaleCost, C2.ImmCost, C2.SetupCost);
+  return std::tie(C1.Insns, C1NumRegs, C1.AddRecCost, C1.NumIVMuls,
+                  C1.NumBaseAdds, C1.ScaleCost, C1.ImmCost, C1.SetupCost) <
+         std::tie(C2.Insns, C2NumRegs, C2.AddRecCost, C2.NumIVMuls,
+                  C2.NumBaseAdds, C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
 
 bool RISCVTTIImpl::isLegalMaskedExpandLoad(Type *DataTy, Align Alignment) {

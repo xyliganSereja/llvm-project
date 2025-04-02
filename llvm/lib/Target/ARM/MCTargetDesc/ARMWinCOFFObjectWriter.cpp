@@ -25,8 +25,7 @@ namespace {
 class ARMWinCOFFObjectWriter : public MCWinCOFFObjectTargetWriter {
 public:
   ARMWinCOFFObjectWriter()
-    : MCWinCOFFObjectTargetWriter(COFF::IMAGE_FILE_MACHINE_ARMNT) {
-  }
+      : MCWinCOFFObjectTargetWriter(COFF::IMAGE_FILE_MACHINE_ARMNT) {}
 
   ~ARMWinCOFFObjectWriter() override = default;
 
@@ -44,8 +43,9 @@ unsigned ARMWinCOFFObjectWriter::getRelocType(MCContext &Ctx,
                                               const MCFixup &Fixup,
                                               bool IsCrossSection,
                                               const MCAsmBackend &MAB) const {
-  MCSymbolRefExpr::VariantKind Modifier =
-    Target.isAbsolute() ? MCSymbolRefExpr::VK_None : Target.getSymA()->getKind();
+  MCSymbolRefExpr::VariantKind Modifier = Target.isAbsolute()
+                                              ? MCSymbolRefExpr::VK_None
+                                              : Target.getSymA()->getKind();
 
   unsigned FixupKind = Fixup.getKind();
   if (IsCrossSection) {
@@ -55,7 +55,6 @@ unsigned ARMWinCOFFObjectWriter::getRelocType(MCContext &Ctx,
     }
     FixupKind = FK_PCRel_4;
   }
-
 
   switch (FixupKind) {
   default: {
@@ -96,8 +95,7 @@ bool ARMWinCOFFObjectWriter::recordRelocation(const MCFixup &Fixup) const {
 
 namespace llvm {
 
-std::unique_ptr<MCObjectTargetWriter>
-createARMWinCOFFObjectWriter() {
+std::unique_ptr<MCObjectTargetWriter> createARMWinCOFFObjectWriter() {
   return std::make_unique<ARMWinCOFFObjectWriter>();
 }
 

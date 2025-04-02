@@ -82,7 +82,8 @@ GCOVOptions GCOVOptions::getDefault() {
 
   if (DefaultGCOVVersion.size() != 4) {
     llvm::report_fatal_error(Twine("Invalid -default-gcov-version: ") +
-                             DefaultGCOVVersion, /*GenCrashDiag=*/false);
+                                 DefaultGCOVVersion,
+                             /*GenCrashDiag=*/false);
   }
   memcpy(Options.Version, DefaultGCOVVersion.c_str(), 4);
   return Options;
@@ -143,7 +144,7 @@ private:
   // Add the function to write out all our counters to the global destructor
   // list.
   Function *
-  insertCounterWriteout(ArrayRef<std::pair<GlobalVariable *, MDNode *>>);
+      insertCounterWriteout(ArrayRef<std::pair<GlobalVariable *, MDNode *>>);
   Function *insertReset(ArrayRef<std::pair<GlobalVariable *, MDNode *>>);
 
   bool AddFlushBeforeForkAndExec();
@@ -202,7 +203,7 @@ struct Edge {
         .str();
   }
 };
-}
+} // namespace
 
 static StringRef getFunctionName(const DISubprogram *SP) {
   if (!SP->getLinkageName().empty())
@@ -226,205 +227,198 @@ static SmallString<128> getFilename(const DISubprogram *SP) {
 }
 
 namespace {
-  class GCOVRecord {
-  protected:
-    GCOVProfiler *P;
+class GCOVRecord {
+protected:
+  GCOVProfiler *P;
 
-    GCOVRecord(GCOVProfiler *P) : P(P) {}
+  GCOVRecord(GCOVProfiler *P) : P(P) {}
 
-    void write(uint32_t i) { P->write(i); }
-    void writeString(StringRef s) { P->writeString(s); }
-    void writeBytes(const char *Bytes, int Size) { P->writeBytes(Bytes, Size); }
-  };
+  void write(uint32_t i) { P->write(i); }
+  void writeString(StringRef s) { P->writeString(s); }
+  void writeBytes(const char *Bytes, int Size) { P->writeBytes(Bytes, Size); }
+};
 
-  class GCOVFunction;
-  class GCOVBlock;
+class GCOVFunction;
+class GCOVBlock;
 
-  // Constructed only by requesting it from a GCOVBlock, this object stores a
-  // list of line numbers and a single filename, representing lines that belong
-  // to the block.
-  class GCOVLines : public GCOVRecord {
-   public:
-    void addLine(uint32_t Line) {
-      assert(Line != 0 && "Line zero is not a valid real line number.");
-      Lines.push_back(Line);
+// Constructed only by requesting it from a GCOVBlock, this object stores a
+// list of line numbers and a single filename, representing lines that belong
+// to the block.
+class GCOVLines : public GCOVRecord {
+public:
+  void addLine(uint32_t Line) {
+    assert(Line != 0 && "Line zero is not a valid real line number.");
+    Lines.push_back(Line);
+  }
+
+  uint32_t length() const { return 1 + wordsOfString(Filename) + Lines.size(); }
+
+  void writeOut() {
+    write(0);
+    writeString(Filename);
+    for (uint32_t L : Lines)
+      write(L);
+  }
+
+  GCOVLines(GCOVProfiler *P, StringRef F)
+      : GCOVRecord(P), Filename(std::string(F)) {}
+
+private:
+  std::string Filename;
+  SmallVector<uint32_t, 32> Lines;
+};
+
+// Represent a basic block in GCOV. Each block has a unique number in the
+// function, number of lines belonging to each block, and a set of edges to
+// other blocks.
+class GCOVBlock : public GCOVRecord {
+public:
+  GCOVLines &getFile(StringRef Filename) {
+    return LinesByFile.try_emplace(Filename, P, Filename).first->second;
+  }
+
+  void addEdge(GCOVBlock &Successor, uint32_t Flags) {
+    OutEdges.emplace_back(&Successor, Flags);
+  }
+
+  void writeOut() {
+    uint32_t Len = 3;
+    SmallVector<StringMapEntry<GCOVLines> *, 32> SortedLinesByFile;
+    for (auto &I : LinesByFile) {
+      Len += I.second.length();
+      SortedLinesByFile.push_back(&I);
     }
 
-    uint32_t length() const {
-      return 1 + wordsOfString(Filename) + Lines.size();
-    }
+    write(GCOV_TAG_LINES);
+    write(Len);
+    write(Number);
 
-    void writeOut() {
-      write(0);
-      writeString(Filename);
-      for (uint32_t L : Lines)
-        write(L);
-    }
+    llvm::sort(SortedLinesByFile, [](StringMapEntry<GCOVLines> *LHS,
+                                     StringMapEntry<GCOVLines> *RHS) {
+      return LHS->getKey() < RHS->getKey();
+    });
+    for (auto &I : SortedLinesByFile)
+      I->getValue().writeOut();
+    write(0);
+    write(0);
+  }
 
-    GCOVLines(GCOVProfiler *P, StringRef F)
-        : GCOVRecord(P), Filename(std::string(F)) {}
+  GCOVBlock(const GCOVBlock &RHS) : GCOVRecord(RHS), Number(RHS.Number) {
+    // Only allow copy before edges and lines have been added. After that,
+    // there are inter-block pointers (eg: edges) that won't take kindly to
+    // blocks being copied or moved around.
+    assert(LinesByFile.empty());
+    assert(OutEdges.empty());
+  }
 
-  private:
-    std::string Filename;
-    SmallVector<uint32_t, 32> Lines;
-  };
+  uint32_t Number;
+  SmallVector<std::pair<GCOVBlock *, uint32_t>, 4> OutEdges;
 
+private:
+  friend class GCOVFunction;
 
-  // Represent a basic block in GCOV. Each block has a unique number in the
-  // function, number of lines belonging to each block, and a set of edges to
-  // other blocks.
-  class GCOVBlock : public GCOVRecord {
-   public:
-    GCOVLines &getFile(StringRef Filename) {
-      return LinesByFile.try_emplace(Filename, P, Filename).first->second;
-    }
+  GCOVBlock(GCOVProfiler *P, uint32_t Number) : GCOVRecord(P), Number(Number) {}
 
-    void addEdge(GCOVBlock &Successor, uint32_t Flags) {
-      OutEdges.emplace_back(&Successor, Flags);
-    }
+  StringMap<GCOVLines> LinesByFile;
+};
 
-    void writeOut() {
-      uint32_t Len = 3;
-      SmallVector<StringMapEntry<GCOVLines> *, 32> SortedLinesByFile;
-      for (auto &I : LinesByFile) {
-        Len += I.second.length();
-        SortedLinesByFile.push_back(&I);
+// A function has a unique identifier, a checksum (we leave as zero) and a
+// set of blocks and a map of edges between blocks. This is the only GCOV
+// object users can construct, the blocks and lines will be rooted here.
+class GCOVFunction : public GCOVRecord {
+public:
+  GCOVFunction(GCOVProfiler *P, Function *F, const DISubprogram *SP,
+               unsigned EndLine, uint32_t Ident, int Version)
+      : GCOVRecord(P), SP(SP), EndLine(EndLine), Ident(Ident), Version(Version),
+        EntryBlock(P, 0), ReturnBlock(P, 1) {
+    LLVM_DEBUG(dbgs() << "Function: " << getFunctionName(SP) << "\n");
+    uint32_t i = 2;
+    for (BasicBlock &BB : *F)
+      Blocks.insert(std::make_pair(&BB, GCOVBlock(P, i++)));
+
+    std::string FunctionNameAndLine;
+    raw_string_ostream FNLOS(FunctionNameAndLine);
+    FNLOS << getFunctionName(SP) << SP->getLine();
+    FuncChecksum = hash_value(FunctionNameAndLine);
+  }
+
+  GCOVBlock &getBlock(const BasicBlock *BB) {
+    return Blocks.find(const_cast<BasicBlock *>(BB))->second;
+  }
+
+  GCOVBlock &getEntryBlock() { return EntryBlock; }
+  GCOVBlock &getReturnBlock() { return ReturnBlock; }
+
+  uint32_t getFuncChecksum() const { return FuncChecksum; }
+
+  void writeOut(uint32_t CfgChecksum) {
+    write(GCOV_TAG_FUNCTION);
+    SmallString<128> Filename = getFilename(SP);
+    uint32_t BlockLen = 3 + wordsOfString(getFunctionName(SP));
+    BlockLen += 1 + wordsOfString(Filename) + 4;
+
+    write(BlockLen);
+    write(Ident);
+    write(FuncChecksum);
+    write(CfgChecksum);
+    writeString(getFunctionName(SP));
+
+    write(SP->isArtificial()); // artificial
+    writeString(Filename);
+    write(SP->getLine()); // start_line
+    write(0);             // start_column
+    // EndLine is the last line with !dbg. It is not the } line as in GCC,
+    // but good enough.
+    write(EndLine);
+    write(0); // end_column
+
+    // Emit count of blocks.
+    write(GCOV_TAG_BLOCKS);
+    write(1);
+    write(Blocks.size() + 2);
+    LLVM_DEBUG(dbgs() << (Blocks.size() + 1) << " blocks\n");
+
+    // Emit edges between blocks.
+    const uint32_t Outgoing = EntryBlock.OutEdges.size();
+    if (Outgoing) {
+      write(GCOV_TAG_ARCS);
+      write(Outgoing * 2 + 1);
+      write(EntryBlock.Number);
+      for (const auto &E : EntryBlock.OutEdges) {
+        write(E.first->Number);
+        write(E.second);
       }
-
-      write(GCOV_TAG_LINES);
-      write(Len);
-      write(Number);
-
-      llvm::sort(SortedLinesByFile, [](StringMapEntry<GCOVLines> *LHS,
-                                       StringMapEntry<GCOVLines> *RHS) {
-        return LHS->getKey() < RHS->getKey();
-      });
-      for (auto &I : SortedLinesByFile)
-        I->getValue().writeOut();
-      write(0);
-      write(0);
     }
+    for (auto &It : Blocks) {
+      const GCOVBlock &Block = It.second;
+      if (Block.OutEdges.empty())
+        continue;
 
-    GCOVBlock(const GCOVBlock &RHS) : GCOVRecord(RHS), Number(RHS.Number) {
-      // Only allow copy before edges and lines have been added. After that,
-      // there are inter-block pointers (eg: edges) that won't take kindly to
-      // blocks being copied or moved around.
-      assert(LinesByFile.empty());
-      assert(OutEdges.empty());
-    }
-
-    uint32_t Number;
-    SmallVector<std::pair<GCOVBlock *, uint32_t>, 4> OutEdges;
-
-  private:
-    friend class GCOVFunction;
-
-    GCOVBlock(GCOVProfiler *P, uint32_t Number)
-        : GCOVRecord(P), Number(Number) {}
-
-    StringMap<GCOVLines> LinesByFile;
-  };
-
-  // A function has a unique identifier, a checksum (we leave as zero) and a
-  // set of blocks and a map of edges between blocks. This is the only GCOV
-  // object users can construct, the blocks and lines will be rooted here.
-  class GCOVFunction : public GCOVRecord {
-  public:
-    GCOVFunction(GCOVProfiler *P, Function *F, const DISubprogram *SP,
-                 unsigned EndLine, uint32_t Ident, int Version)
-        : GCOVRecord(P), SP(SP), EndLine(EndLine), Ident(Ident),
-          Version(Version), EntryBlock(P, 0), ReturnBlock(P, 1) {
-      LLVM_DEBUG(dbgs() << "Function: " << getFunctionName(SP) << "\n");
-      uint32_t i = 2;
-      for (BasicBlock &BB : *F)
-        Blocks.insert(std::make_pair(&BB, GCOVBlock(P, i++)));
-
-      std::string FunctionNameAndLine;
-      raw_string_ostream FNLOS(FunctionNameAndLine);
-      FNLOS << getFunctionName(SP) << SP->getLine();
-      FuncChecksum = hash_value(FunctionNameAndLine);
-    }
-
-    GCOVBlock &getBlock(const BasicBlock *BB) {
-      return Blocks.find(const_cast<BasicBlock *>(BB))->second;
-    }
-
-    GCOVBlock &getEntryBlock() { return EntryBlock; }
-    GCOVBlock &getReturnBlock() {
-      return ReturnBlock;
-    }
-
-    uint32_t getFuncChecksum() const {
-      return FuncChecksum;
-    }
-
-    void writeOut(uint32_t CfgChecksum) {
-      write(GCOV_TAG_FUNCTION);
-      SmallString<128> Filename = getFilename(SP);
-      uint32_t BlockLen = 3 + wordsOfString(getFunctionName(SP));
-      BlockLen += 1 + wordsOfString(Filename) + 4;
-
-      write(BlockLen);
-      write(Ident);
-      write(FuncChecksum);
-      write(CfgChecksum);
-      writeString(getFunctionName(SP));
-
-      write(SP->isArtificial()); // artificial
-      writeString(Filename);
-      write(SP->getLine()); // start_line
-      write(0);             // start_column
-      // EndLine is the last line with !dbg. It is not the } line as in GCC,
-      // but good enough.
-      write(EndLine);
-      write(0); // end_column
-
-      // Emit count of blocks.
-      write(GCOV_TAG_BLOCKS);
-      write(1);
-      write(Blocks.size() + 2);
-      LLVM_DEBUG(dbgs() << (Blocks.size() + 1) << " blocks\n");
-
-      // Emit edges between blocks.
-      const uint32_t Outgoing = EntryBlock.OutEdges.size();
-      if (Outgoing) {
-        write(GCOV_TAG_ARCS);
-        write(Outgoing * 2 + 1);
-        write(EntryBlock.Number);
-        for (const auto &E : EntryBlock.OutEdges) {
-          write(E.first->Number);
-          write(E.second);
-        }
+      write(GCOV_TAG_ARCS);
+      write(Block.OutEdges.size() * 2 + 1);
+      write(Block.Number);
+      for (const auto &E : Block.OutEdges) {
+        write(E.first->Number);
+        write(E.second);
       }
-      for (auto &It : Blocks) {
-        const GCOVBlock &Block = It.second;
-        if (Block.OutEdges.empty()) continue;
-
-        write(GCOV_TAG_ARCS);
-        write(Block.OutEdges.size() * 2 + 1);
-        write(Block.Number);
-        for (const auto &E : Block.OutEdges) {
-          write(E.first->Number);
-          write(E.second);
-        }
-      }
-
-      // Emit lines for each block.
-      for (auto &It : Blocks)
-        It.second.writeOut();
     }
 
-  public:
-    const DISubprogram *SP;
-    unsigned EndLine;
-    uint32_t Ident;
-    uint32_t FuncChecksum;
-    int Version;
-    MapVector<BasicBlock *, GCOVBlock> Blocks;
-    GCOVBlock EntryBlock;
-    GCOVBlock ReturnBlock;
-  };
-}
+    // Emit lines for each block.
+    for (auto &It : Blocks)
+      It.second.writeOut();
+  }
+
+public:
+  const DISubprogram *SP;
+  unsigned EndLine;
+  uint32_t Ident;
+  uint32_t FuncChecksum;
+  int Version;
+  MapVector<BasicBlock *, GCOVBlock> Blocks;
+  GCOVBlock EntryBlock;
+  GCOVBlock ReturnBlock;
+};
+} // namespace
 
 // RegexesStr is a string containing differents regex separated by a semi-colon.
 // For example "foo\..*$;bar\..*$".
@@ -554,8 +548,7 @@ bool GCOVProfiler::runOnModule(
   return true;
 }
 
-PreservedAnalyses GCOVProfilerPass::run(Module &M,
-                                        ModuleAnalysisManager &AM) {
+PreservedAnalyses GCOVProfilerPass::run(Module &M, ModuleAnalysisManager &AM) {
 
   GCOVProfiler Profiler(GCOVOpts);
   FunctionAnalysisManager &FAM =
@@ -585,14 +578,16 @@ static bool functionHasLines(const Function &F, unsigned &EndLine) {
     for (const auto &I : BB) {
       // Debug intrinsic locations correspond to the location of the
       // declaration, not necessarily any statements or expressions.
-      if (isa<DbgInfoIntrinsic>(&I)) continue;
+      if (isa<DbgInfoIntrinsic>(&I))
+        continue;
 
       const DebugLoc &Loc = I.getDebugLoc();
       if (!Loc)
         continue;
 
       // Artificial lines such as calls to the global constructors.
-      if (Loc.getLine() == 0) continue;
+      if (Loc.getLine() == 0)
+        continue;
       EndLine = std::max(EndLine, Loc.getLine());
 
       return true;
@@ -602,7 +597,8 @@ static bool functionHasLines(const Function &F, unsigned &EndLine) {
 }
 
 static bool isUsingScopeBasedEH(Function &F) {
-  if (!F.hasPersonalityFn()) return false;
+  if (!F.hasPersonalityFn())
+    return false;
 
   EHPersonality Personality = classifyEHPersonality(F.getPersonalityFn());
   return isScopedEHPersonality(Personality);
@@ -783,11 +779,13 @@ bool GCOVProfiler::emitProfileNotes(
     for (auto &F : M->functions()) {
       DISubprogram *SP = F.getSubprogram();
       unsigned EndLine;
-      if (!SP) continue;
+      if (!SP)
+        continue;
       if (!functionHasLines(F, EndLine) || !isFunctionInstrumented(F))
         continue;
       // TODO: Functions using scope-based EH are currently not supported.
-      if (isUsingScopeBasedEH(F)) continue;
+      if (isUsingScopeBasedEH(F))
+        continue;
       if (F.hasFnAttribute(llvm::Attribute::NoProfile))
         continue;
       if (F.hasFnAttribute(llvm::Attribute::SkipProfile))
@@ -869,14 +867,16 @@ bool GCOVProfiler::emitProfileNotes(
         auto &Block = GB.second;
         for (auto Succ : Block.OutEdges) {
           uint32_t Idx = Succ.first->Number;
-          do EdgeDestinations.push_back(Idx & 255);
+          do
+            EdgeDestinations.push_back(Idx & 255);
           while ((Idx >>= 8) > 0);
         }
 
         for (const auto &I : BB) {
           // Debug intrinsic locations correspond to the location of the
           // declaration, not necessarily any statements or expressions.
-          if (isa<DbgInfoIntrinsic>(&I)) continue;
+          if (isa<DbgInfoIntrinsic>(&I))
+            continue;
 
           const DebugLoc &Loc = I.getDebugLoc();
           if (!Loc)
@@ -886,7 +886,8 @@ bool GCOVProfiler::emitProfileNotes(
           if (Loc.getLine() == 0 || Loc.isImplicitCode())
             continue;
 
-          if (Line == Loc.getLine()) continue;
+          if (Line == Loc.getLine())
+            continue;
           Line = Loc.getLine();
           MDNode *Scope = Loc.getScope();
           // TODO: Handle blocks from another file due to #line, #include, etc.
@@ -1065,19 +1066,21 @@ FunctionCallee GCOVProfiler::getStartFileFunc(const TargetLibraryInfo *TLI) {
       Type::getInt32Ty(*Ctx),       // uint32_t checksum
   };
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
-  return M->getOrInsertFunction("llvm_gcda_start_file", FTy,
-                                TLI->getAttrList(Ctx, {1, 2}, /*Signed=*/false));
+  return M->getOrInsertFunction(
+      "llvm_gcda_start_file", FTy,
+      TLI->getAttrList(Ctx, {1, 2}, /*Signed=*/false));
 }
 
 FunctionCallee GCOVProfiler::getEmitFunctionFunc(const TargetLibraryInfo *TLI) {
   Type *Args[] = {
-    Type::getInt32Ty(*Ctx),    // uint32_t ident
-    Type::getInt32Ty(*Ctx),    // uint32_t func_checksum
-    Type::getInt32Ty(*Ctx),    // uint32_t cfg_checksum
+      Type::getInt32Ty(*Ctx), // uint32_t ident
+      Type::getInt32Ty(*Ctx), // uint32_t func_checksum
+      Type::getInt32Ty(*Ctx), // uint32_t cfg_checksum
   };
   FunctionType *FTy = FunctionType::get(Type::getVoidTy(*Ctx), Args, false);
-  return M->getOrInsertFunction("llvm_gcda_emit_function", FTy,
-                             TLI->getAttrList(Ctx, {0, 1, 2}, /*Signed=*/false));
+  return M->getOrInsertFunction(
+      "llvm_gcda_emit_function", FTy,
+      TLI->getAttrList(Ctx, {0, 1, 2}, /*Signed=*/false));
 }
 
 FunctionCallee GCOVProfiler::getEmitArcsFunc(const TargetLibraryInfo *TLI) {
@@ -1101,7 +1104,7 @@ FunctionCallee GCOVProfiler::getEndFileFunc() {
 }
 
 Function *GCOVProfiler::insertCounterWriteout(
-    ArrayRef<std::pair<GlobalVariable *, MDNode *> > CountersBySP) {
+    ArrayRef<std::pair<GlobalVariable *, MDNode *>> CountersBySP) {
   FunctionType *WriteoutFTy = FunctionType::get(Type::getVoidTy(*Ctx), false);
   Function *WriteoutF = M->getFunction("__llvm_gcov_writeout");
   if (!WriteoutF)
@@ -1166,8 +1169,7 @@ Function *GCOVProfiler::insertCounterWriteout(
       uint32_t FuncChecksum = Funcs.empty() ? 0 : Funcs[j]->getFuncChecksum();
       EmitFunctionCallArgsArray.push_back(ConstantStruct::get(
           EmitFunctionCallArgsTy,
-          {Builder.getInt32(j),
-           Builder.getInt32(FuncChecksum),
+          {Builder.getInt32(j), Builder.getInt32(FuncChecksum),
            Builder.getInt32(CfgChecksum)}));
 
       GlobalVariable *GV = CountersBySP[j].first;

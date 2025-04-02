@@ -34,8 +34,8 @@ namespace {
 
 class AArch64MachObjectWriter : public MCMachObjectTargetWriter {
   bool getAArch64FixupKindMachOInfo(const MCFixup &Fixup, unsigned &RelocType,
-                                  const MCSymbolRefExpr *Sym,
-                                  unsigned &Log2Size, const MCAssembler &Asm);
+                                    const MCSymbolRefExpr *Sym,
+                                    unsigned &Log2Size, const MCAssembler &Asm);
 
 public:
   AArch64MachObjectWriter(uint32_t CPUType, uint32_t CPUSubtype, bool IsILP32)

@@ -38,14 +38,13 @@ public:
                               ArrayRef<uint8_t> Bytes, uint64_t Address,
                               raw_ostream &CStream) const override;
 };
-}
+} // namespace
 
 static MCDisassembler *createSparcDisassembler(const Target &T,
                                                const MCSubtargetInfo &STI,
                                                MCContext &Ctx) {
   return new SparcDisassembler(STI, Ctx);
 }
-
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeSparcDisassembler() {
   // Register the disassembler.
@@ -58,47 +57,31 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeSparcDisassembler() {
 }
 
 static const unsigned IntRegDecoderTable[] = {
-  SP::G0,  SP::G1,  SP::G2,  SP::G3,
-  SP::G4,  SP::G5,  SP::G6,  SP::G7,
-  SP::O0,  SP::O1,  SP::O2,  SP::O3,
-  SP::O4,  SP::O5,  SP::O6,  SP::O7,
-  SP::L0,  SP::L1,  SP::L2,  SP::L3,
-  SP::L4,  SP::L5,  SP::L6,  SP::L7,
-  SP::I0,  SP::I1,  SP::I2,  SP::I3,
-  SP::I4,  SP::I5,  SP::I6,  SP::I7 };
+    SP::G0, SP::G1, SP::G2, SP::G3, SP::G4, SP::G5, SP::G6, SP::G7,
+    SP::O0, SP::O1, SP::O2, SP::O3, SP::O4, SP::O5, SP::O6, SP::O7,
+    SP::L0, SP::L1, SP::L2, SP::L3, SP::L4, SP::L5, SP::L6, SP::L7,
+    SP::I0, SP::I1, SP::I2, SP::I3, SP::I4, SP::I5, SP::I6, SP::I7};
 
 static const unsigned FPRegDecoderTable[] = {
-  SP::F0,   SP::F1,   SP::F2,   SP::F3,
-  SP::F4,   SP::F5,   SP::F6,   SP::F7,
-  SP::F8,   SP::F9,   SP::F10,  SP::F11,
-  SP::F12,  SP::F13,  SP::F14,  SP::F15,
-  SP::F16,  SP::F17,  SP::F18,  SP::F19,
-  SP::F20,  SP::F21,  SP::F22,  SP::F23,
-  SP::F24,  SP::F25,  SP::F26,  SP::F27,
-  SP::F28,  SP::F29,  SP::F30,  SP::F31 };
+    SP::F0,  SP::F1,  SP::F2,  SP::F3,  SP::F4,  SP::F5,  SP::F6,  SP::F7,
+    SP::F8,  SP::F9,  SP::F10, SP::F11, SP::F12, SP::F13, SP::F14, SP::F15,
+    SP::F16, SP::F17, SP::F18, SP::F19, SP::F20, SP::F21, SP::F22, SP::F23,
+    SP::F24, SP::F25, SP::F26, SP::F27, SP::F28, SP::F29, SP::F30, SP::F31};
 
 static const unsigned DFPRegDecoderTable[] = {
-  SP::D0,   SP::D16,  SP::D1,   SP::D17,
-  SP::D2,   SP::D18,  SP::D3,   SP::D19,
-  SP::D4,   SP::D20,  SP::D5,   SP::D21,
-  SP::D6,   SP::D22,  SP::D7,   SP::D23,
-  SP::D8,   SP::D24,  SP::D9,   SP::D25,
-  SP::D10,  SP::D26,  SP::D11,  SP::D27,
-  SP::D12,  SP::D28,  SP::D13,  SP::D29,
-  SP::D14,  SP::D30,  SP::D15,  SP::D31 };
+    SP::D0,  SP::D16, SP::D1,  SP::D17, SP::D2,  SP::D18, SP::D3,  SP::D19,
+    SP::D4,  SP::D20, SP::D5,  SP::D21, SP::D6,  SP::D22, SP::D7,  SP::D23,
+    SP::D8,  SP::D24, SP::D9,  SP::D25, SP::D10, SP::D26, SP::D11, SP::D27,
+    SP::D12, SP::D28, SP::D13, SP::D29, SP::D14, SP::D30, SP::D15, SP::D31};
 
 static const unsigned QFPRegDecoderTable[] = {
-  SP::Q0,  SP::Q8,   ~0U,  ~0U,
-  SP::Q1,  SP::Q9,   ~0U,  ~0U,
-  SP::Q2,  SP::Q10,  ~0U,  ~0U,
-  SP::Q3,  SP::Q11,  ~0U,  ~0U,
-  SP::Q4,  SP::Q12,  ~0U,  ~0U,
-  SP::Q5,  SP::Q13,  ~0U,  ~0U,
-  SP::Q6,  SP::Q14,  ~0U,  ~0U,
-  SP::Q7,  SP::Q15,  ~0U,  ~0U } ;
+    SP::Q0, SP::Q8,  ~0U, ~0U, SP::Q1, SP::Q9,  ~0U, ~0U,
+    SP::Q2, SP::Q10, ~0U, ~0U, SP::Q3, SP::Q11, ~0U, ~0U,
+    SP::Q4, SP::Q12, ~0U, ~0U, SP::Q5, SP::Q13, ~0U, ~0U,
+    SP::Q6, SP::Q14, ~0U, ~0U, SP::Q7, SP::Q15, ~0U, ~0U};
 
-static const unsigned FCCRegDecoderTable[] = {
-  SP::FCC0, SP::FCC1, SP::FCC2, SP::FCC3 };
+static const unsigned FCCRegDecoderTable[] = {SP::FCC0, SP::FCC1, SP::FCC2,
+                                              SP::FCC3};
 
 static const unsigned ASRRegDecoderTable[] = {
     SP::Y,     SP::ASR1,  SP::ASR2,  SP::ASR3,  SP::ASR4,  SP::ASR5,  SP::ASR6,
@@ -113,30 +96,22 @@ static const unsigned PRRegDecoderTable[] = {
     SP::CANSAVE, SP::CANRESTORE, SP::CLEANWIN, SP::OTHERWIN, SP::WSTATE};
 
 static const uint16_t IntPairDecoderTable[] = {
-  SP::G0_G1, SP::G2_G3, SP::G4_G5, SP::G6_G7,
-  SP::O0_O1, SP::O2_O3, SP::O4_O5, SP::O6_O7,
-  SP::L0_L1, SP::L2_L3, SP::L4_L5, SP::L6_L7,
-  SP::I0_I1, SP::I2_I3, SP::I4_I5, SP::I6_I7,
+    SP::G0_G1, SP::G2_G3, SP::G4_G5, SP::G6_G7, SP::O0_O1, SP::O2_O3,
+    SP::O4_O5, SP::O6_O7, SP::L0_L1, SP::L2_L3, SP::L4_L5, SP::L6_L7,
+    SP::I0_I1, SP::I2_I3, SP::I4_I5, SP::I6_I7,
 };
 
 static const unsigned CPRegDecoderTable[] = {
-  SP::C0,  SP::C1,  SP::C2,  SP::C3,
-  SP::C4,  SP::C5,  SP::C6,  SP::C7,
-  SP::C8,  SP::C9,  SP::C10, SP::C11,
-  SP::C12, SP::C13, SP::C14, SP::C15,
-  SP::C16, SP::C17, SP::C18, SP::C19,
-  SP::C20, SP::C21, SP::C22, SP::C23,
-  SP::C24, SP::C25, SP::C26, SP::C27,
-  SP::C28, SP::C29, SP::C30, SP::C31
-};
-
+    SP::C0,  SP::C1,  SP::C2,  SP::C3,  SP::C4,  SP::C5,  SP::C6,  SP::C7,
+    SP::C8,  SP::C9,  SP::C10, SP::C11, SP::C12, SP::C13, SP::C14, SP::C15,
+    SP::C16, SP::C17, SP::C18, SP::C19, SP::C20, SP::C21, SP::C22, SP::C23,
+    SP::C24, SP::C25, SP::C26, SP::C27, SP::C28, SP::C29, SP::C30, SP::C31};
 
 static const uint16_t CPPairDecoderTable[] = {
-  SP::C0_C1,   SP::C2_C3,   SP::C4_C5,   SP::C6_C7,
-  SP::C8_C9,   SP::C10_C11, SP::C12_C13, SP::C14_C15,
-  SP::C16_C17, SP::C18_C19, SP::C20_C21, SP::C22_C23,
-  SP::C24_C25, SP::C26_C27, SP::C28_C29, SP::C30_C31
-};
+    SP::C0_C1,   SP::C2_C3,   SP::C4_C5,   SP::C6_C7,
+    SP::C8_C9,   SP::C10_C11, SP::C12_C13, SP::C14_C15,
+    SP::C16_C17, SP::C18_C19, SP::C20_C21, SP::C22_C23,
+    SP::C24_C25, SP::C26_C27, SP::C28_C29, SP::C30_C31};
 
 static DecodeStatus DecodeIntRegsRegisterClass(MCInst &Inst, unsigned RegNo,
                                                uint64_t Address,
@@ -243,7 +218,7 @@ static DecodeStatus DecodeIntPairRegisterClass(MCInst &Inst, unsigned RegNo,
   if ((RegNo & 1))
     S = MCDisassembler::SoftFail;
 
-  unsigned RegisterPair = IntPairDecoderTable[RegNo/2];
+  unsigned RegisterPair = IntPairDecoderTable[RegNo / 2];
   Inst.addOperand(MCOperand::createReg(RegisterPair));
   return S;
 }
@@ -254,7 +229,7 @@ DecodeCoprocPairRegisterClass(MCInst &Inst, unsigned RegNo, uint64_t Address,
   if (RegNo > 31)
     return MCDisassembler::Fail;
 
-  unsigned RegisterPair = CPPairDecoderTable[RegNo/2];
+  unsigned RegisterPair = CPPairDecoderTable[RegNo / 2];
   Inst.addOperand(MCOperand::createReg(RegisterPair));
   return MCDisassembler::Success;
 }
@@ -276,11 +251,10 @@ static DecodeStatus readInstruction32(ArrayRef<uint8_t> Bytes, uint64_t Address,
     return MCDisassembler::Fail;
   }
 
-  Insn = IsLittleEndian
-             ? (Bytes[0] << 0) | (Bytes[1] << 8) | (Bytes[2] << 16) |
-                   (Bytes[3] << 24)
-             : (Bytes[3] << 0) | (Bytes[2] << 8) | (Bytes[1] << 16) |
-                   (Bytes[0] << 24);
+  Insn = IsLittleEndian ? (Bytes[0] << 0) | (Bytes[1] << 8) | (Bytes[2] << 16) |
+                              (Bytes[3] << 24)
+                        : (Bytes[3] << 0) | (Bytes[2] << 8) | (Bytes[1] << 16) |
+                              (Bytes[0] << 24);
 
   return MCDisassembler::Success;
 }
@@ -298,13 +272,12 @@ DecodeStatus SparcDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,
 
   // Calling the auto-generated decoder function.
 
-  if (STI.hasFeature(Sparc::FeatureV9))
-  {
-    Result = decodeInstruction(DecoderTableSparcV932, Instr, Insn, Address, this, STI);
-  }
-  else
-  {
-    Result = decodeInstruction(DecoderTableSparcV832, Instr, Insn, Address, this, STI);
+  if (STI.hasFeature(Sparc::FeatureV9)) {
+    Result = decodeInstruction(DecoderTableSparcV932, Instr, Insn, Address,
+                               this, STI);
+  } else {
+    Result = decodeInstruction(DecoderTableSparcV832, Instr, Insn, Address,
+                               this, STI);
   }
   if (Result != MCDisassembler::Fail) {
     Size = 4;
@@ -334,8 +307,8 @@ static DecodeStatus DecodeCall(MCInst &MI, unsigned insn, uint64_t Address,
                                const MCDisassembler *Decoder) {
   unsigned tgt = fieldFromInstruction(insn, 0, 30);
   tgt <<= 2;
-  if (!tryAddingSymbolicOperand(tgt+Address, false, Address,
-                                0, 30, MI, Decoder))
+  if (!tryAddingSymbolicOperand(tgt + Address, false, Address, 0, 30, MI,
+                                Decoder))
     MI.addOperand(MCOperand::createImm(tgt));
   return MCDisassembler::Success;
 }

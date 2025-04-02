@@ -72,10 +72,10 @@ private:
 public:
   Arg(const Option Opt, StringRef Spelling, unsigned Index,
       const Arg *BaseArg = nullptr);
-  Arg(const Option Opt, StringRef Spelling, unsigned Index,
-      const char *Value0, const Arg *BaseArg = nullptr);
-  Arg(const Option Opt, StringRef Spelling, unsigned Index,
-      const char *Value0, const char *Value1, const Arg *BaseArg = nullptr);
+  Arg(const Option Opt, StringRef Spelling, unsigned Index, const char *Value0,
+      const Arg *BaseArg = nullptr);
+  Arg(const Option Opt, StringRef Spelling, unsigned Index, const char *Value0,
+      const char *Value1, const Arg *BaseArg = nullptr);
   Arg(const Arg &) = delete;
   Arg &operator=(const Arg &) = delete;
   ~Arg();
@@ -96,15 +96,13 @@ public:
   ///
   /// This is either the argument itself or the argument it was
   /// derived from during tool chain specific argument translation.
-  const Arg &getBaseArg() const {
-    return BaseArg ? *BaseArg : *this;
-  }
+  const Arg &getBaseArg() const { return BaseArg ? *BaseArg : *this; }
   Arg &getBaseArg() { return BaseArg ? const_cast<Arg &>(*BaseArg) : *this; }
   void setBaseArg(const Arg *BaseArg) { this->BaseArg = BaseArg; }
 
   /// Args are converted to their unaliased form.  For args that originally
   /// came from an alias, this returns the alias the arg was produced from.
-  const Arg* getAlias() const { return Alias.get(); }
+  const Arg *getAlias() const { return Alias.get(); }
   void setAlias(std::unique_ptr<Arg> Alias) { this->Alias = std::move(Alias); }
 
   bool getOwnsValues() const { return OwnsValues; }
@@ -116,15 +114,11 @@ public:
   bool isIgnoredTargetSpecific() const {
     return getBaseArg().IgnoredTargetSpecific;
   }
-  void ignoreTargetSpecific() {
-    getBaseArg().IgnoredTargetSpecific = true;
-  }
+  void ignoreTargetSpecific() { getBaseArg().IgnoredTargetSpecific = true; }
 
   unsigned getNumValues() const { return Values.size(); }
 
-  const char *getValue(unsigned N = 0) const {
-    return Values[N];
-  }
+  const char *getValue(unsigned N = 0) const { return Values[N]; }
 
   SmallVectorImpl<const char *> &getValues() { return Values; }
   const SmallVectorImpl<const char *> &getValues() const { return Values; }

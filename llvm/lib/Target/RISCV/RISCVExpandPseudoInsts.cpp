@@ -24,7 +24,8 @@
 using namespace llvm;
 
 #define RISCV_EXPAND_PSEUDO_NAME "RISC-V pseudo instruction expansion pass"
-#define RISCV_PRERA_EXPAND_PSEUDO_NAME "RISC-V Pre-RA pseudo instruction expansion pass"
+#define RISCV_PRERA_EXPAND_PSEUDO_NAME                                         \
+  "RISC-V Pre-RA pseudo instruction expansion pass"
 
 namespace {
 
@@ -209,33 +210,87 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
     switch (MI.getOpcode()) {
     default:
       llvm_unreachable("Unexpected opcode!");
-    case RISCV::PseudoCCADD:   NewOpc = RISCV::ADD;   break;
-    case RISCV::PseudoCCSUB:   NewOpc = RISCV::SUB;   break;
-    case RISCV::PseudoCCSLL:   NewOpc = RISCV::SLL;   break;
-    case RISCV::PseudoCCSRL:   NewOpc = RISCV::SRL;   break;
-    case RISCV::PseudoCCSRA:   NewOpc = RISCV::SRA;   break;
-    case RISCV::PseudoCCAND:   NewOpc = RISCV::AND;   break;
-    case RISCV::PseudoCCOR:    NewOpc = RISCV::OR;    break;
-    case RISCV::PseudoCCXOR:   NewOpc = RISCV::XOR;   break;
-    case RISCV::PseudoCCADDI:  NewOpc = RISCV::ADDI;  break;
-    case RISCV::PseudoCCSLLI:  NewOpc = RISCV::SLLI;  break;
-    case RISCV::PseudoCCSRLI:  NewOpc = RISCV::SRLI;  break;
-    case RISCV::PseudoCCSRAI:  NewOpc = RISCV::SRAI;  break;
-    case RISCV::PseudoCCANDI:  NewOpc = RISCV::ANDI;  break;
-    case RISCV::PseudoCCORI:   NewOpc = RISCV::ORI;   break;
-    case RISCV::PseudoCCXORI:  NewOpc = RISCV::XORI;  break;
-    case RISCV::PseudoCCADDW:  NewOpc = RISCV::ADDW;  break;
-    case RISCV::PseudoCCSUBW:  NewOpc = RISCV::SUBW;  break;
-    case RISCV::PseudoCCSLLW:  NewOpc = RISCV::SLLW;  break;
-    case RISCV::PseudoCCSRLW:  NewOpc = RISCV::SRLW;  break;
-    case RISCV::PseudoCCSRAW:  NewOpc = RISCV::SRAW;  break;
-    case RISCV::PseudoCCADDIW: NewOpc = RISCV::ADDIW; break;
-    case RISCV::PseudoCCSLLIW: NewOpc = RISCV::SLLIW; break;
-    case RISCV::PseudoCCSRLIW: NewOpc = RISCV::SRLIW; break;
-    case RISCV::PseudoCCSRAIW: NewOpc = RISCV::SRAIW; break;
-    case RISCV::PseudoCCANDN:  NewOpc = RISCV::ANDN;  break;
-    case RISCV::PseudoCCORN:   NewOpc = RISCV::ORN;   break;
-    case RISCV::PseudoCCXNOR:  NewOpc = RISCV::XNOR;  break;
+    case RISCV::PseudoCCADD:
+      NewOpc = RISCV::ADD;
+      break;
+    case RISCV::PseudoCCSUB:
+      NewOpc = RISCV::SUB;
+      break;
+    case RISCV::PseudoCCSLL:
+      NewOpc = RISCV::SLL;
+      break;
+    case RISCV::PseudoCCSRL:
+      NewOpc = RISCV::SRL;
+      break;
+    case RISCV::PseudoCCSRA:
+      NewOpc = RISCV::SRA;
+      break;
+    case RISCV::PseudoCCAND:
+      NewOpc = RISCV::AND;
+      break;
+    case RISCV::PseudoCCOR:
+      NewOpc = RISCV::OR;
+      break;
+    case RISCV::PseudoCCXOR:
+      NewOpc = RISCV::XOR;
+      break;
+    case RISCV::PseudoCCADDI:
+      NewOpc = RISCV::ADDI;
+      break;
+    case RISCV::PseudoCCSLLI:
+      NewOpc = RISCV::SLLI;
+      break;
+    case RISCV::PseudoCCSRLI:
+      NewOpc = RISCV::SRLI;
+      break;
+    case RISCV::PseudoCCSRAI:
+      NewOpc = RISCV::SRAI;
+      break;
+    case RISCV::PseudoCCANDI:
+      NewOpc = RISCV::ANDI;
+      break;
+    case RISCV::PseudoCCORI:
+      NewOpc = RISCV::ORI;
+      break;
+    case RISCV::PseudoCCXORI:
+      NewOpc = RISCV::XORI;
+      break;
+    case RISCV::PseudoCCADDW:
+      NewOpc = RISCV::ADDW;
+      break;
+    case RISCV::PseudoCCSUBW:
+      NewOpc = RISCV::SUBW;
+      break;
+    case RISCV::PseudoCCSLLW:
+      NewOpc = RISCV::SLLW;
+      break;
+    case RISCV::PseudoCCSRLW:
+      NewOpc = RISCV::SRLW;
+      break;
+    case RISCV::PseudoCCSRAW:
+      NewOpc = RISCV::SRAW;
+      break;
+    case RISCV::PseudoCCADDIW:
+      NewOpc = RISCV::ADDIW;
+      break;
+    case RISCV::PseudoCCSLLIW:
+      NewOpc = RISCV::SLLIW;
+      break;
+    case RISCV::PseudoCCSRLIW:
+      NewOpc = RISCV::SRLIW;
+      break;
+    case RISCV::PseudoCCSRAIW:
+      NewOpc = RISCV::SRAIW;
+      break;
+    case RISCV::PseudoCCANDN:
+      NewOpc = RISCV::ANDN;
+      break;
+    case RISCV::PseudoCCORN:
+      NewOpc = RISCV::ORN;
+      break;
+    case RISCV::PseudoCCXNOR:
+      NewOpc = RISCV::XNOR;
+      break;
     }
     BuildMI(TrueBB, DL, TII->get(NewOpc), DestReg)
         .add(MI.getOperand(5))
@@ -639,6 +694,8 @@ INITIALIZE_PASS(RISCVPreRAExpandPseudo, "riscv-prera-expand-pseudo",
 namespace llvm {
 
 FunctionPass *createRISCVExpandPseudoPass() { return new RISCVExpandPseudo(); }
-FunctionPass *createRISCVPreRAExpandPseudoPass() { return new RISCVPreRAExpandPseudo(); }
+FunctionPass *createRISCVPreRAExpandPseudoPass() {
+  return new RISCVPreRAExpandPseudo();
+}
 
 } // end of namespace llvm

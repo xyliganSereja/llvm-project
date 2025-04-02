@@ -34,12 +34,12 @@ enum { DEFAULT_VEC_SLOTS = 8 };
 //
 //===----------------------------------------------------------------------===//
 
-STATISTIC(numSerialPatternMatch,    "CFGStructurizer number of serial pattern "
-    "matched");
-STATISTIC(numIfPatternMatch,        "CFGStructurizer number of if pattern "
-    "matched");
-STATISTIC(numClonedBlock,           "CFGStructurizer cloned blocks");
-STATISTIC(numClonedInstr,           "CFGStructurizer cloned instructions");
+STATISTIC(numSerialPatternMatch, "CFGStructurizer number of serial pattern "
+                                 "matched");
+STATISTIC(numIfPatternMatch, "CFGStructurizer number of if pattern "
+                             "matched");
+STATISTIC(numClonedBlock, "CFGStructurizer cloned blocks");
+STATISTIC(numClonedInstr, "CFGStructurizer cloned instructions");
 
 namespace llvm {
 
@@ -162,7 +162,8 @@ protected:
   void printOrderedBlocks() const {
     size_t i = 0;
     for (MBBVector::const_iterator iterBlk = OrderedBlks.begin(),
-        iterBlkEnd = OrderedBlks.end(); iterBlk != iterBlkEnd; ++iterBlk, ++i) {
+                                   iterBlkEnd = OrderedBlks.end();
+         iterBlk != iterBlkEnd; ++iterBlk, ++i) {
       dbgs() << "BB" << (*iterBlk)->getNumber();
       dbgs() << "(" << getSCCNum(*iterBlk) << "," << (*iterBlk)->size() << ")";
       if (i != 0 && i % 10 == 0) {
@@ -185,9 +186,9 @@ protected:
   bool isRetiredBlock(MachineBasicBlock *MBB) const;
   bool isActiveLoophead(MachineBasicBlock *MBB) const;
   PathToKind singlePathTo(MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB,
-      bool AllowSideEntry = true) const;
+                          bool AllowSideEntry = true) const;
   int countActiveBlock(MBBVector::const_iterator It,
-      MBBVector::const_iterator E) const;
+                       MBBVector::const_iterator E) const;
   bool needMigrateBlock(MachineBasicBlock *MBB) const;
 
   // Utility Functions
@@ -215,7 +216,7 @@ protected:
   static MachineBasicBlock *getTrueBranch(MachineInstr *MI);
   static void setTrueBranch(MachineInstr *MI, MachineBasicBlock *MBB);
   static MachineBasicBlock *getFalseBranch(MachineBasicBlock *MBB,
-      MachineInstr *MI);
+                                           MachineInstr *MI);
   static bool isCondBranch(MachineInstr *MI);
   static bool isUncondBranch(MachineInstr *MI);
   static DebugLoc getLastDebugLocInBB(MachineBasicBlock *MBB);
@@ -230,14 +231,15 @@ protected:
   static MachineInstr *getReturnInstr(MachineBasicBlock *MBB);
   static bool isReturnBlock(MachineBasicBlock *MBB);
   static void cloneSuccessorList(MachineBasicBlock *DstMBB,
-      MachineBasicBlock *SrcMBB);
+                                 MachineBasicBlock *SrcMBB);
   static MachineBasicBlock *clone(MachineBasicBlock *MBB);
 
   /// MachineBasicBlock::ReplaceUsesOfBlockWith doesn't serve the purpose
   /// because the AMDGPU instruction is not recognized as terminator fix this
   /// and retire this routine
   void replaceInstrUseOfBlockWith(MachineBasicBlock *SrcMBB,
-      MachineBasicBlock *OldMBB, MachineBasicBlock *NewBlk);
+                                  MachineBasicBlock *OldMBB,
+                                  MachineBasicBlock *NewBlk);
 
   static void wrapup(MachineBasicBlock *MBB);
 
@@ -252,31 +254,35 @@ protected:
   /// the same loop with LoopLandInfo without explicitly keeping track of
   /// loopContBlks and loopBreakBlks, this is a method to get the information.
   bool isSameloopDetachedContbreak(MachineBasicBlock *Src1MBB,
-      MachineBasicBlock *Src2MBB);
-  int handleJumpintoIf(MachineBasicBlock *HeadMBB,
-      MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB);
+                                   MachineBasicBlock *Src2MBB);
+  int handleJumpintoIf(MachineBasicBlock *HeadMBB, MachineBasicBlock *TrueMBB,
+                       MachineBasicBlock *FalseMBB);
   int handleJumpintoIfImp(MachineBasicBlock *HeadMBB,
-      MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB);
+                          MachineBasicBlock *TrueMBB,
+                          MachineBasicBlock *FalseMBB);
   int improveSimpleJumpintoIf(MachineBasicBlock *HeadMBB,
-      MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB,
-      MachineBasicBlock **LandMBBPtr);
+                              MachineBasicBlock *TrueMBB,
+                              MachineBasicBlock *FalseMBB,
+                              MachineBasicBlock **LandMBBPtr);
   void showImproveSimpleJumpintoIf(MachineBasicBlock *HeadMBB,
-      MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB,
-      MachineBasicBlock *LandMBB, bool Detail = false);
-  int cloneOnSideEntryTo(MachineBasicBlock *PreMBB,
-      MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB);
-  void mergeSerialBlock(MachineBasicBlock *DstMBB,
-      MachineBasicBlock *SrcMBB);
+                                   MachineBasicBlock *TrueMBB,
+                                   MachineBasicBlock *FalseMBB,
+                                   MachineBasicBlock *LandMBB,
+                                   bool Detail = false);
+  int cloneOnSideEntryTo(MachineBasicBlock *PreMBB, MachineBasicBlock *SrcMBB,
+                         MachineBasicBlock *DstMBB);
+  void mergeSerialBlock(MachineBasicBlock *DstMBB, MachineBasicBlock *SrcMBB);
 
-  void mergeIfthenelseBlock(MachineInstr *BranchMI,
-      MachineBasicBlock *MBB, MachineBasicBlock *TrueMBB,
-      MachineBasicBlock *FalseMBB, MachineBasicBlock *LandMBB);
+  void mergeIfthenelseBlock(MachineInstr *BranchMI, MachineBasicBlock *MBB,
+                            MachineBasicBlock *TrueMBB,
+                            MachineBasicBlock *FalseMBB,
+                            MachineBasicBlock *LandMBB);
   void mergeLooplandBlock(MachineBasicBlock *DstMBB,
-      MachineBasicBlock *LandMBB);
+                          MachineBasicBlock *LandMBB);
   void mergeLoopbreakBlock(MachineBasicBlock *ExitingMBB,
-      MachineBasicBlock *LandMBB);
+                           MachineBasicBlock *LandMBB);
   void settleLoopcontBlock(MachineBasicBlock *ContingMBB,
-      MachineBasicBlock *ContMBB);
+                           MachineBasicBlock *ContMBB);
 
   /// normalizeInfiniteLoopExit change
   ///   B1:
@@ -302,9 +308,9 @@ protected:
   void addDummyExitBlock(SmallVectorImpl<MachineBasicBlock *> &RetMBB);
   void removeSuccessor(MachineBasicBlock *MBB);
   MachineBasicBlock *cloneBlockForPredecessor(MachineBasicBlock *MBB,
-      MachineBasicBlock *PredMBB);
-  void migrateInstruction(MachineBasicBlock *SrcMBB,
-      MachineBasicBlock *DstMBB, MachineBasicBlock::iterator I);
+                                              MachineBasicBlock *PredMBB);
+  void migrateInstruction(MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB,
+                          MachineBasicBlock::iterator I);
   void recordSccnum(MachineBasicBlock *MBB, int SCCNum);
   void retireBlock(MachineBasicBlock *MBB);
 
@@ -327,8 +333,8 @@ int R600MachineCFGStructurizer::getSCCNum(MachineBasicBlock *MBB) const {
   return (*It).second->SccNum;
 }
 
-MachineBasicBlock *R600MachineCFGStructurizer::getLoopLandInfo(MachineLoop *LoopRep)
-    const {
+MachineBasicBlock *
+R600MachineCFGStructurizer::getLoopLandInfo(MachineLoop *LoopRep) const {
   LoopLandInfoMap::const_iterator It = LLInfoMap.find(LoopRep);
   if (It == LLInfoMap.end())
     return nullptr;
@@ -350,11 +356,12 @@ bool R600MachineCFGStructurizer::isRetiredBlock(MachineBasicBlock *MBB) const {
   return (*It).second->IsRetired;
 }
 
-bool R600MachineCFGStructurizer::isActiveLoophead(MachineBasicBlock *MBB) const {
+bool R600MachineCFGStructurizer::isActiveLoophead(
+    MachineBasicBlock *MBB) const {
   MachineLoop *LoopRep = MLI->getLoopFor(MBB);
   while (LoopRep && LoopRep->getHeader() == MBB) {
     MachineBasicBlock *LoopLand = getLoopLandInfo(LoopRep);
-    if(!LoopLand)
+    if (!LoopLand)
       return true;
     if (!isRetiredBlock(LoopLand))
       return true;
@@ -363,9 +370,10 @@ bool R600MachineCFGStructurizer::isActiveLoophead(MachineBasicBlock *MBB) const 
   return false;
 }
 
-R600MachineCFGStructurizer::PathToKind R600MachineCFGStructurizer::singlePathTo(
-    MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB,
-    bool AllowSideEntry) const {
+R600MachineCFGStructurizer::PathToKind
+R600MachineCFGStructurizer::singlePathTo(MachineBasicBlock *SrcMBB,
+                                         MachineBasicBlock *DstMBB,
+                                         bool AllowSideEntry) const {
   assert(DstMBB);
   if (SrcMBB == DstMBB)
     return SinglePath_InPath;
@@ -376,13 +384,13 @@ R600MachineCFGStructurizer::PathToKind R600MachineCFGStructurizer::singlePathTo(
     if (!AllowSideEntry && SrcMBB->pred_size() > 1)
       return Not_SinglePath;
   }
-  if (SrcMBB && SrcMBB->succ_size()==0)
+  if (SrcMBB && SrcMBB->succ_size() == 0)
     return SinglePath_NotInPath;
   return Not_SinglePath;
 }
 
-int R600MachineCFGStructurizer::countActiveBlock(MBBVector::const_iterator It,
-    MBBVector::const_iterator E) const {
+int R600MachineCFGStructurizer::countActiveBlock(
+    MBBVector::const_iterator It, MBBVector::const_iterator E) const {
   int Count = 0;
   while (It != E) {
     if (!isRetiredBlock(*It))
@@ -392,16 +400,17 @@ int R600MachineCFGStructurizer::countActiveBlock(MBBVector::const_iterator It,
   return Count;
 }
 
-bool R600MachineCFGStructurizer::needMigrateBlock(MachineBasicBlock *MBB) const {
+bool R600MachineCFGStructurizer::needMigrateBlock(
+    MachineBasicBlock *MBB) const {
   unsigned BlockSizeThreshold = 30;
   unsigned CloneInstrThreshold = 100;
   bool MultiplePreds = MBB && (MBB->pred_size() > 1);
 
-  if(!MultiplePreds)
+  if (!MultiplePreds)
     return false;
   unsigned BlkSize = MBB->size();
   return ((BlkSize > BlockSizeThreshold) &&
-      (BlkSize * (MBB->pred_size() - 1) > CloneInstrThreshold));
+          (BlkSize * (MBB->pred_size() - 1) > CloneInstrThreshold));
 }
 
 void R600MachineCFGStructurizer::reversePredicateSetter(
@@ -432,17 +441,17 @@ void R600MachineCFGStructurizer::reversePredicateSetter(
 }
 
 void R600MachineCFGStructurizer::insertInstrEnd(MachineBasicBlock *MBB,
-                                           int NewOpcode, const DebugLoc &DL) {
+                                                int NewOpcode,
+                                                const DebugLoc &DL) {
   MachineInstr *MI =
       MBB->getParent()->CreateMachineInstr(TII->get(NewOpcode), DL);
   MBB->push_back(MI);
-  //assume the instruction doesn't take any reg operand ...
+  // assume the instruction doesn't take any reg operand ...
   SHOWNEWINSTR(MI);
 }
 
-MachineInstr *R600MachineCFGStructurizer::insertInstrBefore(MachineBasicBlock *MBB,
-                                                       int NewOpcode,
-                                                       const DebugLoc &DL) {
+MachineInstr *R600MachineCFGStructurizer::insertInstrBefore(
+    MachineBasicBlock *MBB, int NewOpcode, const DebugLoc &DL) {
   MachineInstr *MI =
       MBB->getParent()->CreateMachineInstr(TII->get(NewOpcode), DL);
   if (!MBB->empty())
@@ -453,14 +462,15 @@ MachineInstr *R600MachineCFGStructurizer::insertInstrBefore(MachineBasicBlock *M
   return MI;
 }
 
-MachineInstr *R600MachineCFGStructurizer::insertInstrBefore(
-    MachineBasicBlock::iterator I, int NewOpcode) {
+MachineInstr *
+R600MachineCFGStructurizer::insertInstrBefore(MachineBasicBlock::iterator I,
+                                              int NewOpcode) {
   MachineInstr *OldMI = &(*I);
   MachineBasicBlock *MBB = OldMI->getParent();
   MachineInstr *NewMBB =
       MBB->getParent()->CreateMachineInstr(TII->get(NewOpcode), DebugLoc());
   MBB->insert(I, NewMBB);
-  //assume the instruction doesn't take any reg operand ...
+  // assume the instruction doesn't take any reg operand ...
   SHOWNEWINSTR(NewMBB);
   return NewMBB;
 }
@@ -475,7 +485,7 @@ void R600MachineCFGStructurizer::insertCondBranchBefore(
   MachineInstrBuilder MIB(*MF, NewMI);
   MIB.addReg(OldMI->getOperand(1).getReg(), false);
   SHOWNEWINSTR(NewMI);
-  //erase later oldInstr->eraseFromParent();
+  // erase later oldInstr->eraseFromParent();
 }
 
 void R600MachineCFGStructurizer::insertCondBranchBefore(
@@ -483,48 +493,58 @@ void R600MachineCFGStructurizer::insertCondBranchBefore(
     int RegNum, const DebugLoc &DL) {
   MachineFunction *MF = blk->getParent();
   MachineInstr *NewInstr = MF->CreateMachineInstr(TII->get(NewOpcode), DL);
-  //insert before
+  // insert before
   blk->insert(I, NewInstr);
   MachineInstrBuilder(*MF, NewInstr).addReg(RegNum, false);
   SHOWNEWINSTR(NewInstr);
 }
 
 int R600MachineCFGStructurizer::getBranchNzeroOpcode(int OldOpcode) {
-  switch(OldOpcode) {
+  switch (OldOpcode) {
   case R600::JUMP_COND:
-  case R600::JUMP: return R600::IF_PREDICATE_SET;
+  case R600::JUMP:
+    return R600::IF_PREDICATE_SET;
   case R600::BRANCH_COND_i32:
-  case R600::BRANCH_COND_f32: return R600::IF_LOGICALNZ_f32;
-  default: llvm_unreachable("internal error");
+  case R600::BRANCH_COND_f32:
+    return R600::IF_LOGICALNZ_f32;
+  default:
+    llvm_unreachable("internal error");
   }
   return -1;
 }
 
 int R600MachineCFGStructurizer::getBranchZeroOpcode(int OldOpcode) {
-  switch(OldOpcode) {
+  switch (OldOpcode) {
   case R600::JUMP_COND:
-  case R600::JUMP: return R600::IF_PREDICATE_SET;
+  case R600::JUMP:
+    return R600::IF_PREDICATE_SET;
   case R600::BRANCH_COND_i32:
-  case R600::BRANCH_COND_f32: return R600::IF_LOGICALZ_f32;
-  default: llvm_unreachable("internal error");
+  case R600::BRANCH_COND_f32:
+    return R600::IF_LOGICALZ_f32;
+  default:
+    llvm_unreachable("internal error");
   }
   return -1;
 }
 
 int R600MachineCFGStructurizer::getContinueNzeroOpcode(int OldOpcode) {
-  switch(OldOpcode) {
+  switch (OldOpcode) {
   case R600::JUMP_COND:
-  case R600::JUMP: return R600::CONTINUE_LOGICALNZ_i32;
-  default: llvm_unreachable("internal error");
+  case R600::JUMP:
+    return R600::CONTINUE_LOGICALNZ_i32;
+  default:
+    llvm_unreachable("internal error");
   }
   return -1;
 }
 
 int R600MachineCFGStructurizer::getContinueZeroOpcode(int OldOpcode) {
-  switch(OldOpcode) {
+  switch (OldOpcode) {
   case R600::JUMP_COND:
-  case R600::JUMP: return R600::CONTINUE_LOGICALZ_i32;
-  default: llvm_unreachable("internal error");
+  case R600::JUMP:
+    return R600::CONTINUE_LOGICALZ_i32;
+  default:
+    llvm_unreachable("internal error");
   }
   return -1;
 }
@@ -534,13 +554,13 @@ MachineBasicBlock *R600MachineCFGStructurizer::getTrueBranch(MachineInstr *MI) {
 }
 
 void R600MachineCFGStructurizer::setTrueBranch(MachineInstr *MI,
-    MachineBasicBlock *MBB) {
+                                               MachineBasicBlock *MBB) {
   MI->getOperand(0).setMBB(MBB);
 }
 
 MachineBasicBlock *
 R600MachineCFGStructurizer::getFalseBranch(MachineBasicBlock *MBB,
-    MachineInstr *MI) {
+                                           MachineInstr *MI) {
   assert(MBB->succ_size() == 2);
   MachineBasicBlock *TrueBranch = getTrueBranch(MI);
   MachineBasicBlock::succ_iterator It = MBB->succ_begin();
@@ -551,9 +571,10 @@ R600MachineCFGStructurizer::getFalseBranch(MachineBasicBlock *MBB,
 
 bool R600MachineCFGStructurizer::isCondBranch(MachineInstr *MI) {
   switch (MI->getOpcode()) {
-    case R600::JUMP_COND:
-    case R600::BRANCH_COND_i32:
-    case R600::BRANCH_COND_f32: return true;
+  case R600::JUMP_COND:
+  case R600::BRANCH_COND_i32:
+  case R600::BRANCH_COND_f32:
+    return true;
   default:
     return false;
   }
@@ -571,8 +592,9 @@ bool R600MachineCFGStructurizer::isUncondBranch(MachineInstr *MI) {
   return false;
 }
 
-DebugLoc R600MachineCFGStructurizer::getLastDebugLocInBB(MachineBasicBlock *MBB) {
-  //get DebugLoc from the first MachineBasicBlock instruction with debug info
+DebugLoc
+R600MachineCFGStructurizer::getLastDebugLocInBB(MachineBasicBlock *MBB) {
+  // get DebugLoc from the first MachineBasicBlock instruction with debug info
   DebugLoc DL;
   for (MachineInstr &MI : *MBB)
     if (MI.getDebugLoc())
@@ -580,8 +602,8 @@ DebugLoc R600MachineCFGStructurizer::getLastDebugLocInBB(MachineBasicBlock *MBB)
   return DL;
 }
 
-MachineInstr *R600MachineCFGStructurizer::getNormalBlockBranchInstr(
-    MachineBasicBlock *MBB) {
+MachineInstr *
+R600MachineCFGStructurizer::getNormalBlockBranchInstr(MachineBasicBlock *MBB) {
   MachineBasicBlock::reverse_iterator It = MBB->rbegin();
   MachineInstr *MI = &*It;
   if (MI && (isCondBranch(MI) || isUncondBranch(MI)))
@@ -589,10 +611,10 @@ MachineInstr *R600MachineCFGStructurizer::getNormalBlockBranchInstr(
   return nullptr;
 }
 
-MachineInstr *R600MachineCFGStructurizer::getLoopendBlockBranchInstr(
-    MachineBasicBlock *MBB) {
+MachineInstr *
+R600MachineCFGStructurizer::getLoopendBlockBranchInstr(MachineBasicBlock *MBB) {
   for (MachineBasicBlock::reverse_iterator It = MBB->rbegin(), E = MBB->rend();
-      It != E; ++It) {
+       It != E; ++It) {
     // FIXME: Simplify
     MachineInstr *MI = &*It;
     if (MI) {
@@ -605,7 +627,8 @@ MachineInstr *R600MachineCFGStructurizer::getLoopendBlockBranchInstr(
   return nullptr;
 }
 
-MachineInstr *R600MachineCFGStructurizer::getReturnInstr(MachineBasicBlock *MBB) {
+MachineInstr *
+R600MachineCFGStructurizer::getReturnInstr(MachineBasicBlock *MBB) {
   MachineBasicBlock::reverse_iterator It = MBB->rbegin();
   if (It != MBB->rend()) {
     MachineInstr *instr = &(*It);
@@ -623,19 +646,19 @@ bool R600MachineCFGStructurizer::isReturnBlock(MachineBasicBlock *MBB) {
   else if (IsReturn)
     LLVM_DEBUG(dbgs() << "BB" << MBB->getNumber()
                       << " is return block without RETURN instr\n";);
-  return  IsReturn;
+  return IsReturn;
 }
 
 void R600MachineCFGStructurizer::cloneSuccessorList(MachineBasicBlock *DstMBB,
-    MachineBasicBlock *SrcMBB) {
+                                                    MachineBasicBlock *SrcMBB) {
   for (MachineBasicBlock *Succ : SrcMBB->successors())
-    DstMBB->addSuccessor(Succ);  // *iter's predecessor is also taken care of
+    DstMBB->addSuccessor(Succ); // *iter's predecessor is also taken care of
 }
 
 MachineBasicBlock *R600MachineCFGStructurizer::clone(MachineBasicBlock *MBB) {
   MachineFunction *Func = MBB->getParent();
   MachineBasicBlock *NewMBB = Func->CreateMachineBasicBlock();
-  Func->push_back(NewMBB);  //insert to function
+  Func->push_back(NewMBB); // insert to function
   for (const MachineInstr &It : *MBB)
     NewMBB->push_back(Func->CloneMachineInstr(&It));
   return NewMBB;
@@ -645,43 +668,41 @@ void R600MachineCFGStructurizer::replaceInstrUseOfBlockWith(
     MachineBasicBlock *SrcMBB, MachineBasicBlock *OldMBB,
     MachineBasicBlock *NewBlk) {
   MachineInstr *BranchMI = getLoopendBlockBranchInstr(SrcMBB);
-  if (BranchMI && isCondBranch(BranchMI) &&
-      getTrueBranch(BranchMI) == OldMBB)
+  if (BranchMI && isCondBranch(BranchMI) && getTrueBranch(BranchMI) == OldMBB)
     setTrueBranch(BranchMI, NewBlk);
 }
 
 void R600MachineCFGStructurizer::wrapup(MachineBasicBlock *MBB) {
-  assert((!MBB->getParent()->getJumpTableInfo()
-          || MBB->getParent()->getJumpTableInfo()->isEmpty())
-         && "found a jump table");
+  assert((!MBB->getParent()->getJumpTableInfo() ||
+          MBB->getParent()->getJumpTableInfo()->isEmpty()) &&
+         "found a jump table");
 
-   //collect continue right before endloop
-   SmallVector<MachineInstr *, DEFAULT_VEC_SLOTS> ContInstr;
-   MachineBasicBlock::iterator Pre = MBB->begin();
-   MachineBasicBlock::iterator E = MBB->end();
-   MachineBasicBlock::iterator It = Pre;
-   while (It != E) {
-     if (Pre->getOpcode() == R600::CONTINUE
-         && It->getOpcode() == R600::ENDLOOP)
-       ContInstr.push_back(&*Pre);
-     Pre = It;
-     ++It;
-   }
+  // collect continue right before endloop
+  SmallVector<MachineInstr *, DEFAULT_VEC_SLOTS> ContInstr;
+  MachineBasicBlock::iterator Pre = MBB->begin();
+  MachineBasicBlock::iterator E = MBB->end();
+  MachineBasicBlock::iterator It = Pre;
+  while (It != E) {
+    if (Pre->getOpcode() == R600::CONTINUE && It->getOpcode() == R600::ENDLOOP)
+      ContInstr.push_back(&*Pre);
+    Pre = It;
+    ++It;
+  }
 
-   //delete continue right before endloop
-   for (auto *MI : ContInstr)
-     MI->eraseFromParent();
+  // delete continue right before endloop
+  for (auto *MI : ContInstr)
+    MI->eraseFromParent();
 
-   // TODO to fix up jump table so later phase won't be confused.  if
-   // (jumpTableInfo->isEmpty() == false) { need to clean the jump table, but
-   // there isn't such an interface yet.  alternatively, replace all the other
-   // blocks in the jump table with the entryBlk //}
+  // TODO to fix up jump table so later phase won't be confused.  if
+  // (jumpTableInfo->isEmpty() == false) { need to clean the jump table, but
+  // there isn't such an interface yet.  alternatively, replace all the other
+  // blocks in the jump table with the entryBlk //}
 }
 
 bool R600MachineCFGStructurizer::prepare() {
   bool Changed = false;
 
-  //FIXME: if not reducible flow graph, make it so ???
+  // FIXME: if not reducible flow graph, make it so ???
 
   LLVM_DEBUG(dbgs() << "R600MachineCFGStructurizer::prepare\n";);
 
@@ -695,7 +716,7 @@ bool R600MachineCFGStructurizer::prepare() {
     LoopRep->getExitingBlocks(ExitingMBBs);
 
     if (ExitingMBBs.size() == 0) {
-      MachineBasicBlock* DummyExitBlk = normalizeInfiniteLoopExit(LoopRep);
+      MachineBasicBlock *DummyExitBlk = normalizeInfiniteLoopExit(LoopRep);
       if (DummyExitBlk)
         RetBlks.push_back(DummyExitBlk);
     }
@@ -721,11 +742,11 @@ bool R600MachineCFGStructurizer::prepare() {
 }
 
 bool R600MachineCFGStructurizer::run() {
-  //Assume reducible CFG...
+  // Assume reducible CFG...
   LLVM_DEBUG(dbgs() << "R600MachineCFGStructurizer::run\n");
 
 #ifdef STRESSTEST
-  //Use the worse block ordering to test the algorithm.
+  // Use the worse block ordering to test the algorithm.
   ReverseVector(orderedBlks);
 #endif
 
@@ -734,8 +755,7 @@ bool R600MachineCFGStructurizer::run() {
   bool Finish = false;
   MachineBasicBlock *MBB;
   bool MakeProgress = false;
-  int NumRemainedBlk = countActiveBlock(OrderedBlks.begin(),
-                                        OrderedBlks.end());
+  int NumRemainedBlk = countActiveBlock(OrderedBlks.begin(), OrderedBlks.end());
 
   do {
     ++NumIter;
@@ -745,15 +765,13 @@ bool R600MachineCFGStructurizer::run() {
 
     SmallVectorImpl<MachineBasicBlock *>::const_iterator It =
         OrderedBlks.begin();
-    SmallVectorImpl<MachineBasicBlock *>::const_iterator E =
-        OrderedBlks.end();
+    SmallVectorImpl<MachineBasicBlock *>::const_iterator E = OrderedBlks.end();
 
-    SmallVectorImpl<MachineBasicBlock *>::const_iterator SccBeginIter =
-        It;
+    SmallVectorImpl<MachineBasicBlock *>::const_iterator SccBeginIter = It;
     MachineBasicBlock *SccBeginMBB = nullptr;
-    int SccNumBlk = 0;  // The number of active blocks, init to a
-                        // maximum possible number.
-    int SccNumIter;     // Number of iteration in this SCC.
+    int SccNumBlk = 0; // The number of active blocks, init to a
+                       // maximum possible number.
+    int SccNumIter;    // Number of iteration in this SCC.
 
     while (It != E) {
       MBB = *It;
@@ -773,8 +791,7 @@ bool R600MachineCFGStructurizer::run() {
       ++It;
 
       bool ContNextScc = true;
-      if (It == E
-          || getSCCNum(SccBeginMBB) != getSCCNum(*It)) {
+      if (It == E || getSCCNum(SccBeginMBB) != getSCCNum(*It)) {
         // Just finish one scc.
         ++SccNumIter;
         int sccRemainedNumBlk = countActiveBlock(SccBeginIter, It);
@@ -801,7 +818,7 @@ bool R600MachineCFGStructurizer::run() {
 
       if (ContNextScc)
         SccBeginMBB = nullptr;
-    } //while, "one iteration" over the function.
+    } // while, "one iteration" over the function.
 
     MachineBasicBlock *EntryMBB =
         *GraphTraits<MachineFunction *>::nodes_begin(FuncRep);
@@ -809,8 +826,8 @@ bool R600MachineCFGStructurizer::run() {
       Finish = true;
       LLVM_DEBUG(dbgs() << "Reduce to one block\n";);
     } else {
-      int NewnumRemainedBlk
-        = countActiveBlock(OrderedBlks.begin(), OrderedBlks.end());
+      int NewnumRemainedBlk =
+          countActiveBlock(OrderedBlks.begin(), OrderedBlks.end());
       // consider cloned blocks ??
       if (NewnumRemainedBlk == 1 || NewnumRemainedBlk < NumRemainedBlk) {
         MakeProgress = true;
@@ -901,7 +918,7 @@ int R600MachineCFGStructurizer::serialPatternMatch(MachineBasicBlock *MBB) {
 }
 
 int R600MachineCFGStructurizer::ifPatternMatch(MachineBasicBlock *MBB) {
-  //two edges
+  // two edges
   if (MBB->succ_size() != 2)
     return 0;
   if (hasBackEdge(MBB))
@@ -922,29 +939,28 @@ int R600MachineCFGStructurizer::ifPatternMatch(MachineBasicBlock *MBB) {
   MachineBasicBlock *LandBlk;
   int Cloned = 0;
 
-  assert (!TrueMBB->succ_empty() || !FalseMBB->succ_empty());
+  assert(!TrueMBB->succ_empty() || !FalseMBB->succ_empty());
   // TODO: Simplify
-  if (TrueMBB->succ_size() == 1 && FalseMBB->succ_size() == 1
-    && *TrueMBB->succ_begin() == *FalseMBB->succ_begin()) {
+  if (TrueMBB->succ_size() == 1 && FalseMBB->succ_size() == 1 &&
+      *TrueMBB->succ_begin() == *FalseMBB->succ_begin()) {
     // Diamond pattern
     LandBlk = *TrueMBB->succ_begin();
   } else if (TrueMBB->succ_size() == 1 && *TrueMBB->succ_begin() == FalseMBB) {
     // Triangle pattern, false is empty
     LandBlk = FalseMBB;
     FalseMBB = nullptr;
-  } else if (FalseMBB->succ_size() == 1
-             && *FalseMBB->succ_begin() == TrueMBB) {
+  } else if (FalseMBB->succ_size() == 1 && *FalseMBB->succ_begin() == TrueMBB) {
     // Triangle pattern, true is empty
     // We reverse the predicate to make a triangle, empty false pattern;
     std::swap(TrueMBB, FalseMBB);
     reversePredicateSetter(MBB->end(), *MBB);
     LandBlk = FalseMBB;
     FalseMBB = nullptr;
-  } else if (FalseMBB->succ_size() == 1
-             && isSameloopDetachedContbreak(TrueMBB, FalseMBB)) {
+  } else if (FalseMBB->succ_size() == 1 &&
+             isSameloopDetachedContbreak(TrueMBB, FalseMBB)) {
     LandBlk = *FalseMBB->succ_begin();
-  } else if (TrueMBB->succ_size() == 1
-    && isSameloopDetachedContbreak(FalseMBB, TrueMBB)) {
+  } else if (TrueMBB->succ_size() == 1 &&
+             isSameloopDetachedContbreak(FalseMBB, TrueMBB)) {
     LandBlk = *TrueMBB->succ_begin();
   } else {
     return NumMatch + handleJumpintoIf(MBB, TrueMBB, FalseMBB);
@@ -953,10 +969,9 @@ int R600MachineCFGStructurizer::ifPatternMatch(MachineBasicBlock *MBB) {
   // improveSimpleJumpinfoIf can handle the case where landBlk == NULL but the
   // new BB created for landBlk==NULL may introduce new challenge to the
   // reduction process.
-  if (LandBlk &&
-      ((TrueMBB && TrueMBB->pred_size() > 1)
-      || (FalseMBB && FalseMBB->pred_size() > 1))) {
-     Cloned += improveSimpleJumpintoIf(MBB, TrueMBB, FalseMBB, &LandBlk);
+  if (LandBlk && ((TrueMBB && TrueMBB->pred_size() > 1) ||
+                  (FalseMBB && FalseMBB->pred_size() > 1))) {
+    Cloned += improveSimpleJumpintoIf(MBB, TrueMBB, FalseMBB, &LandBlk);
   }
 
   if (TrueMBB && TrueMBB->pred_size() > 1) {
@@ -980,7 +995,7 @@ int R600MachineCFGStructurizer::ifPatternMatch(MachineBasicBlock *MBB) {
 
 int R600MachineCFGStructurizer::loopendPatternMatch() {
   std::deque<MachineLoop *> NestedLoops;
-  for (auto &It: *MLI)
+  for (auto &It : *MLI)
     for (MachineLoop *ML : depth_first(It))
       NestedLoops.push_front(ML);
 
@@ -1020,7 +1035,7 @@ int R600MachineCFGStructurizer::mergeLoop(MachineLoop *LoopRep) {
   MachineBasicBlock *ExitBlk = *ExitBlks.begin();
   assert(ExitBlk && "Loop has several exit block");
   MBBVector LatchBlks;
-  for (auto *LB : inverse_children<MachineBasicBlock*>(LoopHeader))
+  for (auto *LB : inverse_children<MachineBasicBlock *>(LoopHeader))
     if (LoopRep->contains(LB))
       LatchBlks.push_back(LB);
 
@@ -1048,7 +1063,7 @@ bool R600MachineCFGStructurizer::isSameloopDetachedContbreak(
     MachineBasicBlock *Src1MBB, MachineBasicBlock *Src2MBB) {
   if (Src1MBB->succ_empty()) {
     MachineLoop *LoopRep = MLI->getLoopFor(Src1MBB);
-    if (LoopRep&& LoopRep == MLI->getLoopFor(Src2MBB)) {
+    if (LoopRep && LoopRep == MLI->getLoopFor(Src2MBB)) {
       MachineBasicBlock *&TheEntry = LLInfoMap[LoopRep];
       if (TheEntry) {
         LLVM_DEBUG(dbgs() << "isLoopContBreakBlock yes src1 = BB"
@@ -1062,7 +1077,8 @@ bool R600MachineCFGStructurizer::isSameloopDetachedContbreak(
 }
 
 int R600MachineCFGStructurizer::handleJumpintoIf(MachineBasicBlock *HeadMBB,
-    MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB) {
+                                                 MachineBasicBlock *TrueMBB,
+                                                 MachineBasicBlock *FalseMBB) {
   int Num = handleJumpintoIfImp(HeadMBB, TrueMBB, FalseMBB);
   if (Num == 0) {
     LLVM_DEBUG(dbgs() << "handleJumpintoIf swap trueBlk and FalseBlk"
@@ -1072,12 +1088,13 @@ int R600MachineCFGStructurizer::handleJumpintoIf(MachineBasicBlock *HeadMBB,
   return Num;
 }
 
-int R600MachineCFGStructurizer::handleJumpintoIfImp(MachineBasicBlock *HeadMBB,
-    MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB) {
+int R600MachineCFGStructurizer::handleJumpintoIfImp(
+    MachineBasicBlock *HeadMBB, MachineBasicBlock *TrueMBB,
+    MachineBasicBlock *FalseMBB) {
   int Num = 0;
   MachineBasicBlock *DownBlk;
 
-  //trueBlk could be the common post dominator
+  // trueBlk could be the common post dominator
   DownBlk = TrueMBB;
 
   LLVM_DEBUG(dbgs() << "handleJumpintoIfImp head = BB" << HeadMBB->getNumber()
@@ -1122,8 +1139,9 @@ void R600MachineCFGStructurizer::showImproveSimpleJumpintoIf(
   }
 
   if (TrueMBB) {
-    dbgs() << ", true = BB" << TrueMBB->getNumber() << " size = "
-           << TrueMBB->size() << " numPred = " << TrueMBB->pred_size();
+    dbgs() << ", true = BB" << TrueMBB->getNumber()
+           << " size = " << TrueMBB->size()
+           << " numPred = " << TrueMBB->pred_size();
     if (Detail) {
       dbgs() << "\n";
       TrueMBB->print(dbgs());
@@ -1131,8 +1149,9 @@ void R600MachineCFGStructurizer::showImproveSimpleJumpintoIf(
     }
   }
   if (FalseMBB) {
-    dbgs() << ", false = BB" << FalseMBB->getNumber() << " size = "
-           << FalseMBB->size() << " numPred = " << FalseMBB->pred_size();
+    dbgs() << ", false = BB" << FalseMBB->getNumber()
+           << " size = " << FalseMBB->size()
+           << " numPred = " << FalseMBB->pred_size();
     if (Detail) {
       dbgs() << "\n";
       FalseMBB->print(dbgs());
@@ -1140,8 +1159,9 @@ void R600MachineCFGStructurizer::showImproveSimpleJumpintoIf(
     }
   }
   if (LandMBB) {
-    dbgs() << ", land = BB" << LandMBB->getNumber() << " size = "
-           << LandMBB->size() << " numPred = " << LandMBB->pred_size();
+    dbgs() << ", land = BB" << LandMBB->getNumber()
+           << " size = " << LandMBB->size()
+           << " numPred = " << LandMBB->pred_size();
     if (Detail) {
       dbgs() << "\n";
       LandMBB->print(dbgs());
@@ -1153,16 +1173,16 @@ void R600MachineCFGStructurizer::showImproveSimpleJumpintoIf(
 }
 #endif
 
-int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadMBB,
-    MachineBasicBlock *TrueMBB, MachineBasicBlock *FalseMBB,
-    MachineBasicBlock **LandMBBPtr) {
+int R600MachineCFGStructurizer::improveSimpleJumpintoIf(
+    MachineBasicBlock *HeadMBB, MachineBasicBlock *TrueMBB,
+    MachineBasicBlock *FalseMBB, MachineBasicBlock **LandMBBPtr) {
   bool MigrateTrue = false;
   bool MigrateFalse = false;
 
   MachineBasicBlock *LandBlk = *LandMBBPtr;
 
-  assert((!TrueMBB || TrueMBB->succ_size() <= 1)
-         && (!FalseMBB || FalseMBB->succ_size() <= 1));
+  assert((!TrueMBB || TrueMBB->succ_size() <= 1) &&
+         (!FalseMBB || FalseMBB->succ_size() <= 1));
 
   if (TrueMBB == FalseMBB)
     return 0;
@@ -1196,7 +1216,7 @@ int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadM
   //
   // add initReg = initVal to headBlk
 
-  const TargetRegisterClass * I32RC = TRI->getCFGStructurizerRegClass(MVT::i32);
+  const TargetRegisterClass *I32RC = TRI->getCFGStructurizerRegClass(MVT::i32);
   if (!MigrateTrue || !MigrateFalse) {
     // XXX: We have an opportunity here to optimize the "branch into if" case
     // here.  Branch into if looks like this:
@@ -1270,7 +1290,7 @@ int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadM
 
   bool LandBlkHasOtherPred = (LandBlk->pred_size() > 2);
 
-  //insert R600::ENDIF to avoid special case "input landBlk == NULL"
+  // insert R600::ENDIF to avoid special case "input landBlk == NULL"
   MachineBasicBlock::iterator I = insertInstrBefore(LandBlk, R600::ENDIF);
 
   if (LandBlkHasOtherPred) {
@@ -1278,8 +1298,8 @@ int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadM
     Register CmpResReg =
         HeadMBB->getParent()->getRegInfo().createVirtualRegister(I32RC);
     report_fatal_error("Extra compare instruction needed to handle CFG");
-    insertCondBranchBefore(LandBlk, I, R600::IF_PREDICATE_SET,
-        CmpResReg, DebugLoc());
+    insertCondBranchBefore(LandBlk, I, R600::IF_PREDICATE_SET, CmpResReg,
+                           DebugLoc());
   }
 
   // XXX: We are running this after RA, so creating virtual registers will
@@ -1287,7 +1307,7 @@ int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadM
   Register InitReg =
       HeadMBB->getParent()->getRegInfo().createVirtualRegister(I32RC);
   insertCondBranchBefore(LandBlk, I, R600::IF_PREDICATE_SET, InitReg,
-      DebugLoc());
+                         DebugLoc());
 
   if (MigrateTrue) {
     migrateInstruction(TrueMBB, LandBlk, I);
@@ -1326,7 +1346,7 @@ int R600MachineCFGStructurizer::improveSimpleJumpintoIf(MachineBasicBlock *HeadM
 }
 
 void R600MachineCFGStructurizer::mergeSerialBlock(MachineBasicBlock *DstMBB,
-    MachineBasicBlock *SrcMBB) {
+                                                  MachineBasicBlock *SrcMBB) {
   LLVM_DEBUG(dbgs() << "serialPattern BB" << DstMBB->getNumber() << " <= BB"
                     << SrcMBB->getNumber() << "\n";);
   DstMBB->splice(DstMBB->end(), SrcMBB, SrcMBB->begin(), SrcMBB->end());
@@ -1339,39 +1359,39 @@ void R600MachineCFGStructurizer::mergeSerialBlock(MachineBasicBlock *DstMBB,
   retireBlock(SrcMBB);
 }
 
-void R600MachineCFGStructurizer::mergeIfthenelseBlock(MachineInstr *BranchMI,
-    MachineBasicBlock *MBB, MachineBasicBlock *TrueMBB,
+void R600MachineCFGStructurizer::mergeIfthenelseBlock(
+    MachineInstr *BranchMI, MachineBasicBlock *MBB, MachineBasicBlock *TrueMBB,
     MachineBasicBlock *FalseMBB, MachineBasicBlock *LandMBB) {
-  assert (TrueMBB);
-  LLVM_DEBUG(dbgs() << "ifPattern BB" << MBB->getNumber(); dbgs() << "{  ";
-             if (TrueMBB) { dbgs() << "BB" << TrueMBB->getNumber(); } dbgs()
-             << "  } else ";
-             dbgs() << "{  "; if (FalseMBB) {
-               dbgs() << "BB" << FalseMBB->getNumber();
-             } dbgs() << "  }\n ";
-             dbgs() << "landBlock: "; if (!LandMBB) { dbgs() << "NULL"; } else {
-               dbgs() << "BB" << LandMBB->getNumber();
-             } dbgs() << "\n";);
+  assert(TrueMBB);
+  LLVM_DEBUG(
+      dbgs() << "ifPattern BB" << MBB->getNumber(); dbgs() << "{  ";
+      if (TrueMBB) { dbgs() << "BB" << TrueMBB->getNumber(); } dbgs()
+      << "  } else ";
+      dbgs() << "{  "; if (FalseMBB) {
+        dbgs() << "BB" << FalseMBB->getNumber();
+      } dbgs() << "  }\n ";
+      dbgs() << "landBlock: "; if (!LandMBB) { dbgs() << "NULL"; } else {
+        dbgs() << "BB" << LandMBB->getNumber();
+      } dbgs() << "\n";);
 
   int OldOpcode = BranchMI->getOpcode();
   DebugLoc BranchDL = BranchMI->getDebugLoc();
 
-//    transform to
-//    if cond
-//       trueBlk
-//    else
-//       falseBlk
-//    endif
-//    landBlk
+  //    transform to
+  //    if cond
+  //       trueBlk
+  //    else
+  //       falseBlk
+  //    endif
+  //    landBlk
 
   MachineBasicBlock::iterator I = BranchMI;
-  insertCondBranchBefore(I, getBranchNzeroOpcode(OldOpcode),
-      BranchDL);
+  insertCondBranchBefore(I, getBranchNzeroOpcode(OldOpcode), BranchDL);
 
   if (TrueMBB) {
     MBB->splice(I, TrueMBB, TrueMBB->begin(), TrueMBB->end());
     MBB->removeSuccessor(TrueMBB, true);
-    if (LandMBB && TrueMBB->succ_size()!=0)
+    if (LandMBB && TrueMBB->succ_size() != 0)
       TrueMBB->removeSuccessor(LandMBB, true);
     retireBlock(TrueMBB);
     MLI->removeBlock(TrueMBB);
@@ -1379,8 +1399,7 @@ void R600MachineCFGStructurizer::mergeIfthenelseBlock(MachineInstr *BranchMI,
 
   if (FalseMBB) {
     insertInstrBefore(I, R600::ELSE);
-    MBB->splice(I, FalseMBB, FalseMBB->begin(),
-                   FalseMBB->end());
+    MBB->splice(I, FalseMBB, FalseMBB->begin(), FalseMBB->end());
     MBB->removeSuccessor(FalseMBB, true);
     if (LandMBB && !FalseMBB->succ_empty())
       FalseMBB->removeSuccessor(LandMBB, true);
@@ -1395,8 +1414,8 @@ void R600MachineCFGStructurizer::mergeIfthenelseBlock(MachineInstr *BranchMI,
     MBB->addSuccessor(LandMBB);
 }
 
-void R600MachineCFGStructurizer::mergeLooplandBlock(MachineBasicBlock *DstBlk,
-    MachineBasicBlock *LandMBB) {
+void R600MachineCFGStructurizer::mergeLooplandBlock(
+    MachineBasicBlock *DstBlk, MachineBasicBlock *LandMBB) {
   LLVM_DEBUG(dbgs() << "loopPattern header = BB" << DstBlk->getNumber()
                     << " land = BB" << LandMBB->getNumber() << "\n";);
 
@@ -1405,8 +1424,8 @@ void R600MachineCFGStructurizer::mergeLooplandBlock(MachineBasicBlock *DstBlk,
   DstBlk->replaceSuccessor(DstBlk, LandMBB);
 }
 
-void R600MachineCFGStructurizer::mergeLoopbreakBlock(MachineBasicBlock *ExitingMBB,
-    MachineBasicBlock *LandMBB) {
+void R600MachineCFGStructurizer::mergeLoopbreakBlock(
+    MachineBasicBlock *ExitingMBB, MachineBasicBlock *LandMBB) {
   LLVM_DEBUG(dbgs() << "loopbreakPattern exiting = BB"
                     << ExitingMBB->getNumber() << " land = BB"
                     << LandMBB->getNumber() << "\n";);
@@ -1417,17 +1436,18 @@ void R600MachineCFGStructurizer::mergeLoopbreakBlock(MachineBasicBlock *ExitingM
   MachineBasicBlock::iterator I = BranchMI;
   if (TrueBranch != LandMBB)
     reversePredicateSetter(I, *I->getParent());
-  insertCondBranchBefore(ExitingMBB, I, R600::IF_PREDICATE_SET, R600::PREDICATE_BIT, DL);
+  insertCondBranchBefore(ExitingMBB, I, R600::IF_PREDICATE_SET,
+                         R600::PREDICATE_BIT, DL);
   insertInstrBefore(I, R600::BREAK);
   insertInstrBefore(I, R600::ENDIF);
-  //now branchInst can be erase safely
+  // now branchInst can be erase safely
   BranchMI->eraseFromParent();
-  //now take care of successors, retire blocks
+  // now take care of successors, retire blocks
   ExitingMBB->removeSuccessor(LandMBB, true);
 }
 
-void R600MachineCFGStructurizer::settleLoopcontBlock(MachineBasicBlock *ContingMBB,
-    MachineBasicBlock *ContMBB) {
+void R600MachineCFGStructurizer::settleLoopcontBlock(
+    MachineBasicBlock *ContingMBB, MachineBasicBlock *ContMBB) {
   LLVM_DEBUG(dbgs() << "settleLoopcontBlock conting = BB"
                     << ContingMBB->getNumber() << ", cont = BB"
                     << ContMBB->getNumber() << "\n";);
@@ -1443,17 +1463,16 @@ void R600MachineCFGStructurizer::settleLoopcontBlock(MachineBasicBlock *ContingM
     bool UseContinueLogical = ((&*ContingMBB->rbegin()) == MI);
 
     if (!UseContinueLogical) {
-      int BranchOpcode =
-          TrueBranch == ContMBB ? getBranchNzeroOpcode(OldOpcode) :
-          getBranchZeroOpcode(OldOpcode);
+      int BranchOpcode = TrueBranch == ContMBB ? getBranchNzeroOpcode(OldOpcode)
+                                               : getBranchZeroOpcode(OldOpcode);
       insertCondBranchBefore(I, BranchOpcode, DL);
       // insertEnd to ensure phi-moves, if exist, go before the continue-instr.
       insertInstrEnd(ContingMBB, R600::CONTINUE, DL);
       insertInstrEnd(ContingMBB, R600::ENDIF, DL);
     } else {
-      int BranchOpcode =
-          TrueBranch == ContMBB ? getContinueNzeroOpcode(OldOpcode) :
-          getContinueZeroOpcode(OldOpcode);
+      int BranchOpcode = TrueBranch == ContMBB
+                             ? getContinueNzeroOpcode(OldOpcode)
+                             : getContinueZeroOpcode(OldOpcode);
       insertCondBranchBefore(I, BranchOpcode, DL);
     }
 
@@ -1464,13 +1483,13 @@ void R600MachineCFGStructurizer::settleLoopcontBlock(MachineBasicBlock *ContingM
     // location we've just inserted that reference here so it should be
     // representative insertEnd to ensure phi-moves, if exist, go before the
     // continue-instr.
-    insertInstrEnd(ContingMBB, R600::CONTINUE,
-        getLastDebugLocInBB(ContingMBB));
+    insertInstrEnd(ContingMBB, R600::CONTINUE, getLastDebugLocInBB(ContingMBB));
   }
 }
 
 int R600MachineCFGStructurizer::cloneOnSideEntryTo(MachineBasicBlock *PreMBB,
-    MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB) {
+                                                   MachineBasicBlock *SrcMBB,
+                                                   MachineBasicBlock *DstMBB) {
   int Cloned = 0;
   assert(PreMBB->isSuccessor(SrcMBB));
   while (SrcMBB && SrcMBB != DstMBB) {
@@ -1487,14 +1506,13 @@ int R600MachineCFGStructurizer::cloneOnSideEntryTo(MachineBasicBlock *PreMBB,
   return Cloned;
 }
 
-MachineBasicBlock *
-R600MachineCFGStructurizer::cloneBlockForPredecessor(MachineBasicBlock *MBB,
-    MachineBasicBlock *PredMBB) {
+MachineBasicBlock *R600MachineCFGStructurizer::cloneBlockForPredecessor(
+    MachineBasicBlock *MBB, MachineBasicBlock *PredMBB) {
   assert(PredMBB->isSuccessor(MBB) && "succBlk is not a predecessor of curBlk");
 
-  MachineBasicBlock *CloneMBB = clone(MBB);  //clone instructions
+  MachineBasicBlock *CloneMBB = clone(MBB); // clone instructions
   replaceInstrUseOfBlockWith(PredMBB, MBB, CloneMBB);
-  //srcBlk, oldBlk, newBlk
+  // srcBlk, oldBlk, newBlk
 
   PredMBB->replaceSuccessor(MBB, CloneMBB);
 
@@ -1512,10 +1530,11 @@ R600MachineCFGStructurizer::cloneBlockForPredecessor(MachineBasicBlock *MBB,
   return CloneMBB;
 }
 
-void R600MachineCFGStructurizer::migrateInstruction(MachineBasicBlock *SrcMBB,
-    MachineBasicBlock *DstMBB, MachineBasicBlock::iterator I) {
+void R600MachineCFGStructurizer::migrateInstruction(
+    MachineBasicBlock *SrcMBB, MachineBasicBlock *DstMBB,
+    MachineBasicBlock::iterator I) {
   MachineBasicBlock::iterator SpliceEnd;
-  //look for the input branchinstr, not the AMDGPU branchinstr
+  // look for the input branchinstr, not the AMDGPU branchinstr
   MachineInstr *BranchMI = getNormalBlockBranchInstr(SrcMBB);
   if (!BranchMI) {
     LLVM_DEBUG(dbgs() << "migrateInstruction don't see branch instr\n";);
@@ -1528,7 +1547,7 @@ void R600MachineCFGStructurizer::migrateInstruction(MachineBasicBlock *SrcMBB,
                     << DstMBB->size() << "srcSize = " << SrcMBB->size()
                     << "\n";);
 
-  //splice insert before insertPos
+  // splice insert before insertPos
   DstMBB->splice(I, SrcMBB, SrcMBB->begin(), SpliceEnd);
 
   LLVM_DEBUG(dbgs() << "migrateInstruction after splice dstSize = "
@@ -1537,7 +1556,7 @@ void R600MachineCFGStructurizer::migrateInstruction(MachineBasicBlock *SrcMBB,
 }
 
 MachineBasicBlock *
-R600MachineCFGStructurizer::normalizeInfiniteLoopExit(MachineLoop* LoopRep) {
+R600MachineCFGStructurizer::normalizeInfiniteLoopExit(MachineLoop *LoopRep) {
   MachineBasicBlock *LoopHeader = LoopRep->getHeader();
   MachineBasicBlock *LoopLatch = LoopRep->getLoopLatch();
 
@@ -1549,7 +1568,7 @@ R600MachineCFGStructurizer::normalizeInfiniteLoopExit(MachineLoop* LoopRep) {
     return nullptr;
 
   MachineBasicBlock *DummyExitBlk = FuncRep->CreateMachineBasicBlock();
-  FuncRep->push_back(DummyExitBlk);  //insert to function
+  FuncRep->push_back(DummyExitBlk); // insert to function
   SHOWNEWBLK(DummyExitBlk, "DummyExitBlock to normalize infiniteLoop: ");
   LLVM_DEBUG(dbgs() << "Old branch instr: " << *BranchMI << "\n";);
   LLVMContext &Ctx = LoopHeader->getParent()->getFunction().getContext();
@@ -1557,13 +1576,14 @@ R600MachineCFGStructurizer::normalizeInfiniteLoopExit(MachineLoop* LoopRep) {
   return nullptr;
 }
 
-void R600MachineCFGStructurizer::removeUnconditionalBranch(MachineBasicBlock *MBB) {
+void R600MachineCFGStructurizer::removeUnconditionalBranch(
+    MachineBasicBlock *MBB) {
   MachineInstr *BranchMI;
 
   // I saw two unconditional branch in one basic block in example
   // test_fc_do_while_or.c need to fix the upstream on this to remove the loop.
-  while ((BranchMI = getLoopendBlockBranchInstr(MBB))
-          && isUncondBranch(BranchMI)) {
+  while ((BranchMI = getLoopendBlockBranchInstr(MBB)) &&
+         isUncondBranch(BranchMI)) {
     LLVM_DEBUG(dbgs() << "Removing uncond branch instr: " << *BranchMI);
     BranchMI->eraseFromParent();
   }
@@ -1587,9 +1607,9 @@ void R600MachineCFGStructurizer::removeRedundantConditionalBranch(
 }
 
 void R600MachineCFGStructurizer::addDummyExitBlock(
-    SmallVectorImpl<MachineBasicBlock*> &RetMBB) {
+    SmallVectorImpl<MachineBasicBlock *> &RetMBB) {
   MachineBasicBlock *DummyExitBlk = FuncRep->CreateMachineBasicBlock();
-  FuncRep->push_back(DummyExitBlk);  //insert to function
+  FuncRep->push_back(DummyExitBlk); // insert to function
   insertInstrEnd(DummyExitBlk, R600::RETURN);
 
   for (MachineBasicBlock *MBB : RetMBB) {
@@ -1608,7 +1628,7 @@ void R600MachineCFGStructurizer::removeSuccessor(MachineBasicBlock *MBB) {
 }
 
 void R600MachineCFGStructurizer::recordSccnum(MachineBasicBlock *MBB,
-    int SccNum) {
+                                              int SccNum) {
   BlockInformation *&srcBlkInfo = BlockInfoMap[MBB];
   if (!srcBlkInfo)
     srcBlkInfo = new BlockInformation();
@@ -1633,7 +1653,7 @@ INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(MachinePostDominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(MachineLoopInfoWrapperPass)
 INITIALIZE_PASS_END(R600MachineCFGStructurizer, "amdgpustructurizer",
-                      "AMDGPU CFG Structurizer", false, false)
+                    "AMDGPU CFG Structurizer", false, false)
 
 FunctionPass *llvm::createR600MachineCFGStructurizerPass() {
   return new R600MachineCFGStructurizer();

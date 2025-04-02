@@ -55,9 +55,7 @@ namespace {
 
 class MemoryBufferTest : public testing::Test {
 protected:
-  MemoryBufferTest()
-  : data("this is some data")
-  { }
+  MemoryBufferTest() : data("this is some data") {}
 
   void SetUp() override {}
 
@@ -284,13 +282,9 @@ void MemoryBufferTest::testGetOpenFileSlice(bool Reopen) {
   EXPECT_EQ(BufData[9], '9');
 }
 
-TEST_F(MemoryBufferTest, getOpenFileNoReopen) {
-  testGetOpenFileSlice(false);
-}
+TEST_F(MemoryBufferTest, getOpenFileNoReopen) { testGetOpenFileSlice(false); }
 
-TEST_F(MemoryBufferTest, getOpenFileReopened) {
-  testGetOpenFileSlice(true);
-}
+TEST_F(MemoryBufferTest, getOpenFileReopened) { testGetOpenFileSlice(true); }
 
 TEST_F(MemoryBufferTest, slice) {
   // Create a file that is six pages long with different data on each page.
@@ -311,12 +305,12 @@ TEST_F(MemoryBufferTest, slice) {
   OF.close();
 
   // Try offset of one page.
-  ErrorOr<OwningBuffer> MB = MemoryBuffer::getFileSlice(TestPath.str(),
-                                                        0x4000, 0x1000);
+  ErrorOr<OwningBuffer> MB =
+      MemoryBuffer::getFileSlice(TestPath.str(), 0x4000, 0x1000);
   std::error_code EC = MB.getError();
   ASSERT_FALSE(EC);
   EXPECT_EQ(0x4000UL, MB.get()->getBufferSize());
- 
+
   StringRef BufData = MB.get()->getBuffer();
   EXPECT_TRUE(BufData.substr(0x0000, 8) == "12345678");
   EXPECT_TRUE(BufData.substr(0x0FF8, 8) == "12345678");
@@ -326,12 +320,12 @@ TEST_F(MemoryBufferTest, slice) {
   EXPECT_TRUE(BufData.substr(0x3FF8, 8) == "ABCDEFGH");
 
   // Try non-page aligned.
-  ErrorOr<OwningBuffer> MB2 = MemoryBuffer::getFileSlice(TestPath.str(),
-                                                         0x3000, 0x0800);
+  ErrorOr<OwningBuffer> MB2 =
+      MemoryBuffer::getFileSlice(TestPath.str(), 0x3000, 0x0800);
   EC = MB2.getError();
   ASSERT_FALSE(EC);
   EXPECT_EQ(0x3000UL, MB2.get()->getBufferSize());
-  
+
   StringRef BufData2 = MB2.get()->getBuffer();
   EXPECT_TRUE(BufData2.substr(0x0000, 8) == "12345678");
   EXPECT_TRUE(BufData2.substr(0x17F8, 8) == "12345678");
@@ -427,7 +421,8 @@ TEST_F(MemoryBufferTest, mmapVolatileNoNull) {
   auto OnExit =
       make_scope_exit([&] { ASSERT_NO_ERROR(sys::fs::closeFile(*File)); });
 
-  auto MBOrError = MemoryBuffer::getOpenFile(*File, TestPath,
+  auto MBOrError = MemoryBuffer::getOpenFile(
+      *File, TestPath,
       /*FileSize=*/-1, /*RequiresNullTerminator=*/false, /*IsVolatile=*/true);
   ASSERT_NO_ERROR(MBOrError.getError())
   OwningBuffer MB = std::move(*MBOrError);

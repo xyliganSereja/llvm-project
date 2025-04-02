@@ -117,12 +117,10 @@ template <typename T, typename U>
 hash_code hash_value(const std::pair<T, U> &arg);
 
 /// Compute a hash_code for a tuple.
-template <typename... Ts>
-hash_code hash_value(const std::tuple<Ts...> &arg);
+template <typename... Ts> hash_code hash_value(const std::tuple<Ts...> &arg);
 
 /// Compute a hash_code for a standard string.
-template <typename T>
-hash_code hash_value(const std::basic_string<T> &arg);
+template <typename T> hash_code hash_value(const std::basic_string<T> &arg);
 
 /// Compute a hash_code for a standard string.
 template <typename T> hash_code hash_value(const std::optional<T> &arg);
@@ -163,9 +161,7 @@ inline uint64_t rotate(uint64_t val, size_t shift) {
   return shift == 0 ? val : ((val >> shift) | (val << (64 - shift)));
 }
 
-inline uint64_t shift_mix(uint64_t val) {
-  return val ^ (val >> 47);
-}
+inline uint64_t shift_mix(uint64_t val) { return val ^ (val >> 47); }
 
 inline uint64_t hash_16_bytes(uint64_t low, uint64_t high) {
   // Murmur-inspired hashing.
@@ -319,7 +315,6 @@ inline uint64_t get_execution_seed() {
 #endif
 }
 
-
 /// Trait to indicate whether a type's bits can be hashed directly.
 ///
 /// A type trait which is true if we want to combine values for hashing by
@@ -332,20 +327,21 @@ inline uint64_t get_execution_seed() {
 // for equality. For all the platforms we care about, this holds for integers
 // and pointers, but there are platforms where it doesn't and we would like to
 // support user-defined types which happen to satisfy this property.
-template <typename T> struct is_hashable_data
-  : std::integral_constant<bool, ((is_integral_or_enum<T>::value ||
-                                   std::is_pointer<T>::value) &&
-                                  64 % sizeof(T) == 0)> {};
+template <typename T>
+struct is_hashable_data
+    : std::integral_constant<bool, ((is_integral_or_enum<T>::value ||
+                                     std::is_pointer<T>::value) &&
+                                    64 % sizeof(T) == 0)> {};
 
 // Special case std::pair to detect when both types are viable and when there
 // is no alignment-derived padding in the pair. This is a bit of a lie because
 // std::pair isn't truly POD, but it's close enough in all reasonable
 // implementations for our use case of hashing the underlying data.
-template <typename T, typename U> struct is_hashable_data<std::pair<T, U> >
-  : std::integral_constant<bool, (is_hashable_data<T>::value &&
-                                  is_hashable_data<U>::value &&
-                                  (sizeof(T) + sizeof(U)) ==
-                                   sizeof(std::pair<T, U>))> {};
+template <typename T, typename U>
+struct is_hashable_data<std::pair<T, U>>
+    : std::integral_constant<
+          bool, (is_hashable_data<T>::value && is_hashable_data<U>::value &&
+                 (sizeof(T) + sizeof(U)) == sizeof(std::pair<T, U>))> {};
 
 /// Helper to get the hashable data representation for a type.
 /// This variant is enabled when the type itself can be used.
@@ -372,7 +368,7 @@ get_hashable_data(const T &value) {
 /// copies the underlying bytes of value into the buffer, advances the
 /// buffer_ptr past the copied bytes, and returns true.
 template <typename T>
-bool store_and_advance(char *&buffer_ptr, char *buffer_end, const T& value,
+bool store_and_advance(char *&buffer_ptr, char *buffer_end, const T &value,
                        size_t offset = 0) {
   size_t store_size = sizeof(value) - offset;
   if (buffer_ptr + store_size > buffer_end)
@@ -393,8 +389,8 @@ hash_code hash_combine_range_impl(InputIteratorT first, InputIteratorT last) {
   const uint64_t seed = get_execution_seed();
   char buffer[64], *buffer_ptr = buffer;
   char *const buffer_end = std::end(buffer);
-  while (first != last && store_and_advance(buffer_ptr, buffer_end,
-                                            get_hashable_data(*first)))
+  while (first != last &&
+         store_and_advance(buffer_ptr, buffer_end, get_hashable_data(*first)))
     ++first;
   if (first == last)
     return hash_short(buffer, buffer_ptr - buffer, seed);
@@ -406,8 +402,8 @@ hash_code hash_combine_range_impl(InputIteratorT first, InputIteratorT last) {
     // Fill up the buffer. We don't clear it, which re-mixes the last round
     // when only a partial 64-byte chunk is left.
     buffer_ptr = buffer;
-    while (first != last && store_and_advance(buffer_ptr, buffer_end,
-                                              get_hashable_data(*first)))
+    while (first != last &&
+           store_and_advance(buffer_ptr, buffer_end, get_hashable_data(*first)))
       ++first;
 
     // Rotate the buffer if we did a partial fill in order to simulate doing
@@ -457,7 +453,6 @@ hash_combine_range_impl(ValueT *first, ValueT *last) {
 } // namespace detail
 } // namespace hashing
 
-
 /// Compute a hash_code for a sequence of values.
 ///
 /// This hashes a sequence of values. It produces the same hash_code as
@@ -468,7 +463,6 @@ template <typename InputIteratorT>
 hash_code hash_combine_range(InputIteratorT first, InputIteratorT last) {
   return ::llvm::hashing::detail::hash_combine_range_impl(first, last);
 }
-
 
 // Implementation details for hash_combine.
 namespace hashing {
@@ -491,8 +485,7 @@ public:
   ///
   /// This sets up the state for a recursive hash combine, including getting
   /// the seed and buffer setup.
-  hash_combine_recursive_helper()
-    : seed(get_execution_seed()) {}
+  hash_combine_recursive_helper() : seed(get_execution_seed()) {}
 
   /// Combine one chunk of data into the current in-flight hash.
   ///
@@ -501,7 +494,8 @@ public:
   /// hash_state, empties it, and then merges the new chunk in. This also
   /// handles cases where the data straddles the end of the buffer.
   template <typename T>
-  char *combine_data(size_t &length, char *buffer_ptr, char *buffer_end, T data) {
+  char *combine_data(size_t &length, char *buffer_ptr, char *buffer_end,
+                     T data) {
     if (!store_and_advance(buffer_ptr, buffer_end, data)) {
       // Check for skew which prevents the buffer from being packed, and do
       // a partial store into the buffer to fill it. This is only a concern
@@ -528,8 +522,7 @@ public:
 
       // Try again to store into the buffer -- this cannot fail as we only
       // store types smaller than the buffer.
-      if (!store_and_advance(buffer_ptr, buffer_end, data,
-                             partial_store_size))
+      if (!store_and_advance(buffer_ptr, buffer_end, data, partial_store_size))
         llvm_unreachable("buffer smaller than stored type");
     }
     return buffer_ptr;
@@ -539,10 +532,11 @@ public:
   ///
   /// This function recurses through each argument, combining that argument
   /// into a single hash.
-  template <typename T, typename ...Ts>
+  template <typename T, typename... Ts>
   hash_code combine(size_t length, char *buffer_ptr, char *buffer_end,
                     const T &arg, const Ts &...args) {
-    buffer_ptr = combine_data(length, buffer_ptr, buffer_end, get_hashable_data(arg));
+    buffer_ptr =
+        combine_data(length, buffer_ptr, buffer_end, get_hashable_data(arg));
 
     // Recurse to the next argument.
     return combine(length, buffer_ptr, buffer_end, args...);
@@ -587,7 +581,7 @@ public:
 /// The result is suitable for returning from a user's hash_value
 /// *implementation* for their user-defined type. Consumers of a type should
 /// *not* call this routine, they should instead call 'hash_value'.
-template <typename ...Ts> hash_code hash_combine(const Ts &...args) {
+template <typename... Ts> hash_code hash_combine(const Ts &...args) {
   // Recursively hash each argument using a helper class.
   ::llvm::hashing::detail::hash_combine_recursive_helper helper;
   return helper.combine(0, helper.buffer, helper.buffer + 64, args...);
@@ -626,7 +620,7 @@ std::enable_if_t<is_integral_or_enum<T>::value, hash_code> hash_value(T value) {
 // infrastructure is available.
 template <typename T> hash_code hash_value(const T *ptr) {
   return ::llvm::hashing::detail::hash_integer_value(
-    reinterpret_cast<uintptr_t>(ptr));
+      reinterpret_cast<uintptr_t>(ptr));
 }
 
 // Declared and documented above, but defined here so that any of the hashing
@@ -642,8 +636,7 @@ template <typename... Ts> hash_code hash_value(const std::tuple<Ts...> &arg) {
 
 // Declared and documented above, but defined here so that any of the hashing
 // infrastructure is available.
-template <typename T>
-hash_code hash_value(const std::basic_string<T> &arg) {
+template <typename T> hash_code hash_value(const std::basic_string<T> &arg) {
   return hash_combine_range(arg.begin(), arg.end());
 }
 
@@ -665,13 +658,10 @@ template <> struct DenseMapInfo<hash_code, void> {
 /// Implement std::hash so that hash_code can be used in STL containers.
 namespace std {
 
-template<>
-struct hash<llvm::hash_code> {
-  size_t operator()(llvm::hash_code const& Val) const {
-    return Val;
-  }
+template <> struct hash<llvm::hash_code> {
+  size_t operator()(llvm::hash_code const &Val) const { return Val; }
 };
 
-} // namespace std;
+} // namespace std
 
 #endif

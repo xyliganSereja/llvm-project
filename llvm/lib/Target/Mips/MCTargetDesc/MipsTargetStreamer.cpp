@@ -643,8 +643,8 @@ void MipsTargetAsmStreamer::emitDirectiveSetPop() {
 }
 
 void MipsTargetAsmStreamer::emitDirectiveSetPush() {
- OS << "\t.set\tpush\n";
- MipsTargetStreamer::emitDirectiveSetPush();
+  OS << "\t.set\tpush\n";
+  MipsTargetStreamer::emitDirectiveSetPush();
 }
 
 void MipsTargetAsmStreamer::emitDirectiveSetSoftFloat() {
@@ -769,9 +769,7 @@ void MipsTargetAsmStreamer::emitDirectiveModuleHardFloat() {
   OS << "\t.module\thardfloat\n";
 }
 
-void MipsTargetAsmStreamer::emitDirectiveModuleMT() {
-  OS << "\t.module\tmt\n";
-}
+void MipsTargetAsmStreamer::emitDirectiveModuleMT() { OS << "\t.module\tmt\n"; }
 
 void MipsTargetAsmStreamer::emitDirectiveModuleCRC() {
   OS << "\t.module\tcrc\n";
@@ -842,8 +840,7 @@ MipsTargetELFStreamer::MipsTargetELFStreamer(MCStreamer &S,
   // Architecture
   if (Features[Mips::FeatureMips64r6])
     EFlags |= ELF::EF_MIPS_ARCH_64R6;
-  else if (Features[Mips::FeatureMips64r2] ||
-           Features[Mips::FeatureMips64r3] ||
+  else if (Features[Mips::FeatureMips64r2] || Features[Mips::FeatureMips64r3] ||
            Features[Mips::FeatureMips64r5])
     EFlags |= ELF::EF_MIPS_ARCH_64R2;
   else if (Features[Mips::FeatureMips64])
@@ -856,8 +853,7 @@ MipsTargetELFStreamer::MipsTargetELFStreamer(MCStreamer &S,
     EFlags |= ELF::EF_MIPS_ARCH_3;
   else if (Features[Mips::FeatureMips32r6])
     EFlags |= ELF::EF_MIPS_ARCH_32R6;
-  else if (Features[Mips::FeatureMips32r2] ||
-           Features[Mips::FeatureMips32r3] ||
+  else if (Features[Mips::FeatureMips32r2] || Features[Mips::FeatureMips32r3] ||
            Features[Mips::FeatureMips32r5])
     EFlags |= ELF::EF_MIPS_ARCH_32R2;
   else if (Features[Mips::FeatureMips32])

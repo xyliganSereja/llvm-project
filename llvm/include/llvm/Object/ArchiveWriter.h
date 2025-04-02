@@ -72,6 +72,6 @@ writeArchiveToBuffer(ArrayRef<NewArchiveMember> NewMembers,
                      SymtabWritingMode WriteSymtab, object::Archive::Kind Kind,
                      bool Deterministic, bool Thin,
                      function_ref<void(Error)> Warn = warnToStderr);
-}
+} // namespace llvm
 
 #endif

@@ -302,17 +302,11 @@ public:
     return GTM;
   }
 
-  GlobalObject *getGlobal() const {
-    return GO;
-  }
+  GlobalObject *getGlobal() const { return GO; }
 
-  bool isJumpTableCanonical() const {
-    return IsJumpTableCanonical;
-  }
+  bool isJumpTableCanonical() const { return IsJumpTableCanonical; }
 
-  bool isExported() const {
-    return IsExported;
-  }
+  bool isExported() const { return IsExported; }
 
   ArrayRef<MDNode *> types() const {
     return ArrayRef(getTrailingObjects<MDNode *>(), NTypes);
@@ -773,11 +767,11 @@ Value *LowerTypeTestsModule::lowerTypeTestCall(Metadata *TypeId, CallInst *CI,
   Value *OffsetSHR =
       B.CreateLShr(PtrOffset, B.CreateZExt(TIL.AlignLog2, IntPtrTy));
   Value *OffsetSHL = B.CreateShl(
-      PtrOffset, B.CreateZExt(
-                     ConstantExpr::getSub(
-                         ConstantInt::get(Int8Ty, DL.getPointerSizeInBits(0)),
-                         TIL.AlignLog2),
-                     IntPtrTy));
+      PtrOffset,
+      B.CreateZExt(ConstantExpr::getSub(
+                       ConstantInt::get(Int8Ty, DL.getPointerSizeInBits(0)),
+                       TIL.AlignLog2),
+                   IntPtrTy));
   Value *BitOffset = B.CreateOr(OffsetSHR, OffsetSHL);
 
   Value *OffsetInRange = B.CreateICmpULE(BitOffset, TIL.SizeM1);
@@ -1069,10 +1063,9 @@ void LowerTypeTestsModule::importFunction(
     // Non-dso_local functions may be overriden at run time,
     // don't short curcuit them
     if (F->isDSOLocal()) {
-      Function *RealF = Function::Create(F->getFunctionType(),
-                                         GlobalValue::ExternalLinkage,
-                                         F->getAddressSpace(),
-                                         Name + ".cfi", &M);
+      Function *RealF =
+          Function::Create(F->getFunctionType(), GlobalValue::ExternalLinkage,
+                           F->getAddressSpace(), Name + ".cfi", &M);
       RealF->setVisibility(GlobalVariable::HiddenVisibility);
       replaceDirectCalls(F, RealF);
     }
@@ -1099,9 +1092,9 @@ void LowerTypeTestsModule::importFunction(
     // will want to reset the aliasees first.
     for (auto &U : F->uses()) {
       if (auto *A = dyn_cast<GlobalAlias>(U.getUser())) {
-        Function *AliasDecl = Function::Create(
-            F->getFunctionType(), GlobalValue::ExternalLinkage,
-            F->getAddressSpace(), "", &M);
+        Function *AliasDecl =
+            Function::Create(F->getFunctionType(), GlobalValue::ExternalLinkage,
+                             F->getAddressSpace(), "", &M);
         AliasDecl->takeName(A);
         A->replaceAllUsesWith(AliasDecl);
         AliasesToErase.push_back(A);
@@ -1216,7 +1209,7 @@ bool LowerTypeTestsModule::hasBranchTargetEnforcement() {
     // First time this query has been called. Find out the answer by checking
     // the module flags.
     if (const auto *BTE = mdconst::extract_or_null<ConstantInt>(
-          M.getModuleFlag("branch-target-enforcement")))
+            M.getModuleFlag("branch-target-enforcement")))
       HasBranchTargetEnforcement = (BTE->getZExtValue() != 0);
     else
       HasBranchTargetEnforcement = 0;
@@ -1269,7 +1262,7 @@ void LowerTypeTestsModule::createJumpTableEntry(
   if (JumpTableArch == Triple::x86 || JumpTableArch == Triple::x86_64) {
     bool Endbr = false;
     if (const auto *MD = mdconst::extract_or_null<ConstantInt>(
-          Dest->getParent()->getModuleFlag("cf-protection-branch")))
+            Dest->getParent()->getModuleFlag("cf-protection-branch")))
       Endbr = !MD->isZero();
     if (Endbr)
       AsmOS << (JumpTableArch == Triple::x86 ? "endbr32\n" : "endbr64\n");
@@ -1349,12 +1342,12 @@ void LowerTypeTestsModule::buildBitSetsFromFunctions(
 void LowerTypeTestsModule::moveInitializerToModuleConstructor(
     GlobalVariable *GV) {
   if (WeakInitializerFn == nullptr) {
-    WeakInitializerFn = Function::Create(
-        FunctionType::get(Type::getVoidTy(M.getContext()),
-                          /* IsVarArg */ false),
-        GlobalValue::InternalLinkage,
-        M.getDataLayout().getProgramAddressSpace(),
-        "__cfi_global_var_init", &M);
+    WeakInitializerFn =
+        Function::Create(FunctionType::get(Type::getVoidTy(M.getContext()),
+                                           /* IsVarArg */ false),
+                         GlobalValue::InternalLinkage,
+                         M.getDataLayout().getProgramAddressSpace(),
+                         "__cfi_global_var_init", &M);
     BasicBlock *BB =
         BasicBlock::Create(M.getContext(), "entry", WeakInitializerFn);
     ReturnInst::Create(M.getContext(), BB);
@@ -1375,7 +1368,7 @@ void LowerTypeTestsModule::moveInitializerToModuleConstructor(
 
 void LowerTypeTestsModule::findGlobalVariableUsersOf(
     Constant *C, SmallSetVector<GlobalVariable *, 8> &Out) {
-  for (auto *U : C->users()){
+  for (auto *U : C->users()) {
     if (auto *GV = dyn_cast<GlobalVariable>(U))
       Out.insert(GV);
     else if (auto *C2 = dyn_cast<Constant>(U))
@@ -1398,10 +1391,9 @@ void LowerTypeTestsModule::replaceWeakDeclarationWithJumpTablePtr(
 
   // Can not RAUW F with an expression that uses F. Replace with a temporary
   // placeholder first.
-  Function *PlaceholderFn =
-      Function::Create(cast<FunctionType>(F->getValueType()),
-                       GlobalValue::ExternalWeakLinkage,
-                       F->getAddressSpace(), "", &M);
+  Function *PlaceholderFn = Function::Create(
+      cast<FunctionType>(F->getValueType()), GlobalValue::ExternalWeakLinkage,
+      F->getAddressSpace(), "", &M);
   replaceCfiUses(F, PlaceholderFn, IsJumpTableCanonical);
 
   convertUsersOfConstantsToInstructions(PlaceholderFn);
@@ -1416,8 +1408,8 @@ void LowerTypeTestsModule::replaceWeakDeclarationWithJumpTablePtr(
     IRBuilder Builder(InsertPt);
     Value *ICmp = Builder.CreateICmp(CmpInst::ICMP_NE, F,
                                      Constant::getNullValue(F->getType()));
-    Value *Select = Builder.CreateSelect(ICmp, JT,
-                                         Constant::getNullValue(F->getType()));
+    Value *Select =
+        Builder.CreateSelect(ICmp, JT, Constant::getNullValue(F->getType()));
     // For phi nodes, we need to update the incoming value for all operands
     // with the same predecessor.
     if (PN)
@@ -1656,12 +1648,11 @@ void LowerTypeTestsModule::buildBitSetsFromFunctionsNative(
   for (unsigned I = 0; I != Functions.size(); ++I)
     GlobalLayout[Functions[I]] = I * EntrySize;
 
-  Function *JumpTableFn =
-      Function::Create(FunctionType::get(Type::getVoidTy(M.getContext()),
-                                         /* IsVarArg */ false),
-                       GlobalValue::PrivateLinkage,
-                       M.getDataLayout().getProgramAddressSpace(),
-                       ".cfi.jumptable", &M);
+  Function *JumpTableFn = Function::Create(
+      FunctionType::get(Type::getVoidTy(M.getContext()),
+                        /* IsVarArg */ false),
+      GlobalValue::PrivateLinkage, M.getDataLayout().getProgramAddressSpace(),
+      ".cfi.jumptable", &M);
   ArrayType *JumpTableType =
       ArrayType::get(getJumpTableEntryType(), Functions.size());
   auto JumpTable = ConstantExpr::getPointerCast(
@@ -1906,7 +1897,7 @@ bool LowerTypeTestsModule::runForTesting(Module &M, ModuleAnalysisManager &AM) {
   return Changed;
 }
 
-static bool isDirectCall(Use& U) {
+static bool isDirectCall(Use &U) {
   auto *Usr = dyn_cast<CallInst>(U.getUser());
   if (Usr) {
     auto *CB = dyn_cast<CallBase>(Usr);
@@ -2113,7 +2104,7 @@ bool LowerTypeTestsModule::lower() {
                 ->getUniqueInteger()
                 .getZExtValue());
         const GlobalValue::GUID GUID = GlobalValue::getGUID(
-                GlobalValue::dropLLVMManglingEscape(FunctionName));
+            GlobalValue::dropLLVMManglingEscape(FunctionName));
         // Do not emit jumptable entries for functions that are not-live and
         // have no live references (and are not exported with cross-DSO CFI.)
         if (!ExportSummary->isGUIDLive(GUID))
@@ -2208,10 +2199,10 @@ bool LowerTypeTestsModule::lower() {
         IsJumpTableCanonical |=
             ExportedFunctions[F->getName()].Linkage == CFL_Definition;
         IsExported = true;
-      // TODO: The logic here checks only that the function is address taken,
-      // not that the address takers are live. This can be updated to check
-      // their liveness and emit fewer jumptable entries once monolithic LTO
-      // builds also emit summaries.
+        // TODO: The logic here checks only that the function is address taken,
+        // not that the address takers are live. This can be updated to check
+        // their liveness and emit fewer jumptable entries once monolithic LTO
+        // builds also emit summaries.
       } else if (!F->hasAddressTaken()) {
         if (!CrossDsoCfi || !IsJumpTableCanonical || F->hasLocalLinkage())
           continue;
@@ -2270,7 +2261,8 @@ bool LowerTypeTestsModule::lower() {
 
       auto TypeIdMDVal = dyn_cast<MetadataAsValue>(CI->getArgOperand(1));
       if (!TypeIdMDVal)
-        report_fatal_error("Second argument of llvm.type.test must be metadata");
+        report_fatal_error(
+            "Second argument of llvm.type.test must be metadata");
       auto TypeId = TypeIdMDVal->getMetadata();
       AddTypeIdUse(TypeId).CallSites.push_back(CI);
     }
@@ -2308,9 +2300,9 @@ bool LowerTypeTestsModule::lower() {
       }
 
       GlobalClasses.unionSets(
-          CurSet, GlobalClasses.findLeader(
-                      GlobalClasses.insert(ICallBranchFunnel::create(
-                          Alloc, CI, Targets, ++CurUniqueId))));
+          CurSet,
+          GlobalClasses.findLeader(GlobalClasses.insert(
+              ICallBranchFunnel::create(Alloc, CI, Targets, ++CurUniqueId))));
     }
   }
 

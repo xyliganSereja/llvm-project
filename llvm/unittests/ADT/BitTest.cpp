@@ -370,10 +370,14 @@ TEST(BitTest, Rotl) {
   EXPECT_EQ(0x5b7ddfbdU, llvm::rotl<uint32_t>(0xdeadbeef, 41));
   EXPECT_EQ(0xb6fbbf7aU, llvm::rotl<uint32_t>(0xdeadbeef, -22));
 
-  EXPECT_EQ(0x12345678deadbeefULL, llvm::rotl<uint64_t>(0x12345678deadbeefULL, 0));
-  EXPECT_EQ(0xf56df77891a2b3c6ULL, llvm::rotl<uint64_t>(0x12345678deadbeefULL, 35));
-  EXPECT_EQ(0x8d159e37ab6fbbc4ULL, llvm::rotl<uint64_t>(0x12345678deadbeefULL, 70));
-  EXPECT_EQ(0xb7dde2468acf1bd5ULL, llvm::rotl<uint64_t>(0x12345678deadbeefULL, -19));
+  EXPECT_EQ(0x12345678deadbeefULL,
+            llvm::rotl<uint64_t>(0x12345678deadbeefULL, 0));
+  EXPECT_EQ(0xf56df77891a2b3c6ULL,
+            llvm::rotl<uint64_t>(0x12345678deadbeefULL, 35));
+  EXPECT_EQ(0x8d159e37ab6fbbc4ULL,
+            llvm::rotl<uint64_t>(0x12345678deadbeefULL, 70));
+  EXPECT_EQ(0xb7dde2468acf1bd5ULL,
+            llvm::rotl<uint64_t>(0x12345678deadbeefULL, -19));
 }
 
 TEST(BitTest, Rotr) {
@@ -392,10 +396,14 @@ TEST(BitTest, Rotr) {
   EXPECT_EQ(0x77ef56dfU, llvm::rotr<uint32_t>(0xdeadbeef, 41));
   EXPECT_EQ(0xbbf7ab6fU, llvm::rotr<uint32_t>(0xdeadbeef, -22));
 
-  EXPECT_EQ(0x12345678deadbeefULL, llvm::rotr<uint64_t>(0x12345678deadbeefULL, 0));
-  EXPECT_EQ(0x1bd5b7dde2468acfULL, llvm::rotr<uint64_t>(0x12345678deadbeefULL, 35));
-  EXPECT_EQ(0xbc48d159e37ab6fbULL, llvm::rotr<uint64_t>(0x12345678deadbeefULL, 70));
-  EXPECT_EQ(0xb3c6f56df77891a2ULL, llvm::rotr<uint64_t>(0x12345678deadbeefULL, -19));
+  EXPECT_EQ(0x12345678deadbeefULL,
+            llvm::rotr<uint64_t>(0x12345678deadbeefULL, 0));
+  EXPECT_EQ(0x1bd5b7dde2468acfULL,
+            llvm::rotr<uint64_t>(0x12345678deadbeefULL, 35));
+  EXPECT_EQ(0xbc48d159e37ab6fbULL,
+            llvm::rotr<uint64_t>(0x12345678deadbeefULL, 70));
+  EXPECT_EQ(0xb3c6f56df77891a2ULL,
+            llvm::rotr<uint64_t>(0x12345678deadbeefULL, -19));
 }
 
 } // anonymous namespace

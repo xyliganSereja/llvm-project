@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/DebugInfo/DWARF/DWARFDebugLine.h"
 #include "DwarfGenerator.h"
 #include "DwarfUtils.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
-#include "llvm/DebugInfo/DWARF/DWARFDebugLine.h"
 #include "llvm/Object/ObjectFile.h"
 #include "llvm/Testing/Support/Error.h"
 #include "gtest/gtest.h"
@@ -34,7 +34,7 @@ struct CommonFixture {
                                     std::placeholders::_1)),
         Unrecoverable(Error::success()),
         RecordUnrecoverable(std::bind(&CommonFixture::recordUnrecoverable, this,
-                                      std::placeholders::_1)){};
+                                      std::placeholders::_1)) {};
 
   ~CommonFixture() {
     EXPECT_FALSE(Recoverable);
@@ -1629,7 +1629,7 @@ TEST_F(DebugLineBasicFixture, VerboseOutput) {
             "0x00000064: 08 DW_LNS_const_add_pc (addr += 0x0000000000000011, "
             "op-index += 0)");
   EXPECT_EQ(NextLine(), "0x00000065: 09 DW_LNS_fixed_advance_pc (addr += 0x0037"
-            ", op-index = 0)");
+                        ", op-index = 0)");
   EXPECT_EQ(NextLine(), "0x00000068: 0a DW_LNS_set_prologue_end");
   EXPECT_EQ(NextLine(), "0x00000069: 0b DW_LNS_set_epilogue_begin");
   EXPECT_EQ(NextLine(), "0x0000006a: 0c DW_LNS_set_isa (66)");

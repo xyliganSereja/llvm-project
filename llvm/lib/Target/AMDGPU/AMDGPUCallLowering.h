@@ -51,10 +51,10 @@ public:
                             ArrayRef<ArrayRef<Register>> VRegs,
                             FunctionLoweringInfo &FLI) const override;
 
-  bool passSpecialInputs(MachineIRBuilder &MIRBuilder,
-                         CCState &CCInfo,
-                         SmallVectorImpl<std::pair<MCRegister, Register>> &ArgRegs,
-                         CallLoweringInfo &Info) const;
+  bool
+  passSpecialInputs(MachineIRBuilder &MIRBuilder, CCState &CCInfo,
+                    SmallVectorImpl<std::pair<MCRegister, Register>> &ArgRegs,
+                    CallLoweringInfo &Info) const;
 
   bool
   doCallerAndCalleePassArgsTheSameWay(CallLoweringInfo &Info,
@@ -88,5 +88,5 @@ public:
   static CCAssignFn *CCAssignFnForCall(CallingConv::ID CC, bool IsVarArg);
   static CCAssignFn *CCAssignFnForReturn(CallingConv::ID CC, bool IsVarArg);
 };
-} // End of namespace llvm;
+} // namespace llvm
 #endif

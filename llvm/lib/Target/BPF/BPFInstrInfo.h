@@ -58,10 +58,10 @@ public:
                         MachineBasicBlock *FBB, ArrayRef<MachineOperand> Cond,
                         const DebugLoc &DL,
                         int *BytesAdded = nullptr) const override;
+
 private:
   void expandMEMCPY(MachineBasicBlock::iterator) const;
-
 };
-}
+} // namespace llvm
 
 #endif

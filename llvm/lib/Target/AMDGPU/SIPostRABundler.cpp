@@ -34,9 +34,7 @@ public:
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
-  StringRef getPassName() const override {
-    return "SI post-RA bundler";
-  }
+  StringRef getPassName() const override { return "SI post-RA bundler"; }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();
@@ -116,7 +114,8 @@ bool SIPostRABundler::canBundle(const MachineInstr &MI,
   const uint64_t IMemFlags = MI.getDesc().TSFlags & MemFlags;
 
   return (IMemFlags != 0 && MI.mayLoadOrStore() && !NextMI.isBundled() &&
-          NextMI.mayLoad() == MI.mayLoad() && NextMI.mayStore() == MI.mayStore() &&
+          NextMI.mayLoad() == MI.mayLoad() &&
+          NextMI.mayStore() == MI.mayStore() &&
           ((NextMI.getDesc().TSFlags & MemFlags) == IMemFlags) &&
           !isDependentLoad(NextMI));
 }
@@ -200,8 +199,8 @@ bool SIPostRABundler::runOnMachineFunction(MachineFunction &MF) {
 
             // Erase the kill if it's a subset of the used registers.
             //
-            // TODO: Should we just remove all kills? Is there any real reason to
-            // keep them after RA?
+            // TODO: Should we just remove all kills? Is there any real reason
+            // to keep them after RA?
             if (KillUsedRegUnits.none()) {
               ++Next;
               Kill.eraseFromParent();

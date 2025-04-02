@@ -45,17 +45,22 @@ TEST(FloatingPointModeTest, ParseDenormalFPAttribute) {
   EXPECT_EQ(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE),
             parseDenormalFPAttribute(","));
 
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign,"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign,preserve-sign"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign,"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign,preserve-sign"));
 
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            parseDenormalFPAttribute("positive-zero"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            parseDenormalFPAttribute("positive-zero,positive-zero"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      parseDenormalFPAttribute("positive-zero"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      parseDenormalFPAttribute("positive-zero,positive-zero"));
 
   EXPECT_EQ(DenormalMode(DenormalMode::Dynamic, DenormalMode::Dynamic),
             parseDenormalFPAttribute("dynamic"));
@@ -94,25 +99,23 @@ TEST(FloatingPointModeTest, RenderDenormalFPAttribute) {
   EXPECT_EQ(",",
             DenormalMode(DenormalMode::Invalid, DenormalMode::Invalid).str());
 
-  EXPECT_EQ(
-    "preserve-sign,preserve-sign",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign).str());
+  EXPECT_EQ("preserve-sign,preserve-sign",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign)
+                .str());
 
-  EXPECT_EQ(
-    "positive-zero,positive-zero",
-    DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero).str());
+  EXPECT_EQ("positive-zero,positive-zero",
+            DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero)
+                .str());
 
-  EXPECT_EQ(
-    "ieee,preserve-sign",
-    DenormalMode(DenormalMode::IEEE, DenormalMode::PreserveSign).str());
+  EXPECT_EQ("ieee,preserve-sign",
+            DenormalMode(DenormalMode::IEEE, DenormalMode::PreserveSign).str());
 
-  EXPECT_EQ(
-    "preserve-sign,ieee",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::IEEE).str());
+  EXPECT_EQ("preserve-sign,ieee",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::IEEE).str());
 
-  EXPECT_EQ(
-    "preserve-sign,positive-zero",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero).str());
+  EXPECT_EQ("preserve-sign,positive-zero",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero)
+                .str());
 
   EXPECT_EQ("dynamic,dynamic",
             DenormalMode(DenormalMode::Dynamic, DenormalMode::Dynamic).str());
@@ -124,10 +127,11 @@ TEST(FloatingPointModeTest, RenderDenormalFPAttribute) {
 
 TEST(FloatingPointModeTest, DenormalModeIsSimple) {
   EXPECT_TRUE(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE).isSimple());
-  EXPECT_FALSE(DenormalMode(DenormalMode::IEEE,
-                            DenormalMode::Invalid).isSimple());
-  EXPECT_FALSE(DenormalMode(DenormalMode::PreserveSign,
-                            DenormalMode::PositiveZero).isSimple());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isSimple());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero)
+          .isSimple());
   EXPECT_FALSE(DenormalMode(DenormalMode::PreserveSign, DenormalMode::Dynamic)
                    .isSimple());
   EXPECT_FALSE(DenormalMode(DenormalMode::Dynamic, DenormalMode::PreserveSign)
@@ -136,10 +140,12 @@ TEST(FloatingPointModeTest, DenormalModeIsSimple) {
 
 TEST(FloatingPointModeTest, DenormalModeIsValid) {
   EXPECT_TRUE(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::Invalid, DenormalMode::IEEE).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::Invalid,
-                            DenormalMode::Invalid).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::Invalid, DenormalMode::IEEE).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::Invalid, DenormalMode::Invalid).isValid());
 }
 
 TEST(FloatingPointModeTest, DenormalModeConstructor) {
@@ -150,10 +156,12 @@ TEST(FloatingPointModeTest, DenormalModeConstructor) {
   EXPECT_EQ(DenormalMode::getIEEE(), DenormalMode::getDefault());
   EXPECT_EQ(DenormalMode(DenormalMode::Dynamic, DenormalMode::Dynamic),
             DenormalMode::getDynamic());
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            DenormalMode::getPreserveSign());
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            DenormalMode::getPositiveZero());
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      DenormalMode::getPreserveSign());
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      DenormalMode::getPositiveZero());
 }
 
 TEST(FloatingPointModeTest, DenormalModeMerge) {
@@ -226,4 +234,4 @@ TEST(FloatingPointModeTest, DenormalModePredicates) {
   EXPECT_FALSE(DenormalMode::getIEEE().inputsAreZero());
   EXPECT_FALSE(DenormalMode::getDynamic().inputsAreZero());
 }
-}
+} // namespace

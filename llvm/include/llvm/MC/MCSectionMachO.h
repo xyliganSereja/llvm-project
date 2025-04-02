@@ -22,7 +22,7 @@ namespace llvm {
 /// This represents a section on a Mach-O system (used by Mac OS X).  On a Mac
 /// system, these are also described in /usr/include/mach-o/loader.h.
 class MCSectionMachO final : public MCSection {
-  char SegmentName[16];  // Not necessarily null terminated!
+  char SegmentName[16]; // Not necessarily null terminated!
 
   /// This is the SECTION_TYPE and SECTION_ATTRIBUTES field of a section, drawn
   /// from the enums below.
@@ -42,8 +42,8 @@ class MCSectionMachO final : public MCSection {
   MCSectionMachO(StringRef Segment, StringRef Section, unsigned TAA,
                  unsigned reserved2, SectionKind K, MCSymbol *Begin);
   friend class MCContext;
-public:
 
+public:
   StringRef getSegmentName() const {
     // SegmentName is not necessarily null terminated!
     if (SegmentName[15])

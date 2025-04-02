@@ -25,7 +25,9 @@ using namespace llvm;
 
 #define DEBUG_TYPE "nvvm-intr-range"
 
-namespace llvm { void initializeNVVMIntrRangePass(PassRegistry &); }
+namespace llvm {
+void initializeNVVMIntrRangePass(PassRegistry &);
+}
 
 namespace {
 class NVVMIntrRange : public FunctionPass {

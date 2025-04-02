@@ -64,7 +64,7 @@ public:
 
     /// Description of the encoding of one expression Op.
     struct Description {
-      DwarfVersion Version; ///< Dwarf version where the Op was introduced.
+      DwarfVersion Version;     ///< Dwarf version where the Op was introduced.
       SmallVector<Encoding> Op; ///< Encoding for Op operands.
 
       template <typename... Ts>
@@ -183,5 +183,5 @@ inline bool operator==(const DWARFExpression::iterator &LHS,
                        const DWARFExpression::iterator &RHS) {
   return LHS.Expr == RHS.Expr && LHS.Offset == RHS.Offset;
 }
-}
+} // namespace llvm
 #endif

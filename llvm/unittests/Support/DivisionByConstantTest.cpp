@@ -172,12 +172,12 @@ TEST(UnsignedDivisionByConstantTest, Test) {
                   Numerator, Divisor, LZOptimization,
                   AllowEvenDivisorOptimization, ForceNPQ, Magics);
               ASSERT_EQ(MagicResult, NativeResult)
-                    << " ... given the operation:  urem i" << Bits << " "
-                    << Numerator << ", " << Divisor
-                    << " (allow LZ optimization = "
-                    << LZOptimization << ", allow even divisior optimization = "
-                    << AllowEvenDivisorOptimization << ", force NPQ = "
-                    << ForceNPQ << ")";
+                  << " ... given the operation:  urem i" << Bits << " "
+                  << Numerator << ", " << Divisor
+                  << " (allow LZ optimization = " << LZOptimization
+                  << ", allow even divisior optimization = "
+                  << AllowEvenDivisorOptimization
+                  << ", force NPQ = " << ForceNPQ << ")";
             }
           }
         }

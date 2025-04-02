@@ -41,19 +41,17 @@ static_assert(std::is_same_v<typename AdaptedIter::reference, Shadow<3>>, "");
 // Ensure that pointe{e,r}_iterator adaptors correctly forward the category of
 // the underlying iterator.
 
-using RandomAccessIter = SmallVectorImpl<int*>::iterator;
-using BidiIter = ilist<int*>::iterator;
+using RandomAccessIter = SmallVectorImpl<int *>::iterator;
+using BidiIter = ilist<int *>::iterator;
 
-template<class T>
-using pointee_iterator_defaulted = pointee_iterator<T>;
-template<class T>
-using pointer_iterator_defaulted = pointer_iterator<T>;
+template <class T> using pointee_iterator_defaulted = pointee_iterator<T>;
+template <class T> using pointer_iterator_defaulted = pointer_iterator<T>;
 
 // Ensures that an iterator and its adaptation have the same iterator_category.
-template<template<typename> class A, typename It>
+template <template <typename> class A, typename It>
 using IsAdaptedIterCategorySame =
-  std::is_same<typename std::iterator_traits<It>::iterator_category,
-               typename std::iterator_traits<A<It>>::iterator_category>;
+    std::is_same<typename std::iterator_traits<It>::iterator_category,
+                 typename std::iterator_traits<A<It>>::iterator_category>;
 
 // Check that dereferencing works correctly adapting pointers and proxies.
 template <class T>
@@ -85,9 +83,9 @@ using ConstIntProxyIterator = PointerProxyWrapper<const int, ConstIntProxy>;
 // operator[]. This test confirms that there isn't a non-const overload. Rather
 // than adding those, users should double-check that T, PointerT, and ReferenceT
 // have the right constness, and/or make fields mutable.
-static_assert(&IntIterator::operator* == &IntIterator::operator*, "");
-static_assert(&IntIterator::operator-> == &IntIterator::operator->, "");
-static_assert(&IntIterator::operator[] == &IntIterator::operator[], "");
+static_assert(&IntIterator::operator* == & IntIterator::operator*, "");
+static_assert(&IntIterator::operator->== & IntIterator::operator->, "");
+static_assert(&IntIterator::operator[] == & IntIterator::operator[], "");
 
 template <class T, std::enable_if_t<std::is_assignable_v<T, int>, bool> = false>
 constexpr bool canAssignFromInt(T &&) {
@@ -145,14 +143,16 @@ TEST(IteratorAdaptorTest, Dereference) {
 
 // pointeE_iterator
 static_assert(IsAdaptedIterCategorySame<pointee_iterator_defaulted,
-                                        RandomAccessIter>::value, "");
-static_assert(IsAdaptedIterCategorySame<pointee_iterator_defaulted,
-                                        BidiIter>::value, "");
+                                        RandomAccessIter>::value,
+              "");
+static_assert(
+    IsAdaptedIterCategorySame<pointee_iterator_defaulted, BidiIter>::value, "");
 // pointeR_iterator
 static_assert(IsAdaptedIterCategorySame<pointer_iterator_defaulted,
-                                        RandomAccessIter>::value, "");
-static_assert(IsAdaptedIterCategorySame<pointer_iterator_defaulted,
-                                        BidiIter>::value, "");
+                                        RandomAccessIter>::value,
+              "");
+static_assert(
+    IsAdaptedIterCategorySame<pointer_iterator_defaulted, BidiIter>::value, "");
 
 TEST(PointeeIteratorTest, Basic) {
   int arr[4] = {1, 2, 3, 4};
@@ -310,10 +310,11 @@ TEST(FilterIteratorTest, FunctionPointer) {
 
 TEST(FilterIteratorTest, Composition) {
   auto IsOdd = [](int N) { return N % 2 == 1; };
-  std::unique_ptr<int> A[] = {std::make_unique<int>(0), std::make_unique<int>(1),
-                              std::make_unique<int>(2), std::make_unique<int>(3),
-                              std::make_unique<int>(4), std::make_unique<int>(5),
-                              std::make_unique<int>(6)};
+  std::unique_ptr<int> A[] = {
+      std::make_unique<int>(0), std::make_unique<int>(1),
+      std::make_unique<int>(2), std::make_unique<int>(3),
+      std::make_unique<int>(4), std::make_unique<int>(5),
+      std::make_unique<int>(6)};
   using PointeeIterator = pointee_iterator<std::unique_ptr<int> *>;
   auto Range = make_filter_range(
       make_range(PointeeIterator(std::begin(A)), PointeeIterator(std::end(A))),

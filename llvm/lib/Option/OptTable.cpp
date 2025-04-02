@@ -105,14 +105,15 @@ OptTable::OptTable(const StringTable &StrTable,
   // Check that everything after the first searchable option is a
   // regular option class.
   for (unsigned i = FirstSearchableIndex, e = getNumOptions(); i != e; ++i) {
-    Option::OptionClass Kind = (Option::OptionClass) getInfo(i + 1).Kind;
+    Option::OptionClass Kind = (Option::OptionClass)getInfo(i + 1).Kind;
     assert((Kind != Option::InputClass && Kind != Option::UnknownClass &&
             Kind != Option::GroupClass) &&
            "Special options should be defined first!");
   }
 
   // Check that options are in order.
-  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions(); i != e; ++i){
+  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions(); i != e;
+       ++i) {
     if (!(OptNameLess(StrTable, PrefixesTable)(getInfo(i), getInfo(i + 1)))) {
       getOption(i).dump();
       getOption(i + 1).dump();
@@ -139,7 +140,7 @@ const Option OptTable::getOption(OptSpecifier Opt) const {
   unsigned id = Opt.getID();
   if (id == 0)
     return Option(nullptr, nullptr);
-  assert((unsigned) (id - 1) < getNumOptions() && "Invalid ID.");
+  assert((unsigned)(id - 1) < getNumOptions() && "Invalid ID.");
   return Option(&getInfo(id), this);
 }
 
@@ -501,11 +502,10 @@ InputArgList OptTable::ParseArgs(ArrayRef<const char *> Args,
                                  unsigned &MissingArgIndex,
                                  unsigned &MissingArgCount,
                                  Visibility VisibilityMask) const {
-  return internalParseArgs(
-      Args, MissingArgIndex, MissingArgCount,
-      [VisibilityMask](const Option &Opt) {
-        return !Opt.hasVisibilityFlag(VisibilityMask);
-      });
+  return internalParseArgs(Args, MissingArgIndex, MissingArgCount,
+                           [VisibilityMask](const Option &Opt) {
+                             return !Opt.hasVisibilityFlag(VisibilityMask);
+                           });
 }
 
 InputArgList OptTable::ParseArgs(ArrayRef<const char *> Args,
@@ -513,15 +513,14 @@ InputArgList OptTable::ParseArgs(ArrayRef<const char *> Args,
                                  unsigned &MissingArgCount,
                                  unsigned FlagsToInclude,
                                  unsigned FlagsToExclude) const {
-  return internalParseArgs(
-      Args, MissingArgIndex, MissingArgCount,
-      [FlagsToInclude, FlagsToExclude](const Option &Opt) {
-        if (FlagsToInclude && !Opt.hasFlag(FlagsToInclude))
-          return true;
-        if (Opt.hasFlag(FlagsToExclude))
-          return true;
-        return false;
-      });
+  return internalParseArgs(Args, MissingArgIndex, MissingArgCount,
+                           [FlagsToInclude, FlagsToExclude](const Option &Opt) {
+                             if (FlagsToInclude && !Opt.hasFlag(FlagsToInclude))
+                               return true;
+                             if (Opt.hasFlag(FlagsToExclude))
+                               return true;
+                             return false;
+                           });
 }
 
 InputArgList OptTable::internalParseArgs(
@@ -558,9 +557,9 @@ InputArgList OptTable::internalParseArgs(
     }
 
     unsigned Prev = Index;
-    std::unique_ptr<Arg> A = GroupedShortOptions
-                 ? parseOneArgGrouped(Args, Index)
-                 : internalParseOneArg(Args, Index, ExcludeOption);
+    std::unique_ptr<Arg> A =
+        GroupedShortOptions ? parseOneArgGrouped(Args, Index)
+                            : internalParseOneArg(Args, Index, ExcludeOption);
     assert((Index > Prev || GroupedShortOptions) &&
            "Parser failed to consume argument.");
 
@@ -612,7 +611,9 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
 
   // Add metavar, if used.
   switch (O.getKind()) {
-  case Option::GroupClass: case Option::InputClass: case Option::UnknownClass:
+  case Option::GroupClass:
+  case Option::InputClass:
+  case Option::UnknownClass:
     llvm_unreachable("Invalid option with help text.");
 
   case Option::MultiArgClass:
@@ -620,10 +621,9 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
       // For MultiArgs, metavar is full list of all argument names.
       Name += ' ';
       Name += MetaVarName;
-    }
-    else {
+    } else {
       // For MultiArgs<N>, if metavar not supplied, print <value> N times.
-      for (unsigned i=0, e=O.getNumArgs(); i< e; ++i) {
+      for (unsigned i = 0, e = O.getNumArgs(); i < e; ++i) {
         Name += " <value>";
       }
     }
@@ -635,11 +635,14 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
   case Option::ValuesClass:
     break;
 
-  case Option::SeparateClass: case Option::JoinedOrSeparateClass:
-  case Option::RemainingArgsClass: case Option::RemainingArgsJoinedClass:
+  case Option::SeparateClass:
+  case Option::JoinedOrSeparateClass:
+  case Option::RemainingArgsClass:
+  case Option::RemainingArgsJoinedClass:
     Name += ' ';
     [[fallthrough]];
-  case Option::JoinedClass: case Option::CommaJoinedClass:
+  case Option::JoinedClass:
+  case Option::CommaJoinedClass:
   case Option::JoinedAndSeparateClass:
     if (const char *MetaVarName = Opts.getOptionMetaVar(Id))
       Name += MetaVarName;
@@ -780,7 +783,7 @@ void OptTable::internalPrintHelp(
     }
   }
 
-  for (auto& OptionGroup : GroupedOptionHelp) {
+  for (auto &OptionGroup : GroupedOptionHelp) {
     if (OptionGroup.first != GroupedOptionHelp.begin()->first)
       OS << "\n";
     PrintHelpOptionList(OS, OptionGroup.first, OptionGroup.second);

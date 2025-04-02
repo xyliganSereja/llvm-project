@@ -24,8 +24,8 @@ enum class ExceptionHandling {
   WinEH,    ///< Windows Exception Handling
   Wasm,     ///< WebAssembly Exception Handling
   AIX,      ///< AIX Exception Handling
-  ZOS,      ///< z/OS MVS Exception Handling. Very similar to DwarfCFI, but the PPA1
-            ///< is used instead of an .eh_frame section.
+  ZOS, ///< z/OS MVS Exception Handling. Very similar to DwarfCFI, but the PPA1
+       ///< is used instead of an .eh_frame section.
 };
 
 enum class EmitDwarfUnwindType {
@@ -38,10 +38,7 @@ class StringRef;
 
 class MCTargetOptions {
 public:
-  enum AsmInstrumentation {
-    AsmInstrumentationNone,
-    AsmInstrumentationAddress
-  };
+  enum AsmInstrumentation { AsmInstrumentationNone, AsmInstrumentationAddress };
 
   bool MCRelaxAll : 1;
   bool MCNoExecStack : 1;
@@ -97,7 +94,8 @@ public:
   std::string SplitDwarfFile;
   std::string AsSecureLogFile;
 
-  // Used for codeview debug info. These will be set as compiler path and commandline arguments in LF_BUILDINFO
+  // Used for codeview debug info. These will be set as compiler path and
+  // commandline arguments in LF_BUILDINFO
   std::string Argv0;
   std::string CommandlineArgs;
 

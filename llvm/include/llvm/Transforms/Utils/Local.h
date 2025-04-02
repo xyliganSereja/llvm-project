@@ -205,14 +205,15 @@ bool foldBranchToCommonDest(BranchInst *BI, llvm::DomTreeUpdater *DTU = nullptr,
 /// This allows the CFG to be changed around without fear of invalidating the
 /// SSA information for the value. It returns the pointer to the alloca inserted
 /// to create a stack slot for X.
-AllocaInst *DemoteRegToStack(Instruction &X,
-                             bool VolatileLoads = false,
-                             std::optional<BasicBlock::iterator> AllocaPoint = std::nullopt);
+AllocaInst *DemoteRegToStack(
+    Instruction &X, bool VolatileLoads = false,
+    std::optional<BasicBlock::iterator> AllocaPoint = std::nullopt);
 
 /// This function takes a virtual register computed by a phi node and replaces
 /// it with a slot in the stack frame, allocated via alloca. The phi node is
 /// deleted and it returns the pointer to the alloca inserted.
-AllocaInst *DemotePHIToStack(PHINode *P, std::optional<BasicBlock::iterator> AllocaPoint = std::nullopt);
+AllocaInst *DemotePHIToStack(
+    PHINode *P, std::optional<BasicBlock::iterator> AllocaPoint = std::nullopt);
 
 /// If the specified pointer points to an object that we control, try to modify
 /// the object's alignment to PrefAlign. Returns a minimum known alignment of
@@ -271,22 +272,22 @@ void InsertDebugValueAtStoreLoc(DbgVariableIntrinsic *DII, StoreInst *SI,
 
 /// Inserts a llvm.dbg.value intrinsic before a store to an alloca'd value
 /// that has an associated llvm.dbg.declare intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     StoreInst *SI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, StoreInst *SI,
+                                     DIBuilder &Builder);
 void ConvertDebugDeclareToDebugValue(DbgVariableRecord *DVR, StoreInst *SI,
                                      DIBuilder &Builder);
 
 /// Inserts a llvm.dbg.value intrinsic before a load of an alloca'd value
 /// that has an associated llvm.dbg.declare intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     LoadInst *LI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, LoadInst *LI,
+                                     DIBuilder &Builder);
 void ConvertDebugDeclareToDebugValue(DbgVariableRecord *DVR, LoadInst *LI,
                                      DIBuilder &Builder);
 
 /// Inserts a llvm.dbg.value intrinsic after a phi that has an associated
 /// llvm.dbg.declare intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     PHINode *LI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, PHINode *LI,
+                                     DIBuilder &Builder);
 void ConvertDebugDeclareToDebugValue(DbgVariableRecord *DVR, PHINode *LI,
                                      DIBuilder &Builder);
 
@@ -546,7 +547,6 @@ bool canReplaceOperandWithVariable(const Instruction *I, unsigned OpIdx);
 
 /// Invert the given true/false value, possibly reusing an existing copy.
 Value *invertCondition(Value *Condition);
-
 
 //===----------------------------------------------------------------------===//
 //  Assorted

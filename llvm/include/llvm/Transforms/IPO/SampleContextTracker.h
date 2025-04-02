@@ -38,7 +38,7 @@ public:
                   FunctionSamples *FSamples = nullptr,
                   LineLocation CallLoc = {0, 0})
       : ParentContext(Parent), FuncName(FName), FuncSamples(FSamples),
-        CallSiteLoc(CallLoc){};
+        CallSiteLoc(CallLoc) {};
   ContextTrieNode *getChildContext(const LineLocation &CallSite,
                                    FunctionId ChildName);
   ContextTrieNode *getHottestChildContext(const LineLocation &CallSite);
@@ -117,8 +117,7 @@ public:
   FunctionSamples *getBaseSamplesFor(const Function &Func,
                                      bool MergeContext = true);
   // Query base profile for a given function by name.
-  FunctionSamples *getBaseSamplesFor(FunctionId Name,
-                                     bool MergeContext = true);
+  FunctionSamples *getBaseSamplesFor(FunctionId Name, bool MergeContext = true);
   // Retrieve the context trie node for given profile context
   ContextTrieNode *getContextFor(const SampleContext &Context);
   // Get real function name for a given trie node.
@@ -140,8 +139,8 @@ public:
       return nullptr;
     return I->second;
   }
-  HashKeyMap<std::unordered_map, FunctionId, ContextSamplesTy>
-      &getFuncToCtxtProfiles() {
+  HashKeyMap<std::unordered_map, FunctionId, ContextSamplesTy> &
+  getFuncToCtxtProfiles() {
     return FuncToCtxtProfiles;
   }
 

@@ -45,8 +45,9 @@ static cl::opt<unsigned> SVEGatherOverhead("sve-gather-overhead", cl::init(10),
 static cl::opt<unsigned> SVEScatterOverhead("sve-scatter-overhead",
                                             cl::init(10), cl::Hidden);
 
-static cl::opt<unsigned> SVETailFoldInsnThreshold("sve-tail-folding-insn-threshold",
-                                                  cl::init(15), cl::Hidden);
+static cl::opt<unsigned>
+    SVETailFoldInsnThreshold("sve-tail-folding-insn-threshold", cl::init(15),
+                             cl::Hidden);
 
 static cl::opt<unsigned>
     NeonNonConstStrideOverhead("neon-nonconst-stride-overhead", cl::init(10),
@@ -130,7 +131,6 @@ class TailFoldingOption {
   }
 
 public:
-
   void operator=(const std::string &Val) {
     // If the user explicitly sets -sve-tail-folding= then treat as an error.
     if (Val.empty()) {
@@ -580,10 +580,9 @@ AArch64TTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   case Intrinsic::umax:
   case Intrinsic::smin:
   case Intrinsic::smax: {
-    static const auto ValidMinMaxTys = {MVT::v8i8,  MVT::v16i8, MVT::v4i16,
-                                        MVT::v8i16, MVT::v2i32, MVT::v4i32,
-                                        MVT::nxv16i8, MVT::nxv8i16, MVT::nxv4i32,
-                                        MVT::nxv2i64};
+    static const auto ValidMinMaxTys = {
+        MVT::v8i8,  MVT::v16i8,   MVT::v4i16,   MVT::v8i16,   MVT::v2i32,
+        MVT::v4i32, MVT::nxv16i8, MVT::nxv8i16, MVT::nxv4i32, MVT::nxv2i64};
     auto LT = getTypeLegalizationCost(RetTy);
     // v2i64 types get converted to cmp+bif hence the cost of 2
     if (LT.second == MVT::v2i64)
@@ -705,15 +704,11 @@ AArch64TTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return getTypeLegalizationCost(RetTy).first * 12;
     }
     static const CostTblEntry CtpopCostTbl[] = {
-        {ISD::CTPOP, MVT::v2i64, 4},
-        {ISD::CTPOP, MVT::v4i32, 3},
-        {ISD::CTPOP, MVT::v8i16, 2},
-        {ISD::CTPOP, MVT::v16i8, 1},
-        {ISD::CTPOP, MVT::i64,   4},
-        {ISD::CTPOP, MVT::v2i32, 3},
-        {ISD::CTPOP, MVT::v4i16, 2},
-        {ISD::CTPOP, MVT::v8i8,  1},
-        {ISD::CTPOP, MVT::i32,   5},
+        {ISD::CTPOP, MVT::v2i64, 4}, {ISD::CTPOP, MVT::v4i32, 3},
+        {ISD::CTPOP, MVT::v8i16, 2}, {ISD::CTPOP, MVT::v16i8, 1},
+        {ISD::CTPOP, MVT::i64, 4},   {ISD::CTPOP, MVT::v2i32, 3},
+        {ISD::CTPOP, MVT::v4i16, 2}, {ISD::CTPOP, MVT::v8i8, 1},
+        {ISD::CTPOP, MVT::i32, 5},
     };
     auto LT = getTypeLegalizationCost(RetTy);
     MVT MTy = LT.second;
@@ -822,11 +817,13 @@ AArch64TTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       if (LT.second.isVector())
         LegalTy = VectorType::get(LegalTy, LT.second.getVectorElementCount());
       InstructionCost Cost = 1;
-      IntrinsicCostAttributes Attrs1(IsSigned ? Intrinsic::smin : Intrinsic::umin,
-                                    LegalTy, {LegalTy, LegalTy});
+      IntrinsicCostAttributes Attrs1(IsSigned ? Intrinsic::smin
+                                              : Intrinsic::umin,
+                                     LegalTy, {LegalTy, LegalTy});
       Cost += getIntrinsicInstrCost(Attrs1, CostKind);
-      IntrinsicCostAttributes Attrs2(IsSigned ? Intrinsic::smax : Intrinsic::umax,
-                                    LegalTy, {LegalTy, LegalTy});
+      IntrinsicCostAttributes Attrs2(IsSigned ? Intrinsic::smax
+                                              : Intrinsic::umax,
+                                     LegalTy, {LegalTy, LegalTy});
       Cost += getIntrinsicInstrCost(Attrs2, CostKind);
       return LT.first * Cost +
              ((LT.second.getScalarType() != MVT::f16 || ST->hasFullFP16()) ? 0
@@ -1951,8 +1948,7 @@ instCombineLD1GatherIndex(InstCombiner &IC, IntrinsicInst &II) {
   Value *IndexBase;
   if (match(Index, m_Intrinsic<Intrinsic::aarch64_sve_index>(
                        m_Value(IndexBase), m_SpecificInt(1)))) {
-    Align Alignment =
-        BasePtr->getPointerAlignment(II.getDataLayout());
+    Align Alignment = BasePtr->getPointerAlignment(II.getDataLayout());
 
     Value *Ptr = IC.Builder.CreateGEP(cast<VectorType>(Ty)->getElementType(),
                                       BasePtr, IndexBase);
@@ -1979,8 +1975,7 @@ instCombineST1ScatterIndex(InstCombiner &IC, IntrinsicInst &II) {
   Value *IndexBase;
   if (match(Index, m_Intrinsic<Intrinsic::aarch64_sve_index>(
                        m_Value(IndexBase), m_SpecificInt(1)))) {
-    Align Alignment =
-        BasePtr->getPointerAlignment(II.getDataLayout());
+    Align Alignment = BasePtr->getPointerAlignment(II.getDataLayout());
 
     Value *Ptr = IC.Builder.CreateGEP(cast<VectorType>(Ty)->getElementType(),
                                       BasePtr, IndexBase);
@@ -3476,8 +3471,7 @@ InstructionCost AArch64TTIImpl::getScalarizationOverhead(
 InstructionCost AArch64TTIImpl::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
     TTI::OperandValueInfo Op1Info, TTI::OperandValueInfo Op2Info,
-    ArrayRef<const Value *> Args,
-    const Instruction *CxtI) {
+    ArrayRef<const Value *> Args, const Instruction *CxtI) {
 
   // The code-generator is currently not able to handle scalable vectors
   // of <vscale x 1 x eltty> yet, so return an invalid cost to avoid selecting
@@ -3489,8 +3483,8 @@ InstructionCost AArch64TTIImpl::getArithmeticInstrCost(
 
   // TODO: Handle more cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
-    return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info,
-                                         Op2Info, Args, CxtI);
+    return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info,
+                                         Args, CxtI);
 
   // Legalize the type.
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Ty);
@@ -3506,16 +3500,18 @@ InstructionCost AArch64TTIImpl::getArithmeticInstrCost(
       // normally expanded to the sequence ADD + CMP + SELECT + SRA.
       // The OperandValue properties many not be same as that of previous
       // operation; conservatively assume OP_None.
-      InstructionCost Cost = getArithmeticInstrCost(
-          Instruction::Add, Ty, CostKind,
-          Op1Info.getNoProps(), Op2Info.getNoProps());
-      Cost += getArithmeticInstrCost(Instruction::Sub, Ty, CostKind,
-                                     Op1Info.getNoProps(), Op2Info.getNoProps());
-      Cost += getArithmeticInstrCost(
-          Instruction::Select, Ty, CostKind,
-          Op1Info.getNoProps(), Op2Info.getNoProps());
-      Cost += getArithmeticInstrCost(Instruction::AShr, Ty, CostKind,
-                                     Op1Info.getNoProps(), Op2Info.getNoProps());
+      InstructionCost Cost =
+          getArithmeticInstrCost(Instruction::Add, Ty, CostKind,
+                                 Op1Info.getNoProps(), Op2Info.getNoProps());
+      Cost +=
+          getArithmeticInstrCost(Instruction::Sub, Ty, CostKind,
+                                 Op1Info.getNoProps(), Op2Info.getNoProps());
+      Cost +=
+          getArithmeticInstrCost(Instruction::Select, Ty, CostKind,
+                                 Op1Info.getNoProps(), Op2Info.getNoProps());
+      Cost +=
+          getArithmeticInstrCost(Instruction::AShr, Ty, CostKind,
+                                 Op1Info.getNoProps(), Op2Info.getNoProps());
       return Cost;
     }
     [[fallthrough]];
@@ -3526,12 +3522,15 @@ InstructionCost AArch64TTIImpl::getArithmeticInstrCost(
         // Vector signed division by constant are expanded to the
         // sequence MULHS + ADD/SUB + SRA + SRL + ADD, and unsigned division
         // to MULHS + SUB + SRL + ADD + SRL.
-        InstructionCost MulCost = getArithmeticInstrCost(
-            Instruction::Mul, Ty, CostKind, Op1Info.getNoProps(), Op2Info.getNoProps());
-        InstructionCost AddCost = getArithmeticInstrCost(
-            Instruction::Add, Ty, CostKind, Op1Info.getNoProps(), Op2Info.getNoProps());
-        InstructionCost ShrCost = getArithmeticInstrCost(
-            Instruction::AShr, Ty, CostKind, Op1Info.getNoProps(), Op2Info.getNoProps());
+        InstructionCost MulCost =
+            getArithmeticInstrCost(Instruction::Mul, Ty, CostKind,
+                                   Op1Info.getNoProps(), Op2Info.getNoProps());
+        InstructionCost AddCost =
+            getArithmeticInstrCost(Instruction::Add, Ty, CostKind,
+                                   Op1Info.getNoProps(), Op2Info.getNoProps());
+        InstructionCost ShrCost =
+            getArithmeticInstrCost(Instruction::AShr, Ty, CostKind,
+                                   Op1Info.getNoProps(), Op2Info.getNoProps());
         return MulCost * 2 + AddCost * 2 + ShrCost * 2 + 1;
       }
     }
@@ -3542,8 +3541,8 @@ InstructionCost AArch64TTIImpl::getArithmeticInstrCost(
     if (!VT.isVector() && VT.getSizeInBits() > 64)
       return getCallInstrCost(/*Function*/ nullptr, Ty, {Ty, Ty}, CostKind);
 
-    InstructionCost Cost = BaseT::getArithmeticInstrCost(
-        Opcode, Ty, CostKind, Op1Info, Op2Info);
+    InstructionCost Cost =
+        BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info);
     if (Ty->isVectorTy()) {
       if (TLI->isOperationLegalOrCustom(ISD, LT.second) && ST->hasSVE()) {
         // SDIV/UDIV operations are lowered using SVE, then we can have less
@@ -3736,20 +3735,18 @@ InstructionCost AArch64TTIImpl::getCmpSelInstrCost(
         return LT.first;
     }
 
-    static const TypeConversionCostTblEntry
-    VectorSelectTbl[] = {
-      { ISD::SELECT, MVT::v2i1, MVT::v2f32, 2 },
-      { ISD::SELECT, MVT::v2i1, MVT::v2f64, 2 },
-      { ISD::SELECT, MVT::v4i1, MVT::v4f32, 2 },
-      { ISD::SELECT, MVT::v4i1, MVT::v4f16, 2 },
-      { ISD::SELECT, MVT::v8i1, MVT::v8f16, 2 },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i16, 16 },
-      { ISD::SELECT, MVT::v8i1, MVT::v8i32, 8 },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i32, 16 },
-      { ISD::SELECT, MVT::v4i1, MVT::v4i64, 4 * AmortizationCost },
-      { ISD::SELECT, MVT::v8i1, MVT::v8i64, 8 * AmortizationCost },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i64, 16 * AmortizationCost }
-    };
+    static const TypeConversionCostTblEntry VectorSelectTbl[] = {
+        {ISD::SELECT, MVT::v2i1, MVT::v2f32, 2},
+        {ISD::SELECT, MVT::v2i1, MVT::v2f64, 2},
+        {ISD::SELECT, MVT::v4i1, MVT::v4f32, 2},
+        {ISD::SELECT, MVT::v4i1, MVT::v4f16, 2},
+        {ISD::SELECT, MVT::v8i1, MVT::v8f16, 2},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i16, 16},
+        {ISD::SELECT, MVT::v8i1, MVT::v8i32, 8},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i32, 16},
+        {ISD::SELECT, MVT::v4i1, MVT::v4i64, 4 * AmortizationCost},
+        {ISD::SELECT, MVT::v8i1, MVT::v8i64, 8 * AmortizationCost},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i64, 16 * AmortizationCost}};
 
     EVT SelCondTy = TLI->getValueType(DL, CondTy);
     EVT SelValTy = TLI->getValueType(DL, ValTy);
@@ -4527,33 +4524,20 @@ AArch64TTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *ValTy,
   // XOR: llvm/test/CodeGen/AArch64/reduce-xor.ll
   // AND: llvm/test/CodeGen/AArch64/reduce-and.ll
   static const CostTblEntry CostTblNoPairwise[]{
-      {ISD::ADD, MVT::v8i8,   2},
-      {ISD::ADD, MVT::v16i8,  2},
-      {ISD::ADD, MVT::v4i16,  2},
-      {ISD::ADD, MVT::v8i16,  2},
-      {ISD::ADD, MVT::v4i32,  2},
-      {ISD::ADD, MVT::v2i64,  2},
-      {ISD::OR,  MVT::v8i8,  15},
-      {ISD::OR,  MVT::v16i8, 17},
-      {ISD::OR,  MVT::v4i16,  7},
-      {ISD::OR,  MVT::v8i16,  9},
-      {ISD::OR,  MVT::v2i32,  3},
-      {ISD::OR,  MVT::v4i32,  5},
-      {ISD::OR,  MVT::v2i64,  3},
-      {ISD::XOR, MVT::v8i8,  15},
-      {ISD::XOR, MVT::v16i8, 17},
-      {ISD::XOR, MVT::v4i16,  7},
-      {ISD::XOR, MVT::v8i16,  9},
-      {ISD::XOR, MVT::v2i32,  3},
-      {ISD::XOR, MVT::v4i32,  5},
-      {ISD::XOR, MVT::v2i64,  3},
-      {ISD::AND, MVT::v8i8,  15},
-      {ISD::AND, MVT::v16i8, 17},
-      {ISD::AND, MVT::v4i16,  7},
-      {ISD::AND, MVT::v8i16,  9},
-      {ISD::AND, MVT::v2i32,  3},
-      {ISD::AND, MVT::v4i32,  5},
-      {ISD::AND, MVT::v2i64,  3},
+      {ISD::ADD, MVT::v8i8, 2},   {ISD::ADD, MVT::v16i8, 2},
+      {ISD::ADD, MVT::v4i16, 2},  {ISD::ADD, MVT::v8i16, 2},
+      {ISD::ADD, MVT::v4i32, 2},  {ISD::ADD, MVT::v2i64, 2},
+      {ISD::OR, MVT::v8i8, 15},   {ISD::OR, MVT::v16i8, 17},
+      {ISD::OR, MVT::v4i16, 7},   {ISD::OR, MVT::v8i16, 9},
+      {ISD::OR, MVT::v2i32, 3},   {ISD::OR, MVT::v4i32, 5},
+      {ISD::OR, MVT::v2i64, 3},   {ISD::XOR, MVT::v8i8, 15},
+      {ISD::XOR, MVT::v16i8, 17}, {ISD::XOR, MVT::v4i16, 7},
+      {ISD::XOR, MVT::v8i16, 9},  {ISD::XOR, MVT::v2i32, 3},
+      {ISD::XOR, MVT::v4i32, 5},  {ISD::XOR, MVT::v2i64, 3},
+      {ISD::AND, MVT::v8i8, 15},  {ISD::AND, MVT::v16i8, 17},
+      {ISD::AND, MVT::v4i16, 7},  {ISD::AND, MVT::v8i16, 9},
+      {ISD::AND, MVT::v2i32, 3},  {ISD::AND, MVT::v4i32, 5},
+      {ISD::AND, MVT::v2i64, 3},
   };
   switch (ISD) {
   default:
@@ -4611,19 +4595,13 @@ AArch64TTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *ValTy,
 
 InstructionCost AArch64TTIImpl::getSpliceCost(VectorType *Tp, int Index) {
   static const CostTblEntry ShuffleTbl[] = {
-      { TTI::SK_Splice, MVT::nxv16i8,  1 },
-      { TTI::SK_Splice, MVT::nxv8i16,  1 },
-      { TTI::SK_Splice, MVT::nxv4i32,  1 },
-      { TTI::SK_Splice, MVT::nxv2i64,  1 },
-      { TTI::SK_Splice, MVT::nxv2f16,  1 },
-      { TTI::SK_Splice, MVT::nxv4f16,  1 },
-      { TTI::SK_Splice, MVT::nxv8f16,  1 },
-      { TTI::SK_Splice, MVT::nxv2bf16, 1 },
-      { TTI::SK_Splice, MVT::nxv4bf16, 1 },
-      { TTI::SK_Splice, MVT::nxv8bf16, 1 },
-      { TTI::SK_Splice, MVT::nxv2f32,  1 },
-      { TTI::SK_Splice, MVT::nxv4f32,  1 },
-      { TTI::SK_Splice, MVT::nxv2f64,  1 },
+      {TTI::SK_Splice, MVT::nxv16i8, 1},  {TTI::SK_Splice, MVT::nxv8i16, 1},
+      {TTI::SK_Splice, MVT::nxv4i32, 1},  {TTI::SK_Splice, MVT::nxv2i64, 1},
+      {TTI::SK_Splice, MVT::nxv2f16, 1},  {TTI::SK_Splice, MVT::nxv4f16, 1},
+      {TTI::SK_Splice, MVT::nxv8f16, 1},  {TTI::SK_Splice, MVT::nxv2bf16, 1},
+      {TTI::SK_Splice, MVT::nxv4bf16, 1}, {TTI::SK_Splice, MVT::nxv8bf16, 1},
+      {TTI::SK_Splice, MVT::nxv2f32, 1},  {TTI::SK_Splice, MVT::nxv4f32, 1},
+      {TTI::SK_Splice, MVT::nxv2f64, 1},
   };
 
   // The code-generator is currently not able to handle scalable vectors

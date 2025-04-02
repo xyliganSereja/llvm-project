@@ -47,6 +47,6 @@ public:
     DwarfUsesRelocationsAcrossSections = enable;
   }
 };
-}
+} // namespace llvm
 
 #endif

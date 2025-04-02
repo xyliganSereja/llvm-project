@@ -38,7 +38,13 @@ static cl::opt<bool> DisableX86DomainReassignment(
     cl::desc("X86: Disable Virtual Register Reassignment."), cl::init(false));
 
 namespace {
-enum RegDomain { NoDomain = -1, GPRDomain, MaskDomain, OtherDomain, NumDomains };
+enum RegDomain {
+  NoDomain = -1,
+  GPRDomain,
+  MaskDomain,
+  OtherDomain,
+  NumDomains
+};
 
 static bool isMask(const TargetRegisterClass *RC,
                    const TargetRegisterInfo *TRI) {
@@ -303,7 +309,8 @@ private:
   unsigned ID;
 
 public:
-  Closure(unsigned ID, std::initializer_list<RegDomain> LegalDstDomainList) : ID(ID) {
+  Closure(unsigned ID, std::initializer_list<RegDomain> LegalDstDomainList)
+      : ID(ID) {
     for (RegDomain D : LegalDstDomainList)
       LegalDstDomains.set(D);
   }
@@ -329,13 +336,9 @@ public:
     return iterator_range<const_edge_iterator>(Edges.begin(), Edges.end());
   }
 
-  void addInstruction(MachineInstr *I) {
-    Instrs.push_back(I);
-  }
+  void addInstruction(MachineInstr *I) { Instrs.push_back(I); }
 
-  ArrayRef<MachineInstr *> instructions() const {
-    return Instrs;
-  }
+  ArrayRef<MachineInstr *> instructions() const { return Instrs; }
 
   LLVM_DUMP_METHOD void dump(const MachineRegisterInfo *MRI) const {
     dbgs() << "Registers: ";
@@ -354,10 +357,7 @@ public:
     dbgs() << "\n";
   }
 
-  unsigned getID() const {
-    return ID;
-  }
-
+  unsigned getID() const { return ID; }
 };
 
 class X86DomainReassignment : public MachineFunctionPass {
@@ -374,7 +374,7 @@ class X86DomainReassignment : public MachineFunctionPass {
 public:
   static char ID;
 
-  X86DomainReassignment() : MachineFunctionPass(ID) { }
+  X86DomainReassignment() : MachineFunctionPass(ID) {}
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 

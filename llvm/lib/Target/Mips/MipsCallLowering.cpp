@@ -180,7 +180,7 @@ MipsIncomingValueHandler::assignCustomValue(CallLowering::ArgInfo &Arg,
     std::swap(CopyLo, CopyHi);
 
   Arg.OrigRegs.assign(Arg.Regs.begin(), Arg.Regs.end());
-  Arg.Regs = { CopyLo.getReg(0), CopyHi.getReg(0) };
+  Arg.Regs = {CopyLo.getReg(0), CopyHi.getReg(0)};
   MIRBuilder.buildMergeLikeInstr(Arg.OrigRegs[0], {CopyLo, CopyHi});
 
   markPhysRegUsed(VALo.getLocReg());
@@ -272,7 +272,7 @@ MipsOutgoingValueHandler::assignCustomValue(CallLowering::ArgInfo &Arg,
   Register Hi = Unmerge.getReg(1);
 
   Arg.OrigRegs.assign(Arg.Regs.begin(), Arg.Regs.end());
-  Arg.Regs = { Lo, Hi };
+  Arg.Regs = {Lo, Hi};
   if (!STI.isLittle())
     std::swap(Lo, Hi);
 
@@ -535,8 +535,8 @@ bool MipsCallLowering::lowerCall(MachineIRBuilder &MIRBuilder,
 
   if (IsCalleeGlobalPIC) {
     MIRBuilder.buildCopy(
-      Register(Mips::GP),
-      MF.getInfo<MipsFunctionInfo>()->getGlobalBaseRegForGlobalISel(MF));
+        Register(Mips::GP),
+        MF.getInfo<MipsFunctionInfo>()->getGlobalBaseRegForGlobalISel(MF));
     MIB.addDef(Mips::GP, RegState::Implicit);
   }
   MIRBuilder.insertInstr(MIB);

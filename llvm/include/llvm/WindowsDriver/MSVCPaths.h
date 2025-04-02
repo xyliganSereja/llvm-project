@@ -95,10 +95,9 @@ bool findVCToolChainViaEnvironment(vfs::FileSystem &VFS, std::string &Path,
 //
 // This is the preferred way to discover new Visual Studios, as they're no
 // longer listed in the registry.
-bool
-findVCToolChainViaSetupConfig(vfs::FileSystem &VFS,
-                              std::optional<llvm::StringRef> VCToolsVersion,
-                              std::string &Path, ToolsetLayout &VSLayout);
+bool findVCToolChainViaSetupConfig(
+    vfs::FileSystem &VFS, std::optional<llvm::StringRef> VCToolsVersion,
+    std::string &Path, ToolsetLayout &VSLayout);
 
 // Look in the registry for Visual Studio installs, and use that to get
 // a toolchain path. VS2017 and newer don't get added to the registry.

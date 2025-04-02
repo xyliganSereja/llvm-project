@@ -52,8 +52,8 @@ public:
 
 } // End anonymous namespace.
 
-INITIALIZE_PASS(SIPreEmitPeephole, DEBUG_TYPE,
-                "SI peephole optimizations", false, false)
+INITIALIZE_PASS(SIPreEmitPeephole, DEBUG_TYPE, "SI peephole optimizations",
+                false, false)
 
 char SIPreEmitPeephole::ID = 0;
 
@@ -267,11 +267,9 @@ bool SIPreEmitPeephole::optimizeSetGPR(MachineInstr &First,
         return false;
       if (IdxReg && I->modifiesRegister(IdxReg, TRI))
         return false;
-      if (llvm::any_of(I->operands(),
-                       [&MRI, this](const MachineOperand &MO) {
-                         return MO.isReg() &&
-                                TRI->isVectorRegister(MRI, MO.getReg());
-                       })) {
+      if (llvm::any_of(I->operands(), [&MRI, this](const MachineOperand &MO) {
+            return MO.isReg() && TRI->isVectorRegister(MRI, MO.getReg());
+          })) {
         // The only exception allowed here is another indirect vector move
         // with the same mode.
         if (!IdxOn || !(I->getOpcode() == AMDGPU::V_MOV_B32_indirect_write ||

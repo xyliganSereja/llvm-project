@@ -162,9 +162,7 @@ public:
     return ScopeVariables;
   }
 
-  DenseMap<LexicalScope *, LabelList> &getScopeLabels() {
-    return ScopeLabels;
-  }
+  DenseMap<LexicalScope *, LabelList> &getScopeLabels() { return ScopeLabels; }
 
   DenseMap<const DILocalScope *, DIE *> &getAbstractScopeDIEs() {
     return AbstractLocalScopeDIEs;

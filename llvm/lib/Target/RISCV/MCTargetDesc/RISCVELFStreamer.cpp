@@ -37,8 +37,8 @@ RISCVTargetELFStreamer::RISCVTargetELFStreamer(MCStreamer &S,
   // `j label` in `.option norelax; j label; .option relax; ...; label:` needs a
   // relocation to ensure the jump target is correct after linking. This is due
   // to a limitation that shouldForceRelocation has to make the decision upfront
-  // without knowing a possibly future .option relax. When RISCVAsmParser is used,
-  // its ParseInstruction may call setForceRelocs as well.
+  // without knowing a possibly future .option relax. When RISCVAsmParser is
+  // used, its ParseInstruction may call setForceRelocs as well.
   if (STI.hasFeature(RISCV::FeatureRelax))
     static_cast<RISCVAsmBackend &>(MAB).setForceRelocs();
 }
@@ -116,9 +116,7 @@ void RISCVTargetELFStreamer::finish() {
   W.setELFHeaderEFlags(EFlags);
 }
 
-void RISCVTargetELFStreamer::reset() {
-  AttributeSection = nullptr;
-}
+void RISCVTargetELFStreamer::reset() { AttributeSection = nullptr; }
 
 void RISCVTargetELFStreamer::emitDirectiveVariantCC(MCSymbol &Symbol) {
   getStreamer().getAssembler().registerSymbol(Symbol);

@@ -160,7 +160,7 @@ public:
   }
 
   /// Insert and return the specified instruction.
-  template<typename InstTy>
+  template <typename InstTy>
   InstTy *Insert(InstTy *I, const Twine &Name = "") const {
     Inserter.InsertHelper(I, Name, InsertPt);
     AddMetadataToInst(I);
@@ -168,9 +168,7 @@ public:
   }
 
   /// No-op overload to handle constants.
-  Constant *Insert(Constant *C, const Twine& = "") const {
-    return C;
-  }
+  Constant *Insert(Constant *C, const Twine & = "") const { return C; }
 
   Value *Insert(Value *V, const Twine &Name = "") const {
     if (Instruction *I = dyn_cast<Instruction>(V))
@@ -458,7 +456,6 @@ public:
     }
   };
 
-
   //===--------------------------------------------------------------------===//
   // Miscellaneous creation methods.
   //===--------------------------------------------------------------------===//
@@ -477,24 +474,16 @@ public:
                                      Module *M = nullptr, bool AddNull = true);
 
   /// Get a constant value representing either true or false.
-  ConstantInt *getInt1(bool V) {
-    return ConstantInt::get(getInt1Ty(), V);
-  }
+  ConstantInt *getInt1(bool V) { return ConstantInt::get(getInt1Ty(), V); }
 
   /// Get the constant value for i1 true.
-  ConstantInt *getTrue() {
-    return ConstantInt::getTrue(Context);
-  }
+  ConstantInt *getTrue() { return ConstantInt::getTrue(Context); }
 
   /// Get the constant value for i1 false.
-  ConstantInt *getFalse() {
-    return ConstantInt::getFalse(Context);
-  }
+  ConstantInt *getFalse() { return ConstantInt::getFalse(Context); }
 
   /// Get a constant 8-bit value.
-  ConstantInt *getInt8(uint8_t C) {
-    return ConstantInt::get(getInt8Ty(), C);
-  }
+  ConstantInt *getInt8(uint8_t C) { return ConstantInt::get(getInt8Ty(), C); }
 
   /// Get a constant 16-bit value.
   ConstantInt *getInt16(uint16_t C) {
@@ -518,71 +507,47 @@ public:
   }
 
   /// Get a constant integer value.
-  ConstantInt *getInt(const APInt &AI) {
-    return ConstantInt::get(Context, AI);
-  }
+  ConstantInt *getInt(const APInt &AI) { return ConstantInt::get(Context, AI); }
 
   //===--------------------------------------------------------------------===//
   // Type creation methods
   //===--------------------------------------------------------------------===//
 
   /// Fetch the type representing a single bit
-  IntegerType *getInt1Ty() {
-    return Type::getInt1Ty(Context);
-  }
+  IntegerType *getInt1Ty() { return Type::getInt1Ty(Context); }
 
   /// Fetch the type representing an 8-bit integer.
-  IntegerType *getInt8Ty() {
-    return Type::getInt8Ty(Context);
-  }
+  IntegerType *getInt8Ty() { return Type::getInt8Ty(Context); }
 
   /// Fetch the type representing a 16-bit integer.
-  IntegerType *getInt16Ty() {
-    return Type::getInt16Ty(Context);
-  }
+  IntegerType *getInt16Ty() { return Type::getInt16Ty(Context); }
 
   /// Fetch the type representing a 32-bit integer.
-  IntegerType *getInt32Ty() {
-    return Type::getInt32Ty(Context);
-  }
+  IntegerType *getInt32Ty() { return Type::getInt32Ty(Context); }
 
   /// Fetch the type representing a 64-bit integer.
-  IntegerType *getInt64Ty() {
-    return Type::getInt64Ty(Context);
-  }
+  IntegerType *getInt64Ty() { return Type::getInt64Ty(Context); }
 
   /// Fetch the type representing a 128-bit integer.
   IntegerType *getInt128Ty() { return Type::getInt128Ty(Context); }
 
   /// Fetch the type representing an N-bit integer.
-  IntegerType *getIntNTy(unsigned N) {
-    return Type::getIntNTy(Context, N);
-  }
+  IntegerType *getIntNTy(unsigned N) { return Type::getIntNTy(Context, N); }
 
   /// Fetch the type representing a 16-bit floating point value.
-  Type *getHalfTy() {
-    return Type::getHalfTy(Context);
-  }
+  Type *getHalfTy() { return Type::getHalfTy(Context); }
 
   /// Fetch the type representing a 16-bit brain floating point value.
-  Type *getBFloatTy() {
-    return Type::getBFloatTy(Context);
-  }
+  Type *getBFloatTy() { return Type::getBFloatTy(Context); }
 
   /// Fetch the type representing a 32-bit floating point value.
-  Type *getFloatTy() {
-    return Type::getFloatTy(Context);
-  }
+  Type *getFloatTy() { return Type::getFloatTy(Context); }
 
   /// Fetch the type representing a 64-bit floating point value.
-  Type *getDoubleTy() {
-    return Type::getDoubleTy(Context);
-  }
+  Type *getDoubleTy() { return Type::getDoubleTy(Context); }
 
   /// Fetch the type representing void.
-  Type *getVoidTy() {
-    return Type::getVoidTy(Context);
-  }
+  Type *getVoidTy() { return Type::getVoidTy(Context); }
 
   /// Fetch the type representing a pointer.
   PointerType *getPtrTy(unsigned AddrSpace = 0) {
@@ -615,8 +580,8 @@ public:
                          MaybeAlign Align, bool isVolatile = false,
                          MDNode *TBAATag = nullptr, MDNode *ScopeTag = nullptr,
                          MDNode *NoAliasTag = nullptr) {
-    return CreateMemSet(Ptr, Val, getInt64(Size), Align, isVolatile,
-                        TBAATag, ScopeTag, NoAliasTag);
+    return CreateMemSet(Ptr, Val, getInt64(Size), Align, isVolatile, TBAATag,
+                        ScopeTag, NoAliasTag);
   }
 
   CallInst *CreateMemSet(Value *Ptr, Value *Val, Value *Size, MaybeAlign Align,
@@ -715,7 +680,8 @@ public:
   /// Create and insert an element unordered-atomic memcpy between the
   /// specified pointers.
   ///
-  /// DstAlign/SrcAlign are the alignments of the Dst/Src pointers, respectively.
+  /// DstAlign/SrcAlign are the alignments of the Dst/Src pointers,
+  /// respectively.
   ///
   /// If the pointers aren't i8*, they will be converted.  If a TBAA tag is
   /// specified, it will be added to the instruction. Likewise with alias.scope
@@ -943,16 +909,13 @@ public:
 
   /// Create a call to the experimental.gc.result intrinsic to extract
   /// the result from a call wrapped in a statepoint.
-  CallInst *CreateGCResult(Instruction *Statepoint,
-                           Type *ResultType,
+  CallInst *CreateGCResult(Instruction *Statepoint, Type *ResultType,
                            const Twine &Name = "");
 
   /// Create a call to the experimental.gc.relocate intrinsics to
   /// project the relocated value of one pointer from the statepoint.
-  CallInst *CreateGCRelocate(Instruction *Statepoint,
-                             int BaseOffset,
-                             int DerivedOffset,
-                             Type *ResultType,
+  CallInst *CreateGCRelocate(Instruction *Statepoint, int BaseOffset,
+                             int DerivedOffset, Type *ResultType,
                              const Twine &Name = "");
 
   /// Create a call to the experimental.gc.pointer.base intrinsic to get the
@@ -1131,9 +1094,7 @@ private:
 
 public:
   /// Create a 'ret void' instruction.
-  ReturnInst *CreateRetVoid() {
-    return Insert(ReturnInst::Create(Context));
-  }
+  ReturnInst *CreateRetVoid() { return Insert(ReturnInst::Create(Context)); }
 
   /// Create a 'ret <val>' instruction.
   ReturnInst *CreateRet(Value *V) {
@@ -1242,18 +1203,16 @@ public:
                            ArrayRef<BasicBlock *> IndirectDests,
                            ArrayRef<Value *> Args = {},
                            const Twine &Name = "") {
-    return Insert(CallBrInst::Create(Ty, Callee, DefaultDest, IndirectDests,
-                                     Args), Name);
-  }
-  CallBrInst *CreateCallBr(FunctionType *Ty, Value *Callee,
-                           BasicBlock *DefaultDest,
-                           ArrayRef<BasicBlock *> IndirectDests,
-                           ArrayRef<Value *> Args,
-                           ArrayRef<OperandBundleDef> OpBundles,
-                           const Twine &Name = "") {
     return Insert(
-        CallBrInst::Create(Ty, Callee, DefaultDest, IndirectDests, Args,
-                           OpBundles), Name);
+        CallBrInst::Create(Ty, Callee, DefaultDest, IndirectDests, Args), Name);
+  }
+  CallBrInst *
+  CreateCallBr(FunctionType *Ty, Value *Callee, BasicBlock *DefaultDest,
+               ArrayRef<BasicBlock *> IndirectDests, ArrayRef<Value *> Args,
+               ArrayRef<OperandBundleDef> OpBundles, const Twine &Name = "") {
+    return Insert(CallBrInst::Create(Ty, Callee, DefaultDest, IndirectDests,
+                                     Args, OpBundles),
+                  Name);
   }
 
   CallBrInst *CreateCallBr(FunctionCallee Callee, BasicBlock *DefaultDest,
@@ -1313,11 +1272,13 @@ public:
 private:
   BinaryOperator *CreateInsertNUWNSWBinOp(BinaryOperator::BinaryOps Opc,
                                           Value *LHS, Value *RHS,
-                                          const Twine &Name,
-                                          bool HasNUW, bool HasNSW) {
+                                          const Twine &Name, bool HasNUW,
+                                          bool HasNSW) {
     BinaryOperator *BO = Insert(BinaryOperator::Create(Opc, LHS, RHS), Name);
-    if (HasNUW) BO->setHasNoUnsignedWrap();
-    if (HasNSW) BO->setHasNoSignedWrap();
+    if (HasNUW)
+      BO->setHasNoUnsignedWrap();
+    if (HasNSW)
+      BO->setHasNoSignedWrap();
     return BO;
   }
 
@@ -1461,20 +1422,20 @@ public:
     if (Value *V =
             Folder.FoldNoWrapBinOp(Instruction::Shl, LHS, RHS, HasNUW, HasNSW))
       return V;
-    return CreateInsertNUWNSWBinOp(Instruction::Shl, LHS, RHS, Name,
-                                   HasNUW, HasNSW);
+    return CreateInsertNUWNSWBinOp(Instruction::Shl, LHS, RHS, Name, HasNUW,
+                                   HasNSW);
   }
 
   Value *CreateShl(Value *LHS, const APInt &RHS, const Twine &Name = "",
                    bool HasNUW = false, bool HasNSW = false) {
-    return CreateShl(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
-                     HasNUW, HasNSW);
+    return CreateShl(LHS, ConstantInt::get(LHS->getType(), RHS), Name, HasNUW,
+                     HasNSW);
   }
 
   Value *CreateShl(Value *LHS, uint64_t RHS, const Twine &Name = "",
                    bool HasNUW = false, bool HasNSW = false) {
-    return CreateShl(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
-                     HasNUW, HasNSW);
+    return CreateShl(LHS, ConstantInt::get(LHS->getType(), RHS), Name, HasNUW,
+                     HasNSW);
   }
 
   Value *CreateLShr(Value *LHS, Value *RHS, const Twine &Name = "",
@@ -1488,12 +1449,14 @@ public:
 
   Value *CreateLShr(Value *LHS, const APInt &RHS, const Twine &Name = "",
                     bool isExact = false) {
-    return CreateLShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,isExact);
+    return CreateLShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
+                      isExact);
   }
 
   Value *CreateLShr(Value *LHS, uint64_t RHS, const Twine &Name = "",
                     bool isExact = false) {
-    return CreateLShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,isExact);
+    return CreateLShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
+                      isExact);
   }
 
   Value *CreateAShr(Value *LHS, Value *RHS, const Twine &Name = "",
@@ -1507,12 +1470,14 @@ public:
 
   Value *CreateAShr(Value *LHS, const APInt &RHS, const Twine &Name = "",
                     bool isExact = false) {
-    return CreateAShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,isExact);
+    return CreateAShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
+                      isExact);
   }
 
   Value *CreateAShr(Value *LHS, uint64_t RHS, const Twine &Name = "",
                     bool isExact = false) {
-    return CreateAShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,isExact);
+    return CreateAShr(LHS, ConstantInt::get(LHS->getType(), RHS), Name,
+                      isExact);
   }
 
   Value *CreateAnd(Value *LHS, Value *RHS, const Twine &Name = "") {
@@ -1529,7 +1494,7 @@ public:
     return CreateAnd(LHS, ConstantInt::get(LHS->getType(), RHS), Name);
   }
 
-  Value *CreateAnd(ArrayRef<Value*> Ops) {
+  Value *CreateAnd(ArrayRef<Value *> Ops) {
     assert(!Ops.empty());
     Value *Accum = Ops[0];
     for (unsigned i = 1; i < Ops.size(); i++)
@@ -1551,7 +1516,7 @@ public:
     return CreateOr(LHS, ConstantInt::get(LHS->getType(), RHS), Name);
   }
 
-  Value *CreateOr(ArrayRef<Value*> Ops) {
+  Value *CreateOr(ArrayRef<Value *> Ops) {
     assert(!Ops.empty());
     Value *Accum = Ops[0];
     for (unsigned i = 1; i < Ops.size(); i++)
@@ -1668,9 +1633,8 @@ public:
     return Insert(I, Name);
   }
 
-  Value *CreateBinOp(Instruction::BinaryOps Opc,
-                     Value *LHS, Value *RHS, const Twine &Name = "",
-                     MDNode *FPMathTag = nullptr) {
+  Value *CreateBinOp(Instruction::BinaryOps Opc, Value *LHS, Value *RHS,
+                     const Twine &Name = "", MDNode *FPMathTag = nullptr) {
     return CreateBinOpFMF(Opc, LHS, RHS, {}, Name, FPMathTag);
   }
 
@@ -1758,8 +1722,7 @@ public:
     return CreateXor(V, Constant::getAllOnesValue(V->getType()), Name);
   }
 
-  Value *CreateUnOp(Instruction::UnaryOps Opc,
-                    Value *V, const Twine &Name = "",
+  Value *CreateUnOp(Instruction::UnaryOps Opc, Value *V, const Twine &Name = "",
                     MDNode *FPMathTag = nullptr) {
     if (Value *Res = Folder.FoldUnOpFMF(Opc, V, FMF))
       return Res;
@@ -1814,12 +1777,12 @@ public:
 
   LoadInst *CreateAlignedLoad(Type *Ty, Value *Ptr, MaybeAlign Align,
                               const char *Name) {
-    return CreateAlignedLoad(Ty, Ptr, Align, /*isVolatile*/false, Name);
+    return CreateAlignedLoad(Ty, Ptr, Align, /*isVolatile*/ false, Name);
   }
 
   LoadInst *CreateAlignedLoad(Type *Ty, Value *Ptr, MaybeAlign Align,
                               const Twine &Name = "") {
-    return CreateAlignedLoad(Ty, Ptr, Align, /*isVolatile*/false, Name);
+    return CreateAlignedLoad(Ty, Ptr, Align, /*isVolatile*/ false, Name);
   }
 
   LoadInst *CreateAlignedLoad(Type *Ty, Value *Ptr, MaybeAlign Align,
@@ -1907,10 +1870,8 @@ public:
   Value *CreateConstGEP2_32(Type *Ty, Value *Ptr, unsigned Idx0, unsigned Idx1,
                             const Twine &Name = "",
                             GEPNoWrapFlags NWFlags = GEPNoWrapFlags::none()) {
-    Value *Idxs[] = {
-      ConstantInt::get(Type::getInt32Ty(Context), Idx0),
-      ConstantInt::get(Type::getInt32Ty(Context), Idx1)
-    };
+    Value *Idxs[] = {ConstantInt::get(Type::getInt32Ty(Context), Idx0),
+                     ConstantInt::get(Type::getInt32Ty(Context), Idx1)};
 
     if (auto *V = Folder.FoldGEP(Ty, Ptr, Idxs, NWFlags))
       return V;
@@ -1920,10 +1881,8 @@ public:
 
   Value *CreateConstInBoundsGEP2_32(Type *Ty, Value *Ptr, unsigned Idx0,
                                     unsigned Idx1, const Twine &Name = "") {
-    Value *Idxs[] = {
-      ConstantInt::get(Type::getInt32Ty(Context), Idx0),
-      ConstantInt::get(Type::getInt32Ty(Context), Idx1)
-    };
+    Value *Idxs[] = {ConstantInt::get(Type::getInt32Ty(Context), Idx0),
+                     ConstantInt::get(Type::getInt32Ty(Context), Idx1)};
 
     if (auto *V = Folder.FoldGEP(Ty, Ptr, Idxs, GEPNoWrapFlags::inBounds()))
       return V;
@@ -1953,10 +1912,8 @@ public:
 
   Value *CreateConstGEP2_64(Type *Ty, Value *Ptr, uint64_t Idx0, uint64_t Idx1,
                             const Twine &Name = "") {
-    Value *Idxs[] = {
-      ConstantInt::get(Type::getInt64Ty(Context), Idx0),
-      ConstantInt::get(Type::getInt64Ty(Context), Idx1)
-    };
+    Value *Idxs[] = {ConstantInt::get(Type::getInt64Ty(Context), Idx0),
+                     ConstantInt::get(Type::getInt64Ty(Context), Idx1)};
 
     if (auto *V = Folder.FoldGEP(Ty, Ptr, Idxs, GEPNoWrapFlags::none()))
       return V;
@@ -1966,10 +1923,8 @@ public:
 
   Value *CreateConstInBoundsGEP2_64(Type *Ty, Value *Ptr, uint64_t Idx0,
                                     uint64_t Idx1, const Twine &Name = "") {
-    Value *Idxs[] = {
-      ConstantInt::get(Type::getInt64Ty(Context), Idx0),
-      ConstantInt::get(Type::getInt64Ty(Context), Idx1)
-    };
+    Value *Idxs[] = {ConstantInt::get(Type::getInt64Ty(Context), Idx0),
+                     ConstantInt::get(Type::getInt64Ty(Context), Idx1)};
 
     if (auto *V = Folder.FoldGEP(Ty, Ptr, Idxs, GEPNoWrapFlags::inBounds()))
       return V;
@@ -2048,10 +2003,8 @@ public:
 
   /// Create a ZExt or Trunc from the integer value V to DestTy. Return
   /// the value untouched if the type of V is already DestTy.
-  Value *CreateZExtOrTrunc(Value *V, Type *DestTy,
-                           const Twine &Name = "") {
-    assert(V->getType()->isIntOrIntVectorTy() &&
-           DestTy->isIntOrIntVectorTy() &&
+  Value *CreateZExtOrTrunc(Value *V, Type *DestTy, const Twine &Name = "") {
+    assert(V->getType()->isIntOrIntVectorTy() && DestTy->isIntOrIntVectorTy() &&
            "Can only zero extend/truncate integers!");
     Type *VTy = V->getType();
     if (VTy->getScalarSizeInBits() < DestTy->getScalarSizeInBits())
@@ -2063,10 +2016,8 @@ public:
 
   /// Create a SExt or Trunc from the integer value V to DestTy. Return
   /// the value untouched if the type of V is already DestTy.
-  Value *CreateSExtOrTrunc(Value *V, Type *DestTy,
-                           const Twine &Name = "") {
-    assert(V->getType()->isIntOrIntVectorTy() &&
-           DestTy->isIntOrIntVectorTy() &&
+  Value *CreateSExtOrTrunc(Value *V, Type *DestTy, const Twine &Name = "") {
+    assert(V->getType()->isIntOrIntVectorTy() && DestTy->isIntOrIntVectorTy() &&
            "Can only sign extend/truncate integers!");
     Type *VTy = V->getType();
     if (VTy->getScalarSizeInBits() < DestTy->getScalarSizeInBits())
@@ -2103,7 +2054,7 @@ public:
     return I;
   }
 
-  Value *CreateSIToFP(Value *V, Type *DestTy, const Twine &Name = ""){
+  Value *CreateSIToFP(Value *V, Type *DestTy, const Twine &Name = "") {
     if (IsFPConstrained)
       return CreateConstrainedFPCast(Intrinsic::experimental_constrained_sitofp,
                                      V, DestTy, nullptr, Name);
@@ -2139,23 +2090,19 @@ public:
                       FMFSource);
   }
 
-  Value *CreatePtrToInt(Value *V, Type *DestTy,
-                        const Twine &Name = "") {
+  Value *CreatePtrToInt(Value *V, Type *DestTy, const Twine &Name = "") {
     return CreateCast(Instruction::PtrToInt, V, DestTy, Name);
   }
 
-  Value *CreateIntToPtr(Value *V, Type *DestTy,
-                        const Twine &Name = "") {
+  Value *CreateIntToPtr(Value *V, Type *DestTy, const Twine &Name = "") {
     return CreateCast(Instruction::IntToPtr, V, DestTy, Name);
   }
 
-  Value *CreateBitCast(Value *V, Type *DestTy,
-                       const Twine &Name = "") {
+  Value *CreateBitCast(Value *V, Type *DestTy, const Twine &Name = "") {
     return CreateCast(Instruction::BitCast, V, DestTy, Name);
   }
 
-  Value *CreateAddrSpaceCast(Value *V, Type *DestTy,
-                             const Twine &Name = "") {
+  Value *CreateAddrSpaceCast(Value *V, Type *DestTy, const Twine &Name = "") {
     return CreateCast(Instruction::AddrSpaceCast, V, DestTy, Name);
   }
 
@@ -2196,8 +2143,7 @@ public:
     return Insert(Cast, Name);
   }
 
-  Value *CreatePointerCast(Value *V, Type *DestTy,
-                           const Twine &Name = "") {
+  Value *CreatePointerCast(Value *V, Type *DestTy, const Twine &Name = "") {
     if (V->getType() == DestTy)
       return V;
     if (auto *VC = dyn_cast<Constant>(V))
@@ -2496,8 +2442,7 @@ public:
     return Insert(new VAArgInst(List, Ty), Name);
   }
 
-  Value *CreateExtractElement(Value *Vec, Value *Idx,
-                              const Twine &Name = "") {
+  Value *CreateExtractElement(Value *Vec, Value *Idx, const Twine &Name = "") {
     if (Value *V = Folder.FoldExtractElement(Vec, Idx))
       return V;
     return Insert(ExtractElementInst::Create(Vec, Idx), Name);
@@ -2780,7 +2725,6 @@ IRBuilder(BasicBlock *, BasicBlock::iterator, FolderTy, MDNode *,
           ArrayRef<OperandBundleDef>) -> IRBuilder<FolderTy>;
 IRBuilder(BasicBlock *, BasicBlock::iterator, MDNode *,
           ArrayRef<OperandBundleDef>) -> IRBuilder<>;
-
 
 // Create wrappers for C Binding types (see CBindingWrapping.h).
 DEFINE_SIMPLE_CONVERSION_FUNCTIONS(IRBuilder<>, LLVMBuilderRef)

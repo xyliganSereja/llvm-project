@@ -201,13 +201,12 @@ FunctionPass *createLoopDataPrefetchPass();
 //
 FunctionPass *createInstSimplifyLegacyPass();
 
-
 //===----------------------------------------------------------------------===//
 //
 // createScalarizeMaskedMemIntrinPass - Replace masked load, store, gather
 // and scatter intrinsics with scalar code when target doesn't support them.
 //
 FunctionPass *createScalarizeMaskedMemIntrinLegacyPass();
-} // End llvm namespace
+} // namespace llvm
 
 #endif

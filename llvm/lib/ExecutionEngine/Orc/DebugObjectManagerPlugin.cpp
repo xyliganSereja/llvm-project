@@ -457,28 +457,27 @@ Error DebugObjectManagerPlugin::notifyEmitted(
   std::promise<MSVCPError> FinalizePromise;
   std::future<MSVCPError> FinalizeErr = FinalizePromise.get_future();
 
-  It->second->finalizeAsync(
-      [this, &FinalizePromise, &MR](Expected<ExecutorAddrRange> TargetMem) {
-        // Any failure here will fail materialization.
-        if (!TargetMem) {
-          FinalizePromise.set_value(TargetMem.takeError());
-          return;
-        }
-        if (Error Err =
-                Target->registerDebugObject(*TargetMem, AutoRegisterCode)) {
-          FinalizePromise.set_value(std::move(Err));
-          return;
-        }
+  It->second->finalizeAsync([this, &FinalizePromise,
+                             &MR](Expected<ExecutorAddrRange> TargetMem) {
+    // Any failure here will fail materialization.
+    if (!TargetMem) {
+      FinalizePromise.set_value(TargetMem.takeError());
+      return;
+    }
+    if (Error Err = Target->registerDebugObject(*TargetMem, AutoRegisterCode)) {
+      FinalizePromise.set_value(std::move(Err));
+      return;
+    }
 
-        // Once our tracking info is updated, notifyEmitted() can return and
-        // finish materialization.
-        FinalizePromise.set_value(MR.withResourceKeyDo([&](ResourceKey K) {
-          assert(PendingObjs.count(&MR) && "We still hold PendingObjsLock");
-          std::lock_guard<std::mutex> Lock(RegisteredObjsLock);
-          RegisteredObjs[K].push_back(std::move(PendingObjs[&MR]));
-          PendingObjs.erase(&MR);
-        }));
-      });
+    // Once our tracking info is updated, notifyEmitted() can return and
+    // finish materialization.
+    FinalizePromise.set_value(MR.withResourceKeyDo([&](ResourceKey K) {
+      assert(PendingObjs.count(&MR) && "We still hold PendingObjsLock");
+      std::lock_guard<std::mutex> Lock(RegisteredObjsLock);
+      RegisteredObjs[K].push_back(std::move(PendingObjs[&MR]));
+      PendingObjs.erase(&MR);
+    }));
+  });
 
   return FinalizeErr.get();
 }

@@ -47,7 +47,7 @@ class MDNode;
 class Module;
 class ModuleSlotTracker;
 class raw_ostream;
-template<typename ValueTy> class StringMapEntry;
+template <typename ValueTy> class StringMapEntry;
 class Twine;
 class Type;
 class User;
@@ -181,7 +181,9 @@ private:
     user_iterator_impl() = default;
 
     bool operator==(const user_iterator_impl &x) const { return UI == x.UI; }
-    bool operator!=(const user_iterator_impl &x) const { return !operator==(x); }
+    bool operator!=(const user_iterator_impl &x) const {
+      return !operator==(x);
+    }
 
     /// Returns true if this iterator is equal to user_end() on the value.
     bool atEnd() const { return *this == user_iterator_impl(); }
@@ -198,9 +200,7 @@ private:
     }
 
     // Retrieve a pointer to the current User.
-    UserTy *operator*() const {
-      return UI->getUser();
-    }
+    UserTy *operator*() const { return UI->getUser(); }
 
     UserTy *operator->() const { return operator*(); }
 
@@ -346,9 +346,7 @@ public:
     return UseList == nullptr;
   }
 
-  bool materialized_use_empty() const {
-    return UseList == nullptr;
-  }
+  bool materialized_use_empty() const { return UseList == nullptr; }
 
   using use_iterator = use_iterator_impl<Use>;
   using const_use_iterator = use_iterator_impl<const Use>;
@@ -458,8 +456,8 @@ public:
     return const_cast<Value *>(this)->getSingleUndroppableUse();
   }
 
-  /// Return true if there is exactly one unique user of this value that cannot be
-  /// dropped (that user can have multiple uses of this value).
+  /// Return true if there is exactly one unique user of this value that cannot
+  /// be dropped (that user can have multiple uses of this value).
   User *getUniqueUndroppableUser();
   const User *getUniqueUndroppableUser() const {
     return const_cast<Value *>(this)->getUniqueUndroppableUser();
@@ -514,7 +512,7 @@ public:
 #define HANDLE_VALUE(Name) Name##Val,
 #include "llvm/IR/Value.def"
 
-    // Markers:
+  // Markers:
 #define HANDLE_CONSTANT_MARKER(Marker, Constant) Marker = Constant##Val,
 #include "llvm/IR/Value.def"
   };
@@ -529,21 +527,15 @@ public:
   /// # there are more possible values for the value type than in ValueTy enum.
   /// # the InstructionVal enumerator must be the highest valued enumerator in
   ///   the ValueTy enum.
-  unsigned getValueID() const {
-    return SubclassID;
-  }
+  unsigned getValueID() const { return SubclassID; }
 
   /// Return the raw optional flags value contained in this value.
   ///
   /// This should only be used when testing two Values for equivalence.
-  unsigned getRawSubclassOptionalData() const {
-    return SubclassOptionalData;
-  }
+  unsigned getRawSubclassOptionalData() const { return SubclassOptionalData; }
 
   /// Clear the optional flags contained in this value.
-  void clearSubclassOptionalData() {
-    SubclassOptionalData = 0;
-  }
+  void clearSubclassOptionalData() { SubclassOptionalData = 0; }
 
   /// Check the optional flags for equality.
   bool hasSameSubclassOptionalData(const Value *V) const {
@@ -675,8 +667,8 @@ public:
   /// Alias analysis.
   const Value *stripPointerCastsForAliasAnalysis() const;
   Value *stripPointerCastsForAliasAnalysis() {
-    return const_cast<Value *>(static_cast<const Value *>(this)
-                                   ->stripPointerCastsForAliasAnalysis());
+    return const_cast<Value *>(
+        static_cast<const Value *>(this)->stripPointerCastsForAliasAnalysis());
   }
 
   /// Strip off pointer casts and all-constant inbounds GEPs.
@@ -686,7 +678,7 @@ public:
   const Value *stripInBoundsConstantOffsets() const;
   Value *stripInBoundsConstantOffsets() {
     return const_cast<Value *>(
-              static_cast<const Value *>(this)->stripInBoundsConstantOffsets());
+        static_cast<const Value *>(this)->stripInBoundsConstantOffsets());
   }
 
   /// Accumulate the constant offset this value has compared to a base pointer.
@@ -755,7 +747,7 @@ public:
   const Value *stripInBoundsOffsets(function_ref<void(const Value *)> Func =
                                         [](const Value *) {}) const;
   inline Value *stripInBoundsOffsets(function_ref<void(const Value *)> Func =
-                                  [](const Value *) {}) {
+                                         [](const Value *) {}) {
     return const_cast<Value *>(
         static_cast<const Value *>(this)->stripInBoundsOffsets(Func));
   }
@@ -780,8 +772,7 @@ public:
   /// IF CanBeFreed is true, the pointer is known to be dereferenceable at
   /// point of definition only.  Caller must prove that allocation is not
   /// deallocated between point of definition and use.
-  uint64_t getPointerDereferenceableBytes(const DataLayout &DL,
-                                          bool &CanBeNull,
+  uint64_t getPointerDereferenceableBytes(const DataLayout &DL, bool &CanBeNull,
                                           bool &CanBeFreed) const;
 
   /// Returns an alignment of the pointer value.
@@ -800,7 +791,7 @@ public:
                                 const BasicBlock *PredBB) const;
   Value *DoPHITranslation(const BasicBlock *CurBB, const BasicBlock *PredBB) {
     return const_cast<Value *>(
-             static_cast<const Value *>(this)->DoPHITranslation(CurBB, PredBB));
+        static_cast<const Value *>(this)->DoPHITranslation(CurBB, PredBB));
   }
 
   /// The maximum alignment for instructions.
@@ -816,9 +807,7 @@ public:
   /// completely invalid IR very easily.  It is strongly recommended that you
   /// recreate IR objects with the right types instead of mutating them in
   /// place.
-  void mutateType(Type *Ty) {
-    VTy = Ty;
-  }
+  void mutateType(Type *Ty) { VTy = Ty; }
 
   /// Sort the use-list.
   ///
@@ -871,7 +860,9 @@ protected:
   void setValueSubclassData(unsigned short D) { SubclassData = D; }
 };
 
-struct ValueDeleter { void operator()(Value *V) { V->deleteValue(); } };
+struct ValueDeleter {
+  void operator()(Value *V) { V->deleteValue(); }
+};
 
 /// Use this instead of std::unique_ptr<Value> or std::unique_ptr<Instruction>.
 /// Those don't work because Value and Instruction's destructors are protected,
@@ -884,9 +875,11 @@ inline raw_ostream &operator<<(raw_ostream &OS, const Value &V) {
 }
 
 void Use::set(Value *V) {
-  if (Val) removeFromList();
+  if (Val)
+    removeFromList();
   Val = V;
-  if (V) V->addUse(*this);
+  if (V)
+    V->addUse(*this);
 }
 
 Value *Use::operator=(Value *RHS) {
@@ -971,7 +964,8 @@ template <class Compare> void Value::sortUseList(Compare Cmp) {
 //
 template <> struct isa_impl<Constant, Value> {
   static inline bool doit(const Value &Val) {
-    static_assert(Value::ConstantFirstVal == 0, "Val.getValueID() >= Value::ConstantFirstVal");
+    static_assert(Value::ConstantFirstVal == 0,
+                  "Val.getValueID() >= Value::ConstantFirstVal");
     return Val.getValueID() <= Value::ConstantLastVal;
   }
 };
@@ -991,7 +985,7 @@ template <> struct isa_impl<ConstantAggregate, Value> {
 };
 
 template <> struct isa_impl<Argument, Value> {
-  static inline bool doit (const Value &Val) {
+  static inline bool doit(const Value &Val) {
     return Val.getValueID() == Value::ArgumentVal;
   }
 };
@@ -1056,21 +1050,20 @@ DEFINE_ISA_CONVERSION_FUNCTIONS(Value, LLVMValueRef)
 
 // Specialized opaque value conversions.
 inline Value **unwrap(LLVMValueRef *Vals) {
-  return reinterpret_cast<Value**>(Vals);
+  return reinterpret_cast<Value **>(Vals);
 }
 
-template<typename T>
-inline T **unwrap(LLVMValueRef *Vals, unsigned Length) {
+template <typename T> inline T **unwrap(LLVMValueRef *Vals, unsigned Length) {
 #ifndef NDEBUG
   for (LLVMValueRef *I = Vals, *E = Vals + Length; I != E; ++I)
     unwrap<T>(*I); // For side effect of calling assert on invalid usage.
 #endif
   (void)Length;
-  return reinterpret_cast<T**>(Vals);
+  return reinterpret_cast<T **>(Vals);
 }
 
 inline LLVMValueRef *wrap(const Value **Vals) {
-  return reinterpret_cast<LLVMValueRef*>(const_cast<Value**>(Vals));
+  return reinterpret_cast<LLVMValueRef *>(const_cast<Value **>(Vals));
 }
 
 } // end namespace llvm

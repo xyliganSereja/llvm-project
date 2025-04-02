@@ -1885,8 +1885,8 @@ void NumericalStabilitySanitizer::propagateNonFTStore(
     return;
   }
   // ClPropagateNonFTConstStoresAsFT is by default false.
-  if (Constant *C; ClPropagateNonFTConstStoresAsFT &&
-                   (C = dyn_cast<Constant>(StoredValue))) {
+  if (Constant * C; ClPropagateNonFTConstStoresAsFT &&
+                    (C = dyn_cast<Constant>(StoredValue))) {
     // This might be a fp constant stored as an int. Bitcast and store if it has
     // appropriate size.
     Type *BitcastTy = nullptr; // The FT type to bitcast to.

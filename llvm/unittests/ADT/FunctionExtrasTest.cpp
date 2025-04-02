@@ -276,7 +276,9 @@ TEST(UniqueFunctionTest, SFINAE) {
 
 // A forward declared type, and a templated type.
 class Incomplete;
-template <typename T> class Templated { T A; };
+template <typename T> class Templated {
+  T A;
+};
 
 // Check that we can define unique_function that have references to
 // incomplete types, even if those types are templated over an
@@ -311,9 +313,11 @@ class Incomplete {};
 Incomplete incompleteFunction() { return {}; }
 const Incomplete incompleteFunctionConst() { return {}; }
 
-// Check that we can store a pointer-sized payload inline in the unique_function.
+// Check that we can store a pointer-sized payload inline in the
+// unique_function.
 TEST(UniqueFunctionTest, InlineStorageWorks) {
-  // We do assume a couple of implementation details of the unique_function here:
+  // We do assume a couple of implementation details of the unique_function
+  // here:
   //  - It can store certain small-enough payload inline
   //  - Inline storage size is at least >= sizeof(void*)
   void *ptr = nullptr;

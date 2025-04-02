@@ -105,14 +105,11 @@ Register constrainRegToClass(MachineRegisterInfo &MRI,
 /// location of \p InsertPt is used for the new copy.
 ///
 /// \return The virtual register constrained to the right register class.
-Register constrainOperandRegClass(const MachineFunction &MF,
-                                  const TargetRegisterInfo &TRI,
-                                  MachineRegisterInfo &MRI,
-                                  const TargetInstrInfo &TII,
-                                  const RegisterBankInfo &RBI,
-                                  MachineInstr &InsertPt,
-                                  const TargetRegisterClass &RegClass,
-                                  MachineOperand &RegMO);
+Register constrainOperandRegClass(
+    const MachineFunction &MF, const TargetRegisterInfo &TRI,
+    MachineRegisterInfo &MRI, const TargetInstrInfo &TII,
+    const RegisterBankInfo &RBI, MachineInstr &InsertPt,
+    const TargetRegisterClass &RegClass, MachineOperand &RegMO);
 
 /// Try to constrain Reg so that it is usable by argument OpIdx of the provided
 /// MCInstrDesc \p II. If this fails, create a new virtual register in the
@@ -218,7 +215,7 @@ getFConstantVRegValWithLookThrough(Register VReg,
                                    const MachineRegisterInfo &MRI,
                                    bool LookThroughInstrs = true);
 
-const ConstantFP* getConstantFPVRegVal(Register VReg,
+const ConstantFP *getConstantFPVRegVal(Register VReg,
                                        const MachineRegisterInfo &MRI);
 
 /// See if Reg is defined by an single def instruction that is
@@ -547,7 +544,7 @@ bool isConstTrueVal(const TargetLowering &TLI, int64_t Val, bool IsVector,
 /// \returns true if given the TargetLowering's boolean contents information,
 /// the value \p Val contains a false value.
 bool isConstFalseVal(const TargetLowering &TLI, int64_t Val, bool IsVector,
-                    bool IsFP);
+                     bool IsFP);
 
 /// Returns an integer representing true, as defined by the
 /// TargetBooleanContents.

@@ -308,7 +308,7 @@ TEST(VETest, VLIndex) {
 
     uint64_t Flags = Desc.TSFlags;
     ASSERT_EQ(VLIndex(i), GET_VLINDEX(Flags))
-              << MII->getName(i)
-              << ": mismatched expected VL register index in its argument\n";
+        << MII->getName(i)
+        << ": mismatched expected VL register index in its argument\n";
   }
 }

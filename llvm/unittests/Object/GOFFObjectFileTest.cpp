@@ -183,7 +183,8 @@ TEST(GOFFObjectFileTest, ContinuationGetSymbolName) {
   GOFFContData[GOFF::RecordLength + 7] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 11] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 71] = (char)0x0A; // Size of symbol name.
-  GOFFContData[GOFF::RecordLength + 72] = (char)0xC8; // Symbol name is HelloWorld.
+  GOFFContData[GOFF::RecordLength + 72] =
+      (char)0xC8; // Symbol name is HelloWorld.
   GOFFContData[GOFF::RecordLength + 73] = (char)0x85;
   GOFFContData[GOFF::RecordLength + 74] = (char)0x93;
   GOFFContData[GOFF::RecordLength + 75] = (char)0x93;
@@ -194,7 +195,8 @@ TEST(GOFFObjectFileTest, ContinuationGetSymbolName) {
 
   // ESD continuation record.
   GOFFContData[GOFF::RecordLength * 2] = (char)0x03;
-  GOFFContData[GOFF::RecordLength * 2 + 1] = (char)0x02; // No further continuations.
+  GOFFContData[GOFF::RecordLength * 2 + 1] =
+      (char)0x02; // No further continuations.
   GOFFContData[GOFF::RecordLength * 2 + 3] = (char)0x93;
   GOFFContData[GOFF::RecordLength * 2 + 4] = (char)0x84;
 
@@ -234,7 +236,8 @@ TEST(GOFFObjectFileTest, ContinuationBitNotSet) {
   GOFFContData[GOFF::RecordLength + 7] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 11] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 71] = (char)0x0A; // Size of symbol name.
-  GOFFContData[GOFF::RecordLength + 72] = (char)0xC8; // Symbol name is HelloWorld.
+  GOFFContData[GOFF::RecordLength + 72] =
+      (char)0xC8; // Symbol name is HelloWorld.
   GOFFContData[GOFF::RecordLength + 73] = (char)0x85;
   GOFFContData[GOFF::RecordLength + 74] = (char)0x93;
   GOFFContData[GOFF::RecordLength + 75] = (char)0x93;
@@ -278,7 +281,8 @@ TEST(GOFFObjectFileTest, ContinuationRecordNotTerminated) {
   GOFFContData[GOFF::RecordLength + 7] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 11] = (char)0x01;
   GOFFContData[GOFF::RecordLength + 71] = (char)0x0A; // Size of symbol name.
-  GOFFContData[GOFF::RecordLength + 72] = (char)0xC8; // Symbol name is HelloWorld.
+  GOFFContData[GOFF::RecordLength + 72] =
+      (char)0xC8; // Symbol name is HelloWorld.
   GOFFContData[GOFF::RecordLength + 73] = (char)0x85;
   GOFFContData[GOFF::RecordLength + 74] = (char)0x93;
   GOFFContData[GOFF::RecordLength + 75] = (char)0x93;
@@ -352,7 +356,8 @@ TEST(GOFFObjectFileTest, ContinuationTypeMismatch) {
 
   // ESD record.
   GOFFContData[GOFF::RecordLength] = (char)0x03;
-  GOFFContData[GOFF::RecordLength + 1] = (char)0x01; // Continued to next record.
+  GOFFContData[GOFF::RecordLength + 1] =
+      (char)0x01; // Continued to next record.
 
   // END continuation record.
   GOFFContData[GOFF::RecordLength * 2] = (char)0x03;

@@ -715,4 +715,4 @@ TEST_F(DIEHashTest, MemberBlock) {
   uint64_t MD5Res = DIEHash(this->getAsmPrinter()).computeTypeSignature(A);
   ASSERT_EQ(0x493AF53AD3D3F651ULL, MD5Res);
 }
-}
+} // namespace

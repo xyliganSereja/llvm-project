@@ -108,14 +108,10 @@ public:
   }
 
   /// Make this value negative.
-  void makeNegative() {
-    One.setSignBit();
-  }
+  void makeNegative() { One.setSignBit(); }
 
   /// Make this value non-negative.
-  void makeNonNegative() {
-    Zero.setSignBit();
-  }
+  void makeNonNegative() { Zero.setSignBit(); }
 
   /// Return the minimal unsigned value possible given these KnownBits.
   APInt getMinValue() const {
@@ -290,9 +286,7 @@ public:
   }
 
   /// Create known bits from a known constant.
-  static KnownBits makeConstant(const APInt &C) {
-    return KnownBits(~C, C);
-  }
+  static KnownBits makeConstant(const APInt &C) { return KnownBits(~C, C); }
 
   /// Returns KnownBits information that is known to be true for both this and
   /// RHS.
@@ -320,8 +314,9 @@ public:
   }
 
   /// Compute known bits resulting from adding LHS, RHS and a 1-bit Carry.
-  static KnownBits computeForAddCarry(
-      const KnownBits &LHS, const KnownBits &RHS, const KnownBits &Carry);
+  static KnownBits computeForAddCarry(const KnownBits &LHS,
+                                      const KnownBits &RHS,
+                                      const KnownBits &Carry);
 
   /// Compute known bits resulting from adding LHS and RHS.
   static KnownBits computeForAddSub(bool Add, bool NSW, bool NUW,

@@ -186,6 +186,6 @@ private:
                    MachineOptimizationRemarkEmitter *ORE) const override;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

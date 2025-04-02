@@ -216,8 +216,9 @@ TEST_F(SpecialCaseListTest, NoTrigramsInARule) {
 }
 
 TEST_F(SpecialCaseListTest, RepetitiveRule) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("fun:*bar*bar*bar*bar*\n"
-                                                             "fun:bar*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("fun:*bar*bar*bar*bar*\n"
+                          "fun:bar*\n");
   EXPECT_TRUE(SCL->inSection("", "fun", "bara"));
   EXPECT_FALSE(SCL->inSection("", "fun", "abara"));
   EXPECT_TRUE(SCL->inSection("", "fun", "barbarbarbar"));
@@ -226,7 +227,8 @@ TEST_F(SpecialCaseListTest, RepetitiveRule) {
 }
 
 TEST_F(SpecialCaseListTest, SpecialSymbolRule) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("src:*c\\+\\+abi*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("src:*c\\+\\+abi*\n");
   EXPECT_TRUE(SCL->inSection("", "src", "c++abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "c\\+\\+abi"));
 }
@@ -242,8 +244,9 @@ TEST_F(SpecialCaseListTest, PopularTrigram) {
 }
 
 TEST_F(SpecialCaseListTest, EscapedSymbols) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("src:*c\\+\\+abi*\n"
-                                                             "src:*hello\\\\world*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("src:*c\\+\\+abi*\n"
+                          "src:*hello\\\\world*\n");
   EXPECT_TRUE(SCL->inSection("", "src", "dir/c++abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "dir/c\\+\\+abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "c\\+\\+abi"));
@@ -306,4 +309,4 @@ TEST_F(SpecialCaseListTest, Version2) {
   EXPECT_TRUE(SCL->inSection("sect2", "fun", "bar"));
   EXPECT_FALSE(SCL->inSection("sect3", "fun", "bar"));
 }
-}
+} // namespace

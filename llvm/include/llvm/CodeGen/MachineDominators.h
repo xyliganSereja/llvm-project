@@ -33,8 +33,8 @@ class Module;
 class raw_ostream;
 
 template <>
-inline void DominatorTreeBase<MachineBasicBlock, false>::addRoot(
-    MachineBasicBlock *MBB) {
+inline void
+DominatorTreeBase<MachineBasicBlock, false>::addRoot(MachineBasicBlock *MBB) {
   this->Roots.push_back(MBB);
 }
 
@@ -96,7 +96,7 @@ public:
     // Loop through the basic block until we find A or B.
     MachineBasicBlock::const_iterator I = BBA->begin();
     for (; &*I != A && &*I != B; ++I)
-      /*empty*/ ;
+      /*empty*/;
 
     return &*I == A;
   }
@@ -184,8 +184,9 @@ struct GraphTraits<const MachineDomTreeNode *>
                                            MachineDomTreeNode::const_iterator> {
 };
 
-template <> struct GraphTraits<MachineDominatorTree*>
-  : public GraphTraits<MachineDomTreeNode *> {
+template <>
+struct GraphTraits<MachineDominatorTree *>
+    : public GraphTraits<MachineDomTreeNode *> {
   static NodeRef getEntryNode(MachineDominatorTree *DT) {
     return DT->getRootNode();
   }

@@ -98,7 +98,6 @@ static void cloneFrameInfo(
   if (MachineBasicBlock *RestorePt = SrcMFI.getRestorePoint())
     DstMFI.setRestorePoint(Src2DstMBB.find(RestorePt)->second);
 
-
   auto CopyObjectProperties = [](MachineFrameInfo &DstMFI,
                                  const MachineFrameInfo &SrcMFI, int FI) {
     if (SrcMFI.isStatepointSpillSlotObjectIndex(FI))
@@ -135,8 +134,8 @@ static void cloneFrameInfo(
   for (int i = -1; i >= (int)-SrcMFI.getNumFixedObjects(); --i) {
     assert(SrcMFI.isFixedObjectIndex(i));
     int NewFI = DstMFI.CreateFixedObject(
-      SrcMFI.getObjectSize(i), SrcMFI.getObjectOffset(i),
-      SrcMFI.isImmutableObjectIndex(i), SrcMFI.isAliasedObjectIndex(i));
+        SrcMFI.getObjectSize(i), SrcMFI.getObjectOffset(i),
+        SrcMFI.isImmutableObjectIndex(i), SrcMFI.isAliasedObjectIndex(i));
     CopyObjectProperties(DstMFI, SrcMFI, i);
 
     (void)NewFI;
@@ -300,8 +299,8 @@ static std::unique_ptr<MachineFunction> cloneMF(MachineFunction *SrcMF,
   // Clone virtual registers
   for (unsigned I = 0, E = SrcMRI->getNumVirtRegs(); I != E; ++I) {
     Register Reg = Register::index2VirtReg(I);
-    Register NewReg = DstMRI->createIncompleteVirtualRegister(
-      SrcMRI->getVRegName(Reg));
+    Register NewReg =
+        DstMRI->createIncompleteVirtualRegister(SrcMRI->getVRegName(Reg));
     assert(NewReg == Reg && "expected to preserve virtreg number");
 
     DstMRI->setRegClassOrRegBank(NewReg, SrcMRI->getRegClassOrRegBank(Reg));
@@ -408,12 +407,9 @@ static std::unique_ptr<MachineFunction> cloneMF(MachineFunction *SrcMF,
 
   if (!SrcMF->getLandingPads().empty() ||
       !SrcMF->getCodeViewAnnotations().empty() ||
-      !SrcMF->getTypeInfos().empty() ||
-      !SrcMF->getFilterIds().empty() ||
-      SrcMF->hasAnyWasmLandingPadIndex() ||
-      SrcMF->hasAnyCallSiteLandingPad() ||
-      SrcMF->hasAnyCallSiteLabel() ||
-      !SrcMF->getCallSitesInfo().empty())
+      !SrcMF->getTypeInfos().empty() || !SrcMF->getFilterIds().empty() ||
+      SrcMF->hasAnyWasmLandingPadIndex() || SrcMF->hasAnyCallSiteLandingPad() ||
+      SrcMF->hasAnyCallSiteLabel() || !SrcMF->getCallSitesInfo().empty())
     report_fatal_error("cloning not implemented for machine function property");
 
   DstMF->setDebugInstrNumberingCount(SrcMF->DebugInstrNumberingCount);

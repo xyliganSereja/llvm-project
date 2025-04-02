@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_UNITTESTS_EXECUTIONENGINE_ORC_ORCTESTCOMMON_H
 #define LLVM_UNITTESTS_EXECUTIONENGINE_ORC_ORCTESTCOMMON_H
 
@@ -145,15 +144,14 @@ private:
 
 class ModuleBuilder {
 public:
-  ModuleBuilder(LLVMContext &Context, StringRef Triple,
-                StringRef Name);
+  ModuleBuilder(LLVMContext &Context, StringRef Triple, StringRef Name);
 
   Function *createFunctionDecl(FunctionType *FTy, StringRef Name) {
     return Function::Create(FTy, GlobalValue::ExternalLinkage, Name, M.get());
   }
 
-  Module* getModule() { return M.get(); }
-  const Module* getModule() const { return M.get(); }
+  Module *getModule() { return M.get(); }
+  const Module *getModule() const { return M.get(); }
   std::unique_ptr<Module> takeModule() { return std::move(M); }
 
 private:

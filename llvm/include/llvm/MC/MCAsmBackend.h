@@ -116,9 +116,8 @@ public:
     return false;
   }
 
-  virtual bool evaluateTargetFixup(const MCAssembler &Asm,
-                                   const MCFixup &Fixup, const MCFragment *DF,
-                                   const MCValue &Target,
+  virtual bool evaluateTargetFixup(const MCAssembler &Asm, const MCFixup &Fixup,
+                                   const MCFragment *DF, const MCValue &Target,
                                    const MCSubtargetInfo *STI, uint64_t &Value,
                                    bool &WasForced) {
     llvm_unreachable("Need to implement hook if target has custom fixups");
@@ -233,9 +232,7 @@ public:
   }
 
   /// Check whether a given symbol has been flagged with MICROMIPS flag.
-  virtual bool isMicroMips(const MCSymbol *Sym) const {
-    return false;
-  }
+  virtual bool isMicroMips(const MCSymbol *Sym) const { return false; }
 
   bool isDarwinCanonicalPersonality(const MCSymbol *Sym) const;
 };

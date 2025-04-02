@@ -50,11 +50,12 @@ static KnownBits computeForAddCarry(const KnownBits &LHS, const KnownBits &RHS,
   return KnownOut;
 }
 
-KnownBits KnownBits::computeForAddCarry(
-    const KnownBits &LHS, const KnownBits &RHS, const KnownBits &Carry) {
+KnownBits KnownBits::computeForAddCarry(const KnownBits &LHS,
+                                        const KnownBits &RHS,
+                                        const KnownBits &Carry) {
   assert(Carry.getBitWidth() == 1 && "Carry must be 1-bit");
-  return ::computeForAddCarry(
-      LHS, RHS, Carry.Zero.getBoolValue(), Carry.One.getBoolValue());
+  return ::computeForAddCarry(LHS, RHS, Carry.Zero.getBoolValue(),
+                              Carry.One.getBoolValue());
 }
 
 KnownBits KnownBits::computeForAddSub(bool Add, bool NSW, bool NUW,
@@ -469,7 +470,7 @@ KnownBits KnownBits::ashr(const KnownBits &LHS, const KnownBits &RHS,
   Known.Zero.setAllBits();
   Known.One.setAllBits();
   for (unsigned ShiftAmt = MinShiftAmount; ShiftAmt <= MaxShiftAmount;
-      ++ShiftAmt) {
+       ++ShiftAmt) {
     // Skip if the shift amount is impossible.
     if ((ShiftAmtZeroMask & ShiftAmt) != 0 ||
         (ShiftAmtOneMask | ShiftAmt) != ShiftAmt)

@@ -27,8 +27,8 @@
 using namespace llvm;
 using namespace llvm::orc;
 
-Expected<std::unique_ptr<DefinitionGenerator>>
-loadDylib(ExecutionSession &ES, StringRef RemotePath) {
+Expected<std::unique_ptr<DefinitionGenerator>> loadDylib(ExecutionSession &ES,
+                                                         StringRef RemotePath) {
   if (auto Handle = ES.getExecutorProcessControl().getDylibMgr().loadDylib(
           RemotePath.data()))
     return std::make_unique<EPCDynamicLibrarySearchGenerator>(ES, *Handle);
@@ -131,8 +131,7 @@ launchLocalExecutor(StringRef ExecutablePath) {
 
   auto EPC = SimpleRemoteEPC::Create<FDSimpleRemoteEPCTransport>(
       std::make_unique<DynamicThreadPoolTaskDispatcher>(std::nullopt),
-      SimpleRemoteEPC::Setup(),
-      FromExecutor[ReadEnd], ToExecutor[WriteEnd]);
+      SimpleRemoteEPC::Setup(), FromExecutor[ReadEnd], ToExecutor[WriteEnd]);
   if (!EPC)
     return EPC.takeError();
 

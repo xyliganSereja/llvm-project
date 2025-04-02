@@ -83,8 +83,8 @@ static bool foldGuardedFunnelShift(Instruction &I, const DominatorTree &DT) {
     //  == (ShVal0 << ShAmt) | (ShVal1 >> (Width -ShAmt))
     if (match(V, m_OneUse(m_c_Or(
                      m_Shl(m_Value(ShVal0), m_Value(ShAmt)),
-                     m_LShr(m_Value(ShVal1),
-                            m_Sub(m_SpecificInt(Width), m_Deferred(ShAmt))))))) {
+                     m_LShr(m_Value(ShVal1), m_Sub(m_SpecificInt(Width),
+                                                   m_Deferred(ShAmt))))))) {
       return Intrinsic::fshl;
     }
 
@@ -820,7 +820,8 @@ static bool foldConsecutiveLoads(Instruction &I, const DataLayout &DL,
   // Check if shift needed. We need to shift with the amount of load1
   // shift if not zero.
   if (LOps.Shift)
-    NewOp = Builder.CreateShl(NewOp, ConstantInt::get(I.getContext(), *LOps.Shift));
+    NewOp =
+        Builder.CreateShl(NewOp, ConstantInt::get(I.getContext(), *LOps.Shift));
   I.replaceAllUsesWith(NewOp);
 
   return true;

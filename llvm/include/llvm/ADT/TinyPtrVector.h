@@ -25,8 +25,7 @@ namespace llvm {
 ///
 /// NOTE: This container doesn't allow you to store a null pointer into it.
 ///
-template <typename EltTy>
-class TinyPtrVector {
+template <typename EltTy> class TinyPtrVector {
 public:
   using VecTy = SmallVector<EltTy, 4>;
   using value_type = typename VecTy::value_type;
@@ -81,7 +80,7 @@ public:
   }
 
   TinyPtrVector(TinyPtrVector &&RHS) : Val(RHS.Val) {
-    RHS.Val = (EltTy)nullptr;
+    RHS.Val = (EltTy) nullptr;
   }
 
   TinyPtrVector &operator=(TinyPtrVector &&RHS) {
@@ -111,26 +110,24 @@ public:
   }
 
   TinyPtrVector(std::initializer_list<EltTy> IL)
-      : Val(IL.size() == 0
-                ? PtrUnion()
-                : IL.size() == 1 ? PtrUnion(*IL.begin())
-                                 : PtrUnion(new VecTy(IL.begin(), IL.end()))) {}
+      : Val(IL.size() == 0   ? PtrUnion()
+            : IL.size() == 1 ? PtrUnion(*IL.begin())
+                             : PtrUnion(new VecTy(IL.begin(), IL.end()))) {}
 
   /// Constructor from an ArrayRef.
   ///
   /// This also is a constructor for individual array elements due to the single
   /// element constructor for ArrayRef.
   explicit TinyPtrVector(ArrayRef<EltTy> Elts)
-      : Val(Elts.empty()
-                ? PtrUnion()
-                : Elts.size() == 1
-                      ? PtrUnion(Elts[0])
-                      : PtrUnion(new VecTy(Elts.begin(), Elts.end()))) {}
+      : Val(Elts.empty() ? PtrUnion()
+            : Elts.size() == 1
+                ? PtrUnion(Elts[0])
+                : PtrUnion(new VecTy(Elts.begin(), Elts.end()))) {}
 
   TinyPtrVector(size_t Count, EltTy Value)
-      : Val(Count == 0 ? PtrUnion()
-                       : Count == 1 ? PtrUnion(Value)
-                                    : PtrUnion(new VecTy(Count, Value))) {}
+      : Val(Count == 0   ? PtrUnion()
+            : Count == 1 ? PtrUnion(Value)
+                         : PtrUnion(new VecTy(Count, Value))) {}
 
   // implicit conversion operator to ArrayRef.
   operator ArrayRef<EltTy>() const {
@@ -162,7 +159,8 @@ public:
   bool empty() const {
     // This vector can be empty if it contains no element, or if it
     // contains a pointer to an empty vector.
-    if (Val.isNull()) return true;
+    if (Val.isNull())
+      return true;
     if (VecTy *Vec = dyn_cast_if_present<VecTy *>(Val))
       return Vec->empty();
     return false;
@@ -196,11 +194,11 @@ public:
   }
 
   const_iterator begin() const {
-    return (const_iterator)const_cast<TinyPtrVector*>(this)->begin();
+    return (const_iterator) const_cast<TinyPtrVector *>(this)->begin();
   }
 
   const_iterator end() const {
-    return (const_iterator)const_cast<TinyPtrVector*>(this)->end();
+    return (const_iterator) const_cast<TinyPtrVector *>(this)->end();
   }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
@@ -261,7 +259,7 @@ public:
   void pop_back() {
     // If we have a single value, convert to empty.
     if (isa<EltTy>(Val))
-      Val = (EltTy)nullptr;
+      Val = (EltTy) nullptr;
     else if (VecTy *Vec = cast<VecTy *>(Val))
       Vec->pop_back();
   }
@@ -326,8 +324,7 @@ public:
     return cast<VecTy *>(Val)->insert(I, Elt);
   }
 
-  template<typename ItTy>
-  iterator insert(iterator I, ItTy From, ItTy To) {
+  template <typename ItTy> iterator insert(iterator I, ItTy From, ItTy To) {
     assert(I >= this->begin() && "Insertion iterator is out of bounds.");
     assert(I <= this->end() && "Inserting past the end of the vector.");
     if (From == To)

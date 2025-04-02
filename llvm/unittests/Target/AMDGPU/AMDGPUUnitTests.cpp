@@ -87,10 +87,11 @@ static bool checkMinMax(std::stringstream &OS, unsigned Occ, unsigned MinOcc,
   return MinValid && MaxValid && RangeValid;
 }
 
-static const std::pair<StringRef, StringRef>
-  EmptyFS = {"", ""},
-  W32FS = {"+wavefrontsize32", "w32"},
-  W64FS = {"+wavefrontsize64", "w64"};
+static const std::pair<StringRef, StringRef> EmptyFS = {"", ""},
+                                             W32FS = {"+wavefrontsize32",
+                                                      "w32"},
+                                             W64FS = {"+wavefrontsize64",
+                                                      "w64"};
 
 using TestFuncTy =
     function_ref<bool(std::stringstream &, unsigned, const GCNSubtarget &)>;

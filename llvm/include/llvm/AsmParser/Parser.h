@@ -208,6 +208,6 @@ DIExpression *parseDIExpressionBodyAtBeginning(StringRef Asm, unsigned &Read,
                                                const Module &M,
                                                const SlotMapping *Slots);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

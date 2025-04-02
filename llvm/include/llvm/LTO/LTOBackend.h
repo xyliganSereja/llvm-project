@@ -76,7 +76,7 @@ Expected<BitcodeModule> findThinLTOModule(MemoryBufferRef MBRef);
 /// operation failed.
 bool initImportList(const Module &M, const ModuleSummaryIndex &CombinedIndex,
                     FunctionImporter::ImportMapTy &ImportList);
-}
-}
+} // namespace lto
+} // namespace llvm
 
 #endif

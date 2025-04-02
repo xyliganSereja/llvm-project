@@ -53,13 +53,12 @@ Context &getContext() {
   static Context Ctxt;
   return Ctxt;
 }
-}
+} // namespace
 
 void verifyEncoding(MCDwarfLineTableParams Params, int LineDelta, int AddrDelta,
                     ArrayRef<uint8_t> ExpectedEncoding) {
   SmallString<16> Buffer;
-  MCDwarfLineAddr::encode(getContext(), Params, LineDelta, AddrDelta,
-                          Buffer);
+  MCDwarfLineAddr::encode(getContext(), Params, LineDelta, AddrDelta, Buffer);
   EXPECT_EQ(ExpectedEncoding, arrayRefFromStringRef(Buffer));
 }
 

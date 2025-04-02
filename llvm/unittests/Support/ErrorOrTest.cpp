@@ -40,7 +40,7 @@ ErrorOr<std::unique_ptr<int>> t3() { return std::make_unique<int>(3); }
 
 TEST(ErrorOr, Types) {
   int x;
-  ErrorOr<int&> a(x);
+  ErrorOr<int &> a(x);
   *a = 42;
   EXPECT_EQ(42, x);
 
@@ -52,11 +52,11 @@ struct B {};
 struct D : B {};
 
 TEST(ErrorOr, Covariant) {
-  ErrorOr<B*> b(ErrorOr<D*>(nullptr));
-  b = ErrorOr<D*>(nullptr);
+  ErrorOr<B *> b(ErrorOr<D *>(nullptr));
+  b = ErrorOr<D *>(nullptr);
 
-  ErrorOr<std::unique_ptr<B> > b1(ErrorOr<std::unique_ptr<D> >(nullptr));
-  b1 = ErrorOr<std::unique_ptr<D> >(nullptr);
+  ErrorOr<std::unique_ptr<B>> b1(ErrorOr<std::unique_ptr<D>>(nullptr));
+  b1 = ErrorOr<std::unique_ptr<D>>(nullptr);
 
   ErrorOr<std::unique_ptr<int>> b2(ErrorOr<int *>(nullptr));
   ErrorOr<int *> b3(nullptr);
@@ -76,8 +76,8 @@ TEST(ErrorOr, ImplicitConversion) {
 TEST(ErrorOr, ImplicitConversionCausesMove) {
   struct Source {};
   struct Destination {
-    Destination(const Source&) {}
-    Destination(Source&&) = delete;
+    Destination(const Source &) {}
+    Destination(Source &&) = delete;
   };
   Source s;
   ErrorOr<Destination> x = s;
@@ -133,4 +133,4 @@ static_assert(!std::is_assignable_v<ErrorOr<std::unique_ptr<int>> &,
 static_assert(
     !std::is_assignable_v<ErrorOr<std::unique_ptr<int>> &, ErrorOr<int *> &&>,
     "do not invoke explicit ctors in assignment");
-} // end anon namespace
+} // namespace

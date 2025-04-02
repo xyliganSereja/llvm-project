@@ -55,7 +55,7 @@ template void ApplyUpdates<MBBDomTree>(MBBDomTree &DT, MBBDomTreeGraphDiff &,
 template bool Verify<MBBDomTree>(const MBBDomTree &DT,
                                  MBBDomTree::VerificationLevel VL);
 } // namespace DomTreeBuilder
-}
+} // namespace llvm
 
 bool MachineDominatorTree::invalidate(
     MachineFunction &, const PreservedAnalyses &PA,

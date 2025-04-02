@@ -16,9 +16,9 @@ namespace {
 
 TEST(AllocatorTest, Basics) {
   BumpPtrAllocator Alloc;
-  int *a = (int*)Alloc.Allocate(sizeof(int), alignof(int));
-  int *b = (int*)Alloc.Allocate(sizeof(int) * 10, alignof(int));
-  int *c = (int*)Alloc.Allocate(sizeof(int), alignof(int));
+  int *a = (int *)Alloc.Allocate(sizeof(int), alignof(int));
+  int *b = (int *)Alloc.Allocate(sizeof(int) * 10, alignof(int));
+  int *c = (int *)Alloc.Allocate(sizeof(int), alignof(int));
   *a = 1;
   b[0] = 2;
   b[9] = 2;
@@ -235,7 +235,7 @@ class MockSlabAllocator {
   static size_t LastSlabSize;
 
 public:
-  ~MockSlabAllocator() { }
+  ~MockSlabAllocator() {}
 
   void *Allocate(size_t Size, size_t /*Alignment*/) {
     // Allocate space for the alignment, the slab, and a void* that goes right
@@ -244,17 +244,17 @@ public:
     void *MemBase = safe_malloc(Size + Alignment.value() - 1 + sizeof(void *));
 
     // Find the slab start.
-    void *Slab = (void *)alignAddr((char*)MemBase + sizeof(void *), Alignment);
+    void *Slab = (void *)alignAddr((char *)MemBase + sizeof(void *), Alignment);
 
     // Hold a pointer to the base so we can free the whole malloced block.
-    ((void**)Slab)[-1] = MemBase;
+    ((void **)Slab)[-1] = MemBase;
 
     LastSlabSize = Size;
     return Slab;
   }
 
   void Deallocate(void *Slab, size_t /*Size*/, size_t /*Alignment*/) {
-    free(((void**)Slab)[-1]);
+    free(((void **)Slab)[-1]);
   }
 
   static size_t GetLastSlabSize() { return LastSlabSize; }
@@ -279,4 +279,4 @@ TEST(AllocatorTest, TestBigAlignment) {
   EXPECT_GT(MockSlabAllocator::GetLastSlabSize(), 4096u);
 }
 
-}  // anonymous namespace
+} // anonymous namespace

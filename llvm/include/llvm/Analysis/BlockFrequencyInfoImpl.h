@@ -207,7 +207,7 @@ public:
     bool isValid() const { return Index <= getMaxIndex(); }
 
     static size_t getMaxIndex() {
-       return std::numeric_limits<uint32_t>::max() - 1;
+      return std::numeric_limits<uint32_t>::max() - 1;
     }
   };
 
@@ -236,7 +236,7 @@ public:
     Scaled64 Scale;
 
     LoopData(LoopData *Parent, const BlockNode &Header)
-      : Parent(Parent), Nodes(1, Header), BackedgeMass(1) {}
+        : Parent(Parent), Nodes(1, Header), BackedgeMass(1) {}
 
     template <class It1, class It2>
     LoopData(LoopData *Parent, It1 FirstHeader, It1 LastHeader, It2 FirstOther,
@@ -559,8 +559,7 @@ template <> struct TypeMap<MachineBasicBlock> {
   using LoopInfoT = MachineLoopInfo;
 };
 
-template <class BlockT, class BFIImplT>
-class BFICallbackVH;
+template <class BlockT, class BFIImplT> class BFICallbackVH;
 
 /// Get the name of a MachineBasicBlock.
 ///
@@ -632,7 +631,8 @@ struct IrreducibleGraph {
   /// user of this.
   template <class BlockEdgesAdder>
   IrreducibleGraph(BFIBase &BFI, const BFIBase::LoopData *OuterLoop,
-                   BlockEdgesAdder addBlockEdges) : BFI(BFI) {
+                   BlockEdgesAdder addBlockEdges)
+      : BFI(BFI) {
     initialize(OuterLoop, addBlockEdges);
   }
 
@@ -1089,8 +1089,7 @@ public:
 
 /// Dummy implementation since MachineBasicBlocks aren't Values, so ValueHandles
 /// don't apply to them.
-template <class BFIImplT>
-class BFICallbackVH<MachineBasicBlock, BFIImplT> {
+template <class BFIImplT> class BFICallbackVH<MachineBasicBlock, BFIImplT> {
 public:
   BFICallbackVH() = default;
   BFICallbackVH(const MachineBasicBlock *, BFIImplT *) {}
@@ -1640,8 +1639,7 @@ template <class BT> struct BlockEdgesAdder {
 
   const BlockFrequencyInfoImpl<BT> &BFI;
 
-  explicit BlockEdgesAdder(const BlockFrequencyInfoImpl<BT> &BFI)
-      : BFI(BFI) {}
+  explicit BlockEdgesAdder(const BlockFrequencyInfoImpl<BT> &BFI) : BFI(BFI) {}
 
   void operator()(IrreducibleGraph &G, IrreducibleGraph::IrrNode &Irr,
                   const LoopData *OuterLoop) {
@@ -1682,9 +1680,8 @@ inline uint32_t getWeightFromBranchProb(const BranchProbability Prob) {
 }
 
 template <class BT>
-bool
-BlockFrequencyInfoImpl<BT>::propagateMassToSuccessors(LoopData *OuterLoop,
-                                                      const BlockNode &Node) {
+bool BlockFrequencyInfoImpl<BT>::propagateMassToSuccessors(
+    LoopData *OuterLoop, const BlockNode &Node) {
   LLVM_DEBUG(dbgs() << " - node: " << getBlockName(Node) << "\n");
   // Calculate probability for successors.
   Distribution Dist;
@@ -1698,9 +1695,8 @@ BlockFrequencyInfoImpl<BT>::propagateMassToSuccessors(LoopData *OuterLoop,
     for (auto SI = GraphTraits<const BlockT *>::child_begin(BB),
               SE = GraphTraits<const BlockT *>::child_end(BB);
          SI != SE; ++SI)
-      if (!addToDist(
-              Dist, OuterLoop, Node, getNode(*SI),
-              getWeightFromBranchProb(BPI->getEdgeProbability(BB, SI))))
+      if (!addToDist(Dist, OuterLoop, Node, getNode(*SI),
+                     getWeightFromBranchProb(BPI->getEdgeProbability(BB, SI))))
         // Irreducible backedge.
         return false;
   }
@@ -1721,8 +1717,8 @@ raw_ostream &BlockFrequencyInfoImpl<BT>::print(raw_ostream &OS) const {
     getFloatingBlockFreq(&BB).print(OS, 5)
         << ", int = " << getBlockFreq(&BB).getFrequency();
     if (std::optional<uint64_t> ProfileCount =
-        BlockFrequencyInfoImplBase::getBlockProfileCount(
-            F->getFunction(), getNode(&BB)))
+            BlockFrequencyInfoImplBase::getBlockProfileCount(F->getFunction(),
+                                                             getNode(&BB)))
       OS << ", count = " << *ProfileCount;
     if (std::optional<uint64_t> IrrLoopHeaderWeight =
             BB.getIrrLoopHeaderWeight())

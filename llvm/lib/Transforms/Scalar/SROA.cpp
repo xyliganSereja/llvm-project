@@ -1399,8 +1399,7 @@ private:
   void visitCallBase(CallBase &CB) {
     // If the call operand is NoCapture ReadOnly, then we mark it as
     // EscapedReadOnly.
-    if (CB.isDataOperand(U) &&
-        CB.doesNotCapture(U->getOperandNo()) &&
+    if (CB.isDataOperand(U) && CB.doesNotCapture(U->getOperandNo()) &&
         CB.onlyReadsMemory(U->getOperandNo())) {
       PI.setEscapedReadOnly(&CB);
       return;
@@ -4146,8 +4145,7 @@ private:
     enqueueUsers(*NewPhi);
 
     LLVM_DEBUG(dbgs() << "          to: ";
-               for (Value *In
-                    : NewPhi->incoming_values()) dbgs()
+               for (Value *In : NewPhi->incoming_values()) dbgs()
                << "\n              " << *In;
                dbgs() << "\n              " << *NewPhi << '\n');
 

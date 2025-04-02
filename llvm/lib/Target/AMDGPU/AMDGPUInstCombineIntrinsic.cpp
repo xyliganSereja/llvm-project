@@ -518,7 +518,8 @@ GCNTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
       break;
 
     auto IID = SrcCI->getIntrinsicID();
-    // llvm.amdgcn.rcp(llvm.amdgcn.sqrt(x)) -> llvm.amdgcn.rsq(x) if contractable
+    // llvm.amdgcn.rcp(llvm.amdgcn.sqrt(x)) -> llvm.amdgcn.rsq(x) if
+    // contractable
     //
     // llvm.amdgcn.rcp(llvm.sqrt(x)) -> llvm.amdgcn.rsq(x) if contractable and
     // relaxed.
@@ -1365,7 +1366,7 @@ GCNTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
   }
   }
   if (const AMDGPU::ImageDimIntrinsicInfo *ImageDimIntr =
-            AMDGPU::getImageDimIntrinsicInfo(II.getIntrinsicID())) {
+          AMDGPU::getImageDimIntrinsicInfo(II.getIntrinsicID())) {
     return simplifyAMDGCNImageIntrinsic(ST, ImageDimIntr, II, IC);
   }
   return std::nullopt;
@@ -1373,10 +1374,10 @@ GCNTTIImpl::instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) const {
 
 /// Implement SimplifyDemandedVectorElts for amdgcn buffer and image intrinsics.
 ///
-/// The result of simplifying amdgcn image and buffer store intrinsics is updating
-/// definitions of the intrinsics vector argument, not Uses of the result like
-/// image and buffer loads.
-/// Note: This only supports non-TFE/LWE image intrinsic calls; those have
+/// The result of simplifying amdgcn image and buffer store intrinsics is
+/// updating definitions of the intrinsics vector argument, not Uses of the
+/// result like image and buffer loads. Note: This only supports non-TFE/LWE
+/// image intrinsic calls; those have
 ///       struct returns.
 static Value *simplifyAMDGCNMemoryIntrinsicDemanded(InstCombiner &IC,
                                                     IntrinsicInst &II,

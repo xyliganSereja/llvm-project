@@ -25,7 +25,7 @@ using namespace llvm;
 #define DEBUG_TYPE "aarch64symbolrefexpr"
 
 const AArch64MCExpr *AArch64MCExpr::create(const MCExpr *Expr, VariantKind Kind,
-                                       MCContext &Ctx) {
+                                           MCContext &Ctx) {
   return new (Ctx) AArch64MCExpr(Expr, Kind);
 }
 

@@ -280,7 +280,7 @@ void CheckIntPartMax(const FixedPointSemantics &Sema, uint64_t Expected) {
 void CheckIntPartRes(const FixedPointSemantics &Sema, int64_t Representation,
                      uint64_t Result) {
   APFixedPoint Val(Representation, Sema);
-  ASSERT_EQ(Val.getIntPart().getZExtValue(), Result) ;
+  ASSERT_EQ(Val.getIntPart().getZExtValue(), Result);
 }
 
 TEST(FixedPoint, getIntPart) {
@@ -779,65 +779,65 @@ TEST(FixedPoint, FloatToFixed) {
   // Simple exact fraction
   Val = APFloat(0.75f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), 3ULL << 5);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  3ULL << 13);
+  CheckFloatToFixedConversion(Val, getAccumSema(), 3ULL << 13);
   CheckFloatToFixedConversion(Val, getLAccumSema(), 3ULL << 29);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), 3ULL << 6);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  3ULL << 14);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), 3ULL << 14);
   CheckFloatToFixedConversion(Val, getULAccumSema(), 3ULL << 30);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), 3ULL << 5);
-  CheckFloatToFixedConversion(Val, getFractSema(),  3ULL << 13);
+  CheckFloatToFixedConversion(Val, getFractSema(), 3ULL << 13);
   CheckFloatToFixedConversion(Val, getLFractSema(), 3ULL << 29);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), 3ULL << 6);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  3ULL << 14);
+  CheckFloatToFixedConversion(Val, getUFractSema(), 3ULL << 14);
   CheckFloatToFixedConversion(Val, getULFractSema(), 3ULL << 30);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MaxSat);
-  CheckFloatToFixedConversion(Val, getU8Pos4(),  0);
+  CheckFloatToFixedConversion(Val, getU8Pos4(), 0);
   CheckFloatToFixedConversion(Val, getS16Neg18(), MaxSat);
   CheckFloatToFixedConversion(Val, getS32Pos2(), 0);
 
   // Simple negative exact fraction
   Val = APFloat(-0.75f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), -3ULL << 5);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  -3ULL << 13);
+  CheckFloatToFixedConversion(Val, getAccumSema(), -3ULL << 13);
   CheckFloatToFixedConversion(Val, getLAccumSema(), -3ULL << 29);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), MinSat);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  MinSat);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), MinSat);
   CheckFloatToFixedConversion(Val, getULAccumSema(), MinSat);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), -3ULL << 5);
-  CheckFloatToFixedConversion(Val, getFractSema(),  -3ULL << 13);
+  CheckFloatToFixedConversion(Val, getFractSema(), -3ULL << 13);
   CheckFloatToFixedConversion(Val, getLFractSema(), -3ULL << 29);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), MinSat);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  MinSat);
+  CheckFloatToFixedConversion(Val, getUFractSema(), MinSat);
   CheckFloatToFixedConversion(Val, getULFractSema(), MinSat);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MinSat);
-  CheckFloatToFixedConversion(Val, getU8Pos4(),  0);
+  CheckFloatToFixedConversion(Val, getU8Pos4(), 0);
   CheckFloatToFixedConversion(Val, getS16Neg18(), MinSat);
   CheckFloatToFixedConversion(Val, getS32Pos2(), 0);
 
   // Highly precise fraction
   Val = APFloat(0.999999940395355224609375f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), 0x7FULL);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  0x7FFFULL);
+  CheckFloatToFixedConversion(Val, getAccumSema(), 0x7FFFULL);
   CheckFloatToFixedConversion(Val, getLAccumSema(), 0xFFFFFFULL << 7);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), 0xFFULL);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  0xFFFFULL);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), 0xFFFFULL);
   CheckFloatToFixedConversion(Val, getULAccumSema(), 0xFFFFFFULL << 8);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), 0x7FULL);
-  CheckFloatToFixedConversion(Val, getFractSema(),  0x7FFFULL);
+  CheckFloatToFixedConversion(Val, getFractSema(), 0x7FFFULL);
   CheckFloatToFixedConversion(Val, getLFractSema(), 0xFFFFFFULL << 7);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), 0xFFULL);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  0xFFFFULL);
+  CheckFloatToFixedConversion(Val, getUFractSema(), 0xFFFFULL);
   CheckFloatToFixedConversion(Val, getULFractSema(), 0xFFFFFFULL << 8);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MaxSat);
@@ -848,19 +848,19 @@ TEST(FixedPoint, FloatToFixed) {
   // Integral and fraction
   Val = APFloat(17.99609375f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), 0x11FFULL >> 1);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  0x11FFULL << 7);
+  CheckFloatToFixedConversion(Val, getAccumSema(), 0x11FFULL << 7);
   CheckFloatToFixedConversion(Val, getLAccumSema(), 0x11FFULL << 23);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), 0x11FFULL);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  0x11FFULL << 8);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), 0x11FFULL << 8);
   CheckFloatToFixedConversion(Val, getULAccumSema(), 0x11FFULL << 24);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getFractSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getFractSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getLFractSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getUFractSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getULFractSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MaxSat);
@@ -871,19 +871,19 @@ TEST(FixedPoint, FloatToFixed) {
   // Negative integral and fraction
   Val = APFloat(-17.99609375f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), -0x11FELL >> 1);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  -0x11FFULL << 7);
+  CheckFloatToFixedConversion(Val, getAccumSema(), -0x11FFULL << 7);
   CheckFloatToFixedConversion(Val, getLAccumSema(), -0x11FFULL << 23);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), MinSat);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  MinSat);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), MinSat);
   CheckFloatToFixedConversion(Val, getULAccumSema(), MinSat);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), MinSat);
-  CheckFloatToFixedConversion(Val, getFractSema(),  MinSat);
+  CheckFloatToFixedConversion(Val, getFractSema(), MinSat);
   CheckFloatToFixedConversion(Val, getLFractSema(), MinSat);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), MinSat);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  MinSat);
+  CheckFloatToFixedConversion(Val, getUFractSema(), MinSat);
   CheckFloatToFixedConversion(Val, getULFractSema(), MinSat);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MinSat);
@@ -894,19 +894,19 @@ TEST(FixedPoint, FloatToFixed) {
   // Very large value
   Val = APFloat(1.0e38f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getAccumSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getLAccumSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getULAccumSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getFractSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getFractSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getLFractSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), MaxSat);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  MaxSat);
+  CheckFloatToFixedConversion(Val, getUFractSema(), MaxSat);
   CheckFloatToFixedConversion(Val, getULFractSema(), MaxSat);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MaxSat);
@@ -917,19 +917,19 @@ TEST(FixedPoint, FloatToFixed) {
   // Very small value
   Val = APFloat(1.0e-38f);
   CheckFloatToFixedConversion(Val, getSAccumSema(), 0);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  0);
+  CheckFloatToFixedConversion(Val, getAccumSema(), 0);
   CheckFloatToFixedConversion(Val, getLAccumSema(), 0);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), 0);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  0);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), 0);
   CheckFloatToFixedConversion(Val, getULAccumSema(), 0);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), 0);
-  CheckFloatToFixedConversion(Val, getFractSema(),  0);
+  CheckFloatToFixedConversion(Val, getFractSema(), 0);
   CheckFloatToFixedConversion(Val, getLFractSema(), 0);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), 0);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  0);
+  CheckFloatToFixedConversion(Val, getUFractSema(), 0);
   CheckFloatToFixedConversion(Val, getULFractSema(), 0);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), 0);
@@ -943,19 +943,19 @@ TEST(FixedPoint, FloatToFixed) {
   Val.convert(APFloat::IEEEhalf(), APFloat::rmNearestTiesToEven, &Ignored);
 
   CheckFloatToFixedConversion(Val, getSAccumSema(), 0x7FULL);
-  CheckFloatToFixedConversion(Val, getAccumSema(),  0x7FFULL << 4);
+  CheckFloatToFixedConversion(Val, getAccumSema(), 0x7FFULL << 4);
   CheckFloatToFixedConversion(Val, getLAccumSema(), 0x7FFULL << 20);
 
   CheckFloatToFixedConversion(Val, getUSAccumSema(), 0xFFULL);
-  CheckFloatToFixedConversion(Val, getUAccumSema(),  0xFFEULL << 4);
+  CheckFloatToFixedConversion(Val, getUAccumSema(), 0xFFEULL << 4);
   CheckFloatToFixedConversion(Val, getULAccumSema(), 0xFFEULL << 20);
 
   CheckFloatToFixedConversion(Val, getSFractSema(), 0x7FULL);
-  CheckFloatToFixedConversion(Val, getFractSema(),  0x7FFULL << 4);
+  CheckFloatToFixedConversion(Val, getFractSema(), 0x7FFULL << 4);
   CheckFloatToFixedConversion(Val, getLFractSema(), 0x7FFULL << 20);
 
   CheckFloatToFixedConversion(Val, getUSFractSema(), 0xFFULL);
-  CheckFloatToFixedConversion(Val, getUFractSema(),  0xFFEULL << 4);
+  CheckFloatToFixedConversion(Val, getUFractSema(), 0xFFEULL << 4);
   CheckFloatToFixedConversion(Val, getULFractSema(), 0xFFEULL << 20);
 
   CheckFloatToFixedConversion(Val, getU8Neg10(), MaxSat);
@@ -995,14 +995,14 @@ void CheckFixedToHalfConversion(int64_t Val, const FixedPointSemantics &Sema,
 TEST(FixedPoint, FixedToFloat) {
   int64_t Val = 0x1ULL;
   CheckFixedToFloatConversion(Val, getSAccumSema(), 0.0078125f);
-  CheckFixedToFloatConversion(Val, getFractSema(),  0.000030517578125f);
-  CheckFixedToFloatConversion(Val, getAccumSema(),  0.000030517578125f);
+  CheckFixedToFloatConversion(Val, getFractSema(), 0.000030517578125f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), 0.000030517578125f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               0.0000000004656612873077392578125f);
 
   CheckFixedToFloatConversion(Val, getUSAccumSema(), 0.00390625f);
-  CheckFixedToFloatConversion(Val, getUFractSema(),  0.0000152587890625f);
-  CheckFixedToFloatConversion(Val, getUAccumSema(),  0.0000152587890625f);
+  CheckFixedToFloatConversion(Val, getUFractSema(), 0.0000152587890625f);
+  CheckFixedToFloatConversion(Val, getUAccumSema(), 0.0000152587890625f);
   CheckFixedToFloatConversion(Val, getULFractSema(),
                               0.00000000023283064365386962890625f);
 
@@ -1013,14 +1013,14 @@ TEST(FixedPoint, FixedToFloat) {
 
   Val = 0x7FULL;
   CheckFixedToFloatConversion(Val, getSAccumSema(), 0.9921875f);
-  CheckFixedToFloatConversion(Val, getFractSema(),  0.003875732421875f);
-  CheckFixedToFloatConversion(Val, getAccumSema(),  0.003875732421875f);
+  CheckFixedToFloatConversion(Val, getFractSema(), 0.003875732421875f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), 0.003875732421875f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               0.0000000591389834880828857421875f);
 
   CheckFixedToFloatConversion(Val, getUSAccumSema(), 0.49609375f);
-  CheckFixedToFloatConversion(Val, getUFractSema(),  0.0019378662109375f);
-  CheckFixedToFloatConversion(Val, getUAccumSema(),  0.0019378662109375f);
+  CheckFixedToFloatConversion(Val, getUFractSema(), 0.0019378662109375f);
+  CheckFixedToFloatConversion(Val, getUAccumSema(), 0.0019378662109375f);
   CheckFixedToFloatConversion(Val, getULFractSema(),
                               0.00000002956949174404144287109375f);
 
@@ -1031,8 +1031,8 @@ TEST(FixedPoint, FixedToFloat) {
 
   Val = -0x1ULL;
   CheckFixedToFloatConversion(Val, getSAccumSema(), -0.0078125f);
-  CheckFixedToFloatConversion(Val, getFractSema(),  -0.000030517578125f);
-  CheckFixedToFloatConversion(Val, getAccumSema(),  -0.000030517578125f);
+  CheckFixedToFloatConversion(Val, getFractSema(), -0.000030517578125f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), -0.000030517578125f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               -0.0000000004656612873077392578125f);
 
@@ -1041,21 +1041,21 @@ TEST(FixedPoint, FixedToFloat) {
   CheckFixedToFloatConversion(Val, getS16Neg18(), -0.000003814697265625f);
   CheckFixedToFloatConversion(Val, getS32Pos2(), -4.0f);
 
-  CheckFixedToFloatConversion(-0x80ULL,       getSAccumSema(), -1.0f);
-  CheckFixedToFloatConversion(-0x8000ULL,     getFractSema(),  -1.0f);
-  CheckFixedToFloatConversion(-0x8000ULL,     getAccumSema(),  -1.0f);
+  CheckFixedToFloatConversion(-0x80ULL, getSAccumSema(), -1.0f);
+  CheckFixedToFloatConversion(-0x8000ULL, getFractSema(), -1.0f);
+  CheckFixedToFloatConversion(-0x8000ULL, getAccumSema(), -1.0f);
   CheckFixedToFloatConversion(-0x80000000ULL, getLFractSema(), -1.0f);
 
   Val = 0xAFAULL;
   CheckFixedToFloatConversion(Val, getSAccumSema(), 21.953125f);
-  CheckFixedToFloatConversion(Val, getFractSema(),  0.08575439453125f);
-  CheckFixedToFloatConversion(Val, getAccumSema(),  0.08575439453125f);
+  CheckFixedToFloatConversion(Val, getFractSema(), 0.08575439453125f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), 0.08575439453125f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               0.000001308508217334747314453125f);
 
   CheckFixedToFloatConversion(Val, getUSAccumSema(), 10.9765625f);
-  CheckFixedToFloatConversion(Val, getUFractSema(),  0.042877197265625f);
-  CheckFixedToFloatConversion(Val, getUAccumSema(),  0.042877197265625f);
+  CheckFixedToFloatConversion(Val, getUFractSema(), 0.042877197265625f);
+  CheckFixedToFloatConversion(Val, getUAccumSema(), 0.042877197265625f);
   CheckFixedToFloatConversion(Val, getULFractSema(),
                               0.0000006542541086673736572265625f);
 
@@ -1064,8 +1064,8 @@ TEST(FixedPoint, FixedToFloat) {
 
   Val = -0xAFAULL;
   CheckFixedToFloatConversion(Val, getSAccumSema(), -21.953125f);
-  CheckFixedToFloatConversion(Val, getFractSema(),  -0.08575439453125f);
-  CheckFixedToFloatConversion(Val, getAccumSema(),  -0.08575439453125f);
+  CheckFixedToFloatConversion(Val, getFractSema(), -0.08575439453125f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), -0.08575439453125f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               -0.000001308508217334747314453125f);
 
@@ -1073,31 +1073,33 @@ TEST(FixedPoint, FixedToFloat) {
   CheckFixedToFloatConversion(Val, getS32Pos2(), -11240.0f);
 
   Val = 0x40000080ULL;
-  CheckFixedToFloatConversion(Val, getAccumSema(),  32768.00390625f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), 32768.00390625f);
   CheckFixedToFloatConversion(Val, getLFractSema(),
                               0.500000059604644775390625f);
 
-  CheckFixedToFloatConversion(Val, getUAccumSema(),  16384.001953125f);
+  CheckFixedToFloatConversion(Val, getUAccumSema(), 16384.001953125f);
   CheckFixedToFloatConversion(Val, getULFractSema(),
                               0.2500000298023223876953125f);
 
   CheckFixedToFloatConversion(Val, getS32Pos2(), 4294967808.0f);
 
   Val = 0x40000040ULL;
-  CheckFixedToFloatConversion(Val, getAccumSema(),  32768.0f);
+  CheckFixedToFloatConversion(Val, getAccumSema(), 32768.0f);
   CheckFixedToFloatConversion(Val, getLFractSema(), 0.5f);
 
-  CheckFixedToFloatConversion(Val, getUAccumSema(),  16384.0f);
+  CheckFixedToFloatConversion(Val, getUAccumSema(), 16384.0f);
   CheckFixedToFloatConversion(Val, getULFractSema(), 0.25f);
 
   CheckFixedToFloatConversion(Val, getS32Pos2(), 4294967552.0f);
 
   Val = 0x7FF0ULL;
   CheckFixedToHalfConversion(Val, getAccumSema(), 0.99951171875f);
-  CheckFixedToHalfConversion(Val, getLFractSema(), 0.000015251338481903076171875f);
+  CheckFixedToHalfConversion(Val, getLFractSema(),
+                             0.000015251338481903076171875f);
 
   CheckFixedToHalfConversion(Val, getUAccumSema(), 0.499755859375f);
-  CheckFixedToHalfConversion(Val, getULFractSema(), 0.0000076256692409515380859375f);
+  CheckFixedToHalfConversion(Val, getULFractSema(),
+                             0.0000076256692409515380859375f);
 
   CheckFixedToFloatConversion(Val, getS32Pos2(), 131008.0f);
 }
@@ -1144,8 +1146,8 @@ TEST(FixedPoint, add) {
       APFixedPoint(11, getU8Neg10()), APFixedPoint(-9472, getS16Neg18()),
       APFixedPoint(-6656, FixedPointSemantics(17, FixedPointSemantics::Lsb{-18},
                                               true, false, false)));
-  CheckAddOverflow(
-      APFixedPoint::getMax(getU8Neg10()), APFixedPoint::getMax(getS16Neg18()));
+  CheckAddOverflow(APFixedPoint::getMax(getU8Neg10()),
+                   APFixedPoint::getMax(getS16Neg18()));
   CheckAdd(APFixedPoint::getMin(getU8Neg10()),
            APFixedPoint::getMin(getS16Neg18()),
            APFixedPoint::getMin(getS16Neg18())
@@ -1194,10 +1196,10 @@ TEST(FixedPoint, mul) {
   CheckMul(APFixedPoint(32, getU8Neg10()), APFixedPoint(32, getU8Neg10()),
            APFixedPoint(1, getU8Neg10()));
 
-  CheckMul(APFixedPoint(11, getS32Pos2()), APFixedPoint(1, getS16Neg18()),
-           APFixedPoint(44,
-                        FixedPointSemantics(52, FixedPointSemantics::Lsb{-18},
-                                            true, false, false)));
+  CheckMul(
+      APFixedPoint(11, getS32Pos2()), APFixedPoint(1, getS16Neg18()),
+      APFixedPoint(44, FixedPointSemantics(52, FixedPointSemantics::Lsb{-18},
+                                           true, false, false)));
   CheckMul(
       APFixedPoint(11, getU8Neg10()), APFixedPoint(-9472, getS16Neg18()),
       APFixedPoint(-102, FixedPointSemantics(17, FixedPointSemantics::Lsb{-18},
@@ -1215,8 +1217,10 @@ TEST(FixedPoint, mul) {
            APFixedPoint(281474976710656,
                         FixedPointSemantics(52, FixedPointSemantics::Lsb{-18},
                                             true, false, false)));
-  CheckMulOverflow(APFixedPoint::getMax(getS32Pos2()), APFixedPoint::getMax(getU8Pos4()));
-  CheckMulOverflow(APFixedPoint::getMin(getS32Pos2()), APFixedPoint::getMax(getU8Pos4()));
+  CheckMulOverflow(APFixedPoint::getMax(getS32Pos2()),
+                   APFixedPoint::getMax(getU8Pos4()));
+  CheckMulOverflow(APFixedPoint::getMin(getS32Pos2()),
+                   APFixedPoint::getMax(getU8Pos4()));
 }
 
 void CheckDiv(const APFixedPoint &Lhs, const APFixedPoint &Rhs,
@@ -1237,8 +1241,10 @@ void CheckDivOverflow(const APFixedPoint &Lhs, const APFixedPoint &Rhs) {
 TEST(FixedPoint, div) {
   CheckDiv(APFixedPoint(1, getS32Pos2()), APFixedPoint(1, getS32Pos2()),
            APFixedPoint(0, getS32Pos2()));
-  CheckDivOverflow(APFixedPoint(1, getS16Neg18()), APFixedPoint(1, getS16Neg18()));
-  CheckDivOverflow(APFixedPoint(1, getU8Neg10()), APFixedPoint(1, getU8Neg10()));
+  CheckDivOverflow(APFixedPoint(1, getS16Neg18()),
+                   APFixedPoint(1, getS16Neg18()));
+  CheckDivOverflow(APFixedPoint(1, getU8Neg10()),
+                   APFixedPoint(1, getU8Neg10()));
   CheckDiv(APFixedPoint(1, getU8Pos4()), APFixedPoint(1, getU8Pos4()),
            APFixedPoint(0, getU8Pos4()));
 

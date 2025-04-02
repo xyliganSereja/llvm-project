@@ -21,9 +21,7 @@ MCTargetOptions::MCTargetOptions()
       MCUseDwarfDirectory(DefaultDwarfDirectory),
       EmitCompactUnwindNonCanonical(false), PPCUseFullRegisterNames(false) {}
 
-StringRef MCTargetOptions::getABIName() const {
-  return ABIName;
-}
+StringRef MCTargetOptions::getABIName() const { return ABIName; }
 
 StringRef MCTargetOptions::getAssemblyLanguage() const {
   return AssemblyLanguage;

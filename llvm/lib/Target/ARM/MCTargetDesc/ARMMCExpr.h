@@ -42,7 +42,7 @@ public:
   /// @{
 
   static const ARMMCExpr *create(VariantKind Kind, const MCExpr *Expr,
-                                      MCContext &Ctx);
+                                 MCContext &Ctx);
 
   static const ARMMCExpr *createUpper16(const MCExpr *Expr, MCContext &Ctx) {
     return create(VK_ARM_HI16, Expr, Ctx);

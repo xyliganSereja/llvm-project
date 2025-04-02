@@ -30,12 +30,12 @@ struct PatchableFunction : public MachineFunctionPass {
   }
 
   bool runOnMachineFunction(MachineFunction &F) override;
-   MachineFunctionProperties getRequiredProperties() const override {
+  MachineFunctionProperties getRequiredProperties() const override {
     return MachineFunctionProperties().set(
         MachineFunctionProperties::Property::NoVRegs);
   }
 };
-}
+} // namespace
 
 bool PatchableFunction::runOnMachineFunction(MachineFunction &MF) {
   MachineBasicBlock &FirstMBB = *MF.begin();

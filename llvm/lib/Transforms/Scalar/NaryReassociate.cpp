@@ -126,9 +126,7 @@ public:
     initializeNaryReassociateLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 
-  bool doInitialization(Module &M) override {
-    return false;
-  }
+  bool doInitialization(Module &M) override { return false; }
 
   bool runOnFunction(Function &F) override;
 
@@ -292,7 +290,7 @@ NaryReassociatePass::matchAndReassociateMinOrMax(Instruction *I,
   return nullptr;
 }
 
-Instruction *NaryReassociatePass::tryReassociate(Instruction * I,
+Instruction *NaryReassociatePass::tryReassociate(Instruction *I,
                                                  const SCEV *&OrigSCEV) {
 
   if (!SE->isSCEVable(I->getType()))
@@ -340,8 +338,8 @@ Instruction *NaryReassociatePass::tryReassociateGEP(GetElementPtrInst *GEP) {
   gep_type_iterator GTI = gep_type_begin(*GEP);
   for (unsigned I = 1, E = GEP->getNumOperands(); I != E; ++I, ++GTI) {
     if (GTI.isSequential()) {
-      if (auto *NewGEP = tryReassociateGEPAtIndex(GEP, I - 1,
-                                                  GTI.getIndexedType())) {
+      if (auto *NewGEP =
+              tryReassociateGEPAtIndex(GEP, I - 1, GTI.getIndexedType())) {
         return NewGEP;
       }
     }
@@ -413,8 +411,8 @@ NaryReassociatePass::tryReassociateGEPAtIndex(GetElementPtrInst *GEP,
     IndexExprs[I] =
         SE->getZeroExtendExpr(IndexExprs[I], GEP->getOperand(I)->getType());
   }
-  const SCEV *CandidateExpr = SE->getGEPExpr(cast<GEPOperator>(GEP),
-                                             IndexExprs);
+  const SCEV *CandidateExpr =
+      SE->getGEPExpr(cast<GEPOperator>(GEP), IndexExprs);
 
   Value *Candidate = findClosestMatchingDominator(CandidateExpr, GEP);
   if (Candidate == nullptr)
@@ -614,10 +612,10 @@ Value *NaryReassociatePass::tryReassociateMinOrMax(Instruction *I,
       // The optimization is profitable only if LHS can be removed in the end.
       // In other words LHS should be used (directly or indirectly) by I only.
       llvm::any_of(LHS->users(),
-                    [&](auto *U) {
-                      return U != I &&
-                             !(U->hasOneUser() && *U->users().begin() == I);
-                    }) ||
+                   [&](auto *U) {
+                     return U != I &&
+                            !(U->hasOneUser() && *U->users().begin() == I);
+                   }) ||
       !match(LHS, m_MaxMin))
     return nullptr;
 

@@ -51,6 +51,7 @@ inline std::error_code make_error_code(object_error e) {
 /// std::error_code, but this will be removed in the future.
 class BinaryError : public ErrorInfo<BinaryError, ECError> {
   void anchor() override;
+
 public:
   static char ID;
   BinaryError() {
@@ -70,14 +71,15 @@ public:
   GenericBinaryError(const Twine &Msg, object_error ECOverride);
   const std::string &getMessage() const { return Msg; }
   void log(raw_ostream &OS) const override;
+
 private:
   std::string Msg;
 };
 
 /// isNotObjectErrorInvalidFileType() is used when looping through the children
 /// of an archive after calling getAsBinary() on the child and it returns an
-/// llvm::Error.  In the cases we want to loop through the children and ignore the
-/// non-objects in the archive this is used to test the error to see if an
+/// llvm::Error.  In the cases we want to loop through the children and ignore
+/// the non-objects in the archive this is used to test the error to see if an
 /// error() function needs to called on the llvm::Error.
 Error isNotObjectErrorInvalidFileType(llvm::Error Err);
 
@@ -92,6 +94,6 @@ inline Error createError(const Twine &Err) {
 namespace std {
 template <>
 struct is_error_code_enum<llvm::object::object_error> : std::true_type {};
-}
+} // namespace std
 
 #endif

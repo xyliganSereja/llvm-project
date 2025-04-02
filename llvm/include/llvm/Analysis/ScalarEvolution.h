@@ -166,9 +166,7 @@ public:
   // SCEV and all its operands recursively. We may use it to avoid performing
   // heavy transformations on SCEVs of excessive size for sake of saving the
   // compilation time.
-  unsigned short getExpressionSize() const {
-    return ExpressionSize;
-  }
+  unsigned short getExpressionSize() const { return ExpressionSize; }
 
   /// Print out the internal representation of this scalar to the specified
   /// stream.  This should really only be used for debugging purposes.
@@ -282,8 +280,8 @@ class SCEVComparePredicate final : public SCEVPredicate {
 
 public:
   SCEVComparePredicate(const FoldingSetNodeIDRef ID,
-                       const ICmpInst::Predicate Pred,
-                       const SCEV *LHS, const SCEV *RHS);
+                       const ICmpInst::Predicate Pred, const SCEV *LHS,
+                       const SCEV *RHS);
 
   /// Implementation of the SCEVPredicate interface
   bool implies(const SCEVPredicate *N, ScalarEvolution &SE) const override;
@@ -398,9 +396,7 @@ public:
   bool isAlwaysTrue() const override;
 
   /// Methods for support type inquiry through isa, cast, and dyn_cast:
-  static bool classof(const SCEVPredicate *P) {
-    return P->getKind() == P_Wrap;
-  }
+  static bool classof(const SCEVPredicate *P) { return P->getKind() == P_Wrap; }
 };
 
 /// This class represents a composition of other SCEV predicates, and is the
@@ -408,7 +404,8 @@ public:
 /// logical "AND" of all the predicates in the union.
 ///
 /// NB! Unlike other SCEVPredicate sub-classes this class does not live in the
-/// ScalarEvolution::Preds folding set.  This is why the \c add function is sound.
+/// ScalarEvolution::Preds folding set.  This is why the \c add function is
+/// sound.
 class SCEVUnionPredicate final : public SCEVPredicate {
 private:
   using PredicateMap =
@@ -835,8 +832,7 @@ public:
   /// unknown or not guaranteed to be the multiple of a constant., Will also
   /// return 1 if the trip count is very large (>= 2^32).
   /// Note that the argument is an exit count for loop L, NOT a trip count.
-  unsigned getSmallConstantTripMultiple(const Loop *L,
-                                        const SCEV *ExitCount);
+  unsigned getSmallConstantTripMultiple(const Loop *L, const SCEV *ExitCount);
 
   /// Returns the largest constant divisor of the trip count of the
   /// loop.  Will return 1 if no trip count could be computed, or if a
@@ -1511,9 +1507,7 @@ private:
           ConstantMaxNotTaken(ConstantMaxNotTaken),
           SymbolicMaxNotTaken(SymbolicMaxNotTaken), Predicates(Predicates) {}
 
-    bool hasAlwaysTruePredicate() const {
-      return Predicates.empty();
-    }
+    bool hasAlwaysTruePredicate() const { return Predicates.empty(); }
   };
 
   /// Information about the backedge-taken count of a loop. This currently
@@ -1711,7 +1705,7 @@ private:
   BlockDisposition computeBlockDisposition(const SCEV *S, const BasicBlock *BB);
 
   /// Stores all SCEV that use a given SCEV as its direct operand.
-  DenseMap<const SCEV *, SmallPtrSet<const SCEV *, 8> > SCEVUsers;
+  DenseMap<const SCEV *, SmallPtrSet<const SCEV *, 8>> SCEVUsers;
 
   /// Memoized results from getRange
   DenseMap<const SCEV *, ConstantRange> UnsignedRanges;
@@ -1790,7 +1784,7 @@ private:
 
   /// A helper function for createAddRecFromPHI to handle simple cases.
   const SCEV *createSimpleAffineAddRec(PHINode *PN, Value *BEValueV,
-                                            Value *StartValueV);
+                                       Value *StartValueV);
 
   /// Helper function called from createNodeForPHI.
   const SCEV *createNodeFromSelectLikePHI(PHINode *PN);
@@ -1893,8 +1887,7 @@ private:
   /// to use a minimal set of SCEV predicates in order to return an exact
   /// answer.
   ExitLimit computeExitLimitFromICmp(const Loop *L, ICmpInst *ExitCond,
-                                     bool ExitIfTrue,
-                                     bool IsSubExpr,
+                                     bool ExitIfTrue, bool IsSubExpr,
                                      bool AllowPredicates = false);
 
   /// Variant of previous which takes the components representing an ICmp
@@ -2259,8 +2252,8 @@ private:
                                  SCEV::NoWrapFlags Flags);
 
   // Get addrec expr already created or create a new one.
-  const SCEV *getOrCreateAddRecExpr(ArrayRef<const SCEV *> Ops,
-                                    const Loop *L, SCEV::NoWrapFlags Flags);
+  const SCEV *getOrCreateAddRecExpr(ArrayRef<const SCEV *> Ops, const Loop *L,
+                                    SCEV::NoWrapFlags Flags);
 
   /// Return x if \p Val is f(x) where f is a 1-1 function.
   const SCEV *stripInjectiveFunctions(const SCEV *Val) const;

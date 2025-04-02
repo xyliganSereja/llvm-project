@@ -50,7 +50,8 @@ void Mips16FrameLowering::emitPrologue(MachineFunction &MF,
   uint64_t StackSize = MFI.getStackSize();
 
   // No need to allocate space on the stack.
-  if (StackSize == 0 && !MFI.adjustsStack()) return;
+  if (StackSize == 0 && !MFI.adjustsStack())
+    return;
 
   const MCRegisterInfo *MRI = MF.getContext().getRegisterInfo();
 
@@ -80,11 +81,12 @@ void Mips16FrameLowering::emitPrologue(MachineFunction &MF,
   }
   if (hasFP(MF))
     BuildMI(MBB, MBBI, dl, TII.get(Mips::MoveR3216), Mips::S0)
-      .addReg(Mips::SP).setMIFlag(MachineInstr::FrameSetup);
+        .addReg(Mips::SP)
+        .setMIFlag(MachineInstr::FrameSetup);
 }
 
 void Mips16FrameLowering::emitEpilogue(MachineFunction &MF,
-                                 MachineBasicBlock &MBB) const {
+                                       MachineBasicBlock &MBB) const {
   MachineBasicBlock::iterator MBBI = MBB.getFirstTerminator();
   MachineFrameInfo &MFI = MF.getFrameInfo();
   const Mips16InstrInfo &TII =
@@ -96,8 +98,7 @@ void Mips16FrameLowering::emitEpilogue(MachineFunction &MF,
     return;
 
   if (hasFP(MF))
-    BuildMI(MBB, MBBI, dl, TII.get(Mips::Move32R16), Mips::SP)
-      .addReg(Mips::S0);
+    BuildMI(MBB, MBBI, dl, TII.get(Mips::Move32R16), Mips::SP).addReg(Mips::S0);
 
   // Adjust stack.
   // assumes stacksize multiple of 8
@@ -121,8 +122,8 @@ bool Mips16FrameLowering::spillCalleeSavedRegisters(
     // It's killed at the spill, unless the register is RA and return address
     // is taken.
     Register Reg = I.getReg();
-    bool IsRAAndRetAddrIsTaken = (Reg == Mips::RA)
-      && MF->getFrameInfo().isReturnAddressTaken();
+    bool IsRAAndRetAddrIsTaken =
+        (Reg == Mips::RA) && MF->getFrameInfo().isReturnAddressTaken();
     if (!IsRAAndRetAddrIsTaken)
       MBB.addLiveIn(Reg);
   }
@@ -143,8 +144,8 @@ bool Mips16FrameLowering::restoreCalleeSavedRegisters(
   return true;
 }
 
-bool
-Mips16FrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
+bool Mips16FrameLowering::hasReservedCallFrame(
+    const MachineFunction &MF) const {
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   // Reserve call frame if the size of the maximum call frame fits into 15-bit
   // immediate field and there are no variable sized objects on the stack.

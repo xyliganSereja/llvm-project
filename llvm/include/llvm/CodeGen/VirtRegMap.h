@@ -235,6 +235,6 @@ public:
                         MachineFunctionAnalysisManager &MFAM);
   static bool isRequired() { return true; }
 };
-} // end llvm namespace
+} // namespace llvm
 
 #endif // LLVM_CODEGEN_VIRTREGMAP_H

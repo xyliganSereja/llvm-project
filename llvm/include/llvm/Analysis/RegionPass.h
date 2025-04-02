@@ -56,8 +56,8 @@ public:
   Pass *createPrinterPass(raw_ostream &O,
                           const std::string &Banner) const override;
 
-  using llvm::Pass::doInitialization;
   using llvm::Pass::doFinalization;
+  using llvm::Pass::doInitialization;
 
   virtual bool doInitialization(Region *R, RGPassManager &RGM) { return false; }
   virtual bool doFinalization() { return false; }
@@ -85,7 +85,7 @@ protected:
 
 /// The pass manager to schedule RegionPasses.
 class RGPassManager : public FunctionPass, public PMDataManager {
-  std::deque<Region*> RQ;
+  std::deque<Region *> RQ;
   RegionInfo *RI;
   Region *CurrentRegion;
 
@@ -122,6 +122,6 @@ public:
   }
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

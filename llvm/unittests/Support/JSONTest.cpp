@@ -126,7 +126,7 @@ TEST(JSONTest, Array) {
   A.emplace_back(3);
   A.emplace(++A.begin(), 0);
   A.push_back(4);
-  A.insert(++++A.begin(), 99);
+  A.insert(++ ++A.begin(), 99);
 
   EXPECT_EQ(A.size(), 6u);
   EXPECT_EQ(R"([1,0,99,2,3,4])", s(std::move(A)));
@@ -305,49 +305,49 @@ TEST(JSONTest, Integers) {
     std::optional<int64_t> AsInt;
     std::optional<double> AsNumber;
   } TestCases[] = {
-    {
-        "Non-integer. Stored as double, not convertible.",
-        double{1.5},
-        "1.5",
-        std::nullopt,
-        1.5,
-    },
+      {
+          "Non-integer. Stored as double, not convertible.",
+          double{1.5},
+          "1.5",
+          std::nullopt,
+          1.5,
+      },
 
-    {
-        "Integer, not exact double. Stored as int64, convertible.",
-        int64_t{0x4000000000000001},
-        "4611686018427387905",
-        int64_t{0x4000000000000001},
-        double{0x4000000000000000},
-    },
+      {
+          "Integer, not exact double. Stored as int64, convertible.",
+          int64_t{0x4000000000000001},
+          "4611686018427387905",
+          int64_t{0x4000000000000001},
+          double{0x4000000000000000},
+      },
 
-    {
-        "Negative integer, not exact double. Stored as int64, convertible.",
-        int64_t{-0x4000000000000001},
-        "-4611686018427387905",
-        int64_t{-0x4000000000000001},
-        double{-0x4000000000000000},
-    },
+      {
+          "Negative integer, not exact double. Stored as int64, convertible.",
+          int64_t{-0x4000000000000001},
+          "-4611686018427387905",
+          int64_t{-0x4000000000000001},
+          double{-0x4000000000000000},
+      },
 
-      // PR46470,
-      // https://developercommunity.visualstudio.com/content/problem/1093399/incorrect-result-when-printing-6917529027641081856.html
+  // PR46470,
+  // https://developercommunity.visualstudio.com/content/problem/1093399/incorrect-result-when-printing-6917529027641081856.html
 #if !defined(_MSC_VER) || _MSC_VER < 1926
-    {
-        "Dynamically exact integer. Stored as double, convertible.",
-        double{0x6000000000000000},
-        "6.9175290276410819e+18",
-        int64_t{0x6000000000000000},
-        double{0x6000000000000000},
-    },
+      {
+          "Dynamically exact integer. Stored as double, convertible.",
+          double{0x6000000000000000},
+          "6.9175290276410819e+18",
+          int64_t{0x6000000000000000},
+          double{0x6000000000000000},
+      },
 #endif
 
-    {
-        "Dynamically integer, >64 bits. Stored as double, not convertible.",
-        1.5 * double{0x8000000000000000},
-        "1.3835058055282164e+19",
-        std::nullopt,
-        1.5 * double{0x8000000000000000},
-    },
+      {
+          "Dynamically integer, >64 bits. Stored as double, not convertible.",
+          1.5 * double{0x8000000000000000},
+          "1.3835058055282164e+19",
+          std::nullopt,
+          1.5 * double{0x8000000000000000},
+      },
   };
   for (const auto &T : TestCases) {
     EXPECT_EQ(T.Str, s(T.Val)) << T.Desc;

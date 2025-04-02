@@ -46,6 +46,6 @@ public:
                      function_ref<StringRef(StringRef)> MapClassName2PassName);
 };
 
-}
+} // namespace llvm
 
 #endif

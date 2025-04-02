@@ -866,8 +866,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   NamedInstrProfRecord Record("caller", 0x1234, {1, 2});
   Record.reserveSites(IPVK_IndirectCallTarget, 1);
-  InstrProfValueData VD0[] = {{1000, 1}, {2000, 2}, {3000, 3}, {5000, 5},
-                              {4000, 4}, {6000, 6}};
+  InstrProfValueData VD0[] = {{1000, 1}, {2000, 2}, {3000, 3},
+                              {5000, 5}, {4000, 4}, {6000, 6}};
   Record.addValueData(IPVK_IndirectCallTarget, 0, VD0, nullptr);
   Writer.addRecord(std::move(Record), Err);
   auto Profile = Writer.writeBuffer();
@@ -932,8 +932,8 @@ TEST_P(MaybeSparseInstrProfTest, annotate_vp_data) {
   // Remove the MD_prof metadata
   Inst->setMetadata(LLVMContext::MD_prof, 0);
   // Annotate with 4 records.
-  InstrProfValueData VD0Sorted[] = {{1000, 6}, {2000, 5}, {3000, 4}, {4000, 3},
-                              {5000, 2}, {6000, 1}};
+  InstrProfValueData VD0Sorted[] = {{1000, 6}, {2000, 5}, {3000, 4},
+                                    {4000, 3}, {5000, 2}, {6000, 1}};
   annotateValueSite(*M, *Inst, ArrayRef(VD0Sorted).slice(2), 10,
                     IPVK_IndirectCallTarget, 5);
   ValueData = getValueProfDataFromInst(*Inst, IPVK_IndirectCallTarget, 5, T);

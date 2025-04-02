@@ -1,4 +1,5 @@
-//===-- DomPrinter.h - Dom printer external interface ------------*- C++ -*-===//
+//===-- DomPrinter.h - Dom printer external interface ------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -40,8 +41,7 @@ struct DOTGraphTraits<DomTreeNode *> : public DefaultDOTGraphTraits {
 };
 
 template <>
-struct DOTGraphTraits<DominatorTree *>
-    : public DOTGraphTraits<DomTreeNode *> {
+struct DOTGraphTraits<DominatorTree *> : public DOTGraphTraits<DomTreeNode *> {
 
   DOTGraphTraits(bool isSimple = false)
       : DOTGraphTraits<DomTreeNode *>(isSimple) {}
@@ -51,25 +51,23 @@ struct DOTGraphTraits<DominatorTree *>
   }
 
   std::string getNodeLabel(DomTreeNode *Node, DominatorTree *G) {
-    return DOTGraphTraits<DomTreeNode *>::getNodeLabel(Node,
-                                                             G->getRootNode());
+    return DOTGraphTraits<DomTreeNode *>::getNodeLabel(Node, G->getRootNode());
   }
 };
 
-template<>
+template <>
 struct DOTGraphTraits<PostDominatorTree *>
-  : public DOTGraphTraits<DomTreeNode*> {
+    : public DOTGraphTraits<DomTreeNode *> {
 
-  DOTGraphTraits (bool isSimple=false)
-    : DOTGraphTraits<DomTreeNode*>(isSimple) {}
+  DOTGraphTraits(bool isSimple = false)
+      : DOTGraphTraits<DomTreeNode *>(isSimple) {}
 
   static std::string getGraphName(PostDominatorTree *DT) {
     return "Post dominator tree";
   }
 
-  std::string getNodeLabel(DomTreeNode *Node,
-                           PostDominatorTree *G) {
-    return DOTGraphTraits<DomTreeNode*>::getNodeLabel(Node, G->getRootNode());
+  std::string getNodeLabel(DomTreeNode *Node, PostDominatorTree *G) {
+    return DOTGraphTraits<DomTreeNode *>::getNodeLabel(Node, G->getRootNode());
   }
 };
 
@@ -118,15 +116,15 @@ struct PostDomOnlyPrinter final
 } // namespace llvm
 
 namespace llvm {
-  class FunctionPass;
-  FunctionPass *createDomPrinterWrapperPassPass();
-  FunctionPass *createDomOnlyPrinterWrapperPassPass();
-  FunctionPass *createDomViewerWrapperPassPass();
-  FunctionPass *createDomOnlyViewerWrapperPassPass();
-  FunctionPass *createPostDomPrinterWrapperPassPass();
-  FunctionPass *createPostDomOnlyPrinterWrapperPassPass();
-  FunctionPass *createPostDomViewerWrapperPassPass();
-  FunctionPass *createPostDomOnlyViewerWrapperPassPass();
-} // End llvm namespace
+class FunctionPass;
+FunctionPass *createDomPrinterWrapperPassPass();
+FunctionPass *createDomOnlyPrinterWrapperPassPass();
+FunctionPass *createDomViewerWrapperPassPass();
+FunctionPass *createDomOnlyViewerWrapperPassPass();
+FunctionPass *createPostDomPrinterWrapperPassPass();
+FunctionPass *createPostDomOnlyPrinterWrapperPassPass();
+FunctionPass *createPostDomViewerWrapperPassPass();
+FunctionPass *createPostDomOnlyViewerWrapperPassPass();
+} // namespace llvm
 
 #endif

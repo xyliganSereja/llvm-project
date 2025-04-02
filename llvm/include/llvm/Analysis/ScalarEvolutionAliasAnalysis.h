@@ -71,6 +71,6 @@ public:
 /// Creates an instance of \c SCEVAAWrapperPass.
 FunctionPass *createSCEVAAWrapperPass();
 
-}
+} // namespace llvm
 
 #endif

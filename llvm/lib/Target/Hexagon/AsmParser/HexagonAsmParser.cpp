@@ -157,8 +157,8 @@ class HexagonAsmParser : public MCTargetAsmParser {
 public:
   HexagonAsmParser(const MCSubtargetInfo &_STI, MCAsmParser &_Parser,
                    const MCInstrInfo &MII, const MCTargetOptions &Options)
-    : MCTargetAsmParser(Options, _STI, MII), Parser(_Parser),
-      InBrackets(false) {
+      : MCTargetAsmParser(Options, _STI, MII), Parser(_Parser),
+        InBrackets(false) {
     MCB.setOpcode(Hexagon::BUNDLE);
     setAvailableFeatures(ComputeAvailableFeatures(getSTI().getFeatureBits()));
 
@@ -482,8 +482,8 @@ bool HexagonAsmParser::finishBundle(SMLoc IDLoc, MCStreamer &Out) {
   MCInst OrigBundle = MCB;
   HexagonMCChecker Check(getContext(), MII, STI, MCB, *RI, true);
 
-  bool CheckOk = HexagonMCInstrInfo::canonicalizePacket(
-      MII, STI, getContext(), MCB, &Check, true);
+  bool CheckOk = HexagonMCInstrInfo::canonicalizePacket(MII, STI, getContext(),
+                                                        MCB, &Check, true);
 
   if (CheckOk) {
     if (HexagonMCInstrInfo::bundleSize(MCB) == 0) {
@@ -651,8 +651,8 @@ bool HexagonAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
       eatToEndOfPacket();
     return true;
   }
-  HexagonMCInstrInfo::extendIfNeeded(
-      getParser().getContext(), MII, MCB, *SubInst);
+  HexagonMCInstrInfo::extendIfNeeded(getParser().getContext(), MII, MCB,
+                                     *SubInst);
   MCB.addOperand(MCOperand::createInst(SubInst));
   if (!InBrackets)
     return finishBundle(IDLoc, Out);
@@ -1064,7 +1064,7 @@ ParseStatus HexagonAsmParser::tryParseRegister(MCRegister &Reg, SMLoc &StartLoc,
     } else {
       Reg = DotReg;
       size_t First = RawString.find('.');
-      StringRef DotString (RawString.data() + First, RawString.size() - First);
+      StringRef DotString(RawString.data() + First, RawString.size() - First);
       Lexer.UnLex(AsmToken(AsmToken::Identifier, DotString));
       EndLoc = Lexer.getLoc();
       if (handleNoncontigiousRegister(!NeededWorkaround, StartLoc))

@@ -15,29 +15,29 @@
 #define LLVM_ANALYSIS_PASSES_H
 
 namespace llvm {
-  class FunctionPass;
-  class ImmutablePass;
-  class ModulePass;
+class FunctionPass;
+class ImmutablePass;
+class ModulePass;
 
-  //===--------------------------------------------------------------------===//
-  //
-  /// createLazyValueInfoPass - This creates an instance of the LazyValueInfo
-  /// pass.
-  FunctionPass *createLazyValueInfoPass();
+//===--------------------------------------------------------------------===//
+//
+/// createLazyValueInfoPass - This creates an instance of the LazyValueInfo
+/// pass.
+FunctionPass *createLazyValueInfoPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createDependenceAnalysisWrapperPass - This creates an instance of the
-  // DependenceAnalysisWrapper pass.
-  //
-  FunctionPass *createDependenceAnalysisWrapperPass();
+//===--------------------------------------------------------------------===//
+//
+// createDependenceAnalysisWrapperPass - This creates an instance of the
+// DependenceAnalysisWrapper pass.
+//
+FunctionPass *createDependenceAnalysisWrapperPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createRegionInfoPass - This pass finds all single entry single exit regions
-  // in a function and builds the region hierarchy.
-  //
-  FunctionPass *createRegionInfoPass();
-}
+//===--------------------------------------------------------------------===//
+//
+// createRegionInfoPass - This pass finds all single entry single exit regions
+// in a function and builds the region hierarchy.
+//
+FunctionPass *createRegionInfoPass();
+} // namespace llvm
 
 #endif

@@ -392,7 +392,7 @@ public:
 
       auto PartI = I->getData();
       for (auto *PartJ : make_range(std::next(ToBeMerged.member_begin(I)),
-                                   ToBeMerged.member_end())) {
+                                    ToBeMerged.member_end())) {
         PartJ->moveTo(*PartI);
       }
     }
@@ -665,8 +665,7 @@ public:
     if (!L->getExitBlock())
       return fail("MultipleExitBlocks", "multiple exit blocks");
     if (!L->isLoopSimplifyForm())
-      return fail("NotLoopSimplifyForm",
-                  "loop is not in loop-simplify form");
+      return fail("NotLoopSimplifyForm", "loop is not in loop-simplify form");
     if (!L->isRotatedForm())
       return fail("NotBottomTested", "loop is not bottom tested");
 
@@ -877,8 +876,9 @@ public:
     // failed.
     if (Forced)
       Ctx.diagnose(DiagnosticInfoOptimizationFailure(
-          *F, L->getStartLoc(), "loop not distributed: failed "
-                                "explicitly specified loop distribution"));
+          *F, L->getStartLoc(),
+          "loop not distributed: failed "
+          "explicitly specified loop distribution"));
 
     return false;
   }

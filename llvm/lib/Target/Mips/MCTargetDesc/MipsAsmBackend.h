@@ -61,6 +61,6 @@ public:
   bool isMicroMips(const MCSymbol *Sym) const override;
 }; // class MipsAsmBackend
 
-} // namespace
+} // namespace llvm
 
 #endif

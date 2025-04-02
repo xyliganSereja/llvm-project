@@ -90,9 +90,7 @@ public:
     return TTI::TCC_Expensive;
   }
 
-  uint64_t getMaxMemIntrinsicInlineSizeThreshold() const {
-    return 64;
-  }
+  uint64_t getMaxMemIntrinsicInlineSizeThreshold() const { return 64; }
 
   // Although this default value is arbitrary, it is not random. It is assumed
   // that a condition that evaluates the same way by a higher percentage than
@@ -116,9 +114,7 @@ public:
     return false;
   }
 
-  bool addrspacesMayAlias(unsigned AS0, unsigned AS1) const {
-    return true;
-  }
+  bool addrspacesMayAlias(unsigned AS0, unsigned AS1) const { return true; }
 
   unsigned getFlatAddressSpace() const { return -1; }
 
@@ -272,7 +268,7 @@ public:
   }
 
   TTI::AddressingModeKind
-    getPreferredAddressingMode(const Loop *L, ScalarEvolution *SE) const {
+  getPreferredAddressingMode(const Loop *L, ScalarEvolution *SE) const {
     return TTI::AMK_None;
   }
 
@@ -599,8 +595,7 @@ public:
   InstructionCost getArithmeticInstrCost(
       unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
       TTI::OperandValueInfo Opd1Info, TTI::OperandValueInfo Opd2Info,
-      ArrayRef<const Value *> Args,
-      const Instruction *CxtI = nullptr) const {
+      ArrayRef<const Value *> Args, const Instruction *CxtI = nullptr) const {
     // Widenable conditions will eventually lower into constants, so some
     // operations with them will be trivially optimized away.
     auto IsWidenableCondition = [](const Value *V) {
@@ -999,9 +994,7 @@ public:
     return false;
   }
 
-  bool preferEpilogueVectorization() const {
-    return true;
-  }
+  bool preferEpilogueVectorization() const { return true; }
 
   bool shouldExpandReduction(const IntrinsicInst *II) const { return true; }
 

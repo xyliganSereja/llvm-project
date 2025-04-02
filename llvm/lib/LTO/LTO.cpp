@@ -234,7 +234,8 @@ std::string llvm::computeLTOCacheKey(
   };
 
   auto AddUsedThings = [&](GlobalValueSummary *GS) {
-    if (!GS) return;
+    if (!GS)
+      return;
     AddUnsigned(GS->getVisibility());
     AddUnsigned(GS->isLive());
     AddUnsigned(GS->canAutoHide());
@@ -580,9 +581,7 @@ Expected<std::unique_ptr<InputFile>> InputFile::create(MemoryBufferRef Object) {
   return std::move(File);
 }
 
-StringRef InputFile::getName() const {
-  return Mods[0].getModuleIdentifier();
-}
+StringRef InputFile::getName() const { return Mods[0].getModuleIdentifier(); }
 
 BitcodeModule &InputFile::getSingleBitcodeModule() {
   assert(Mods.size() == 1 && "Expect only one bitcode module");
@@ -937,8 +936,8 @@ LTO::addRegularLTO(BitcodeModule BM, ArrayRef<InputFile::Symbol> Syms,
       if (Res.FinalDefinitionInLinkageUnit) {
         GV->setDSOLocal(true);
         if (GV->hasDLLImportStorageClass())
-          GV->setDLLStorageClass(GlobalValue::DLLStorageClassTypes::
-                                 DefaultStorageClass);
+          GV->setDLLStorageClass(
+              GlobalValue::DLLStorageClassTypes::DefaultStorageClass);
       }
     } else if (auto *AS =
                    dyn_cast_if_present<ModuleSymbolTable::AsmSymbol *>(Msym)) {

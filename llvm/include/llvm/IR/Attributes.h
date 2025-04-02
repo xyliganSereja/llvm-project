@@ -85,12 +85,12 @@ public:
 
   enum AttrKind {
     // IR-Level Attributes
-    None,                  ///< No attributes have been set
-    #define GET_ATTR_ENUM
-    #include "llvm/IR/Attributes.inc"
-    EndAttrKinds,          ///< Sentinel value useful for loops
-    EmptyKey,              ///< Use as Empty key for DenseMap of AttrKind
-    TombstoneKey,          ///< Use as Tombstone key for DenseMap of AttrKind
+    None, ///< No attributes have been set
+#define GET_ATTR_ENUM
+#include "llvm/IR/Attributes.inc"
+    EndAttrKinds, ///< Sentinel value useful for loops
+    EmptyKey,     ///< Use as Empty key for DenseMap of AttrKind
+    TombstoneKey, ///< Use as Tombstone key for DenseMap of AttrKind
   };
 
   static const unsigned NumIntAttrKinds = LastIntAttr - FirstIntAttr + 1;
@@ -149,12 +149,12 @@ public:
   static Attribute getWithAlignment(LLVMContext &Context, Align Alignment);
   static Attribute getWithStackAlignment(LLVMContext &Context, Align Alignment);
   static Attribute getWithDereferenceableBytes(LLVMContext &Context,
-                                              uint64_t Bytes);
+                                               uint64_t Bytes);
   static Attribute getWithDereferenceableOrNullBytes(LLVMContext &Context,
                                                      uint64_t Bytes);
-  static Attribute getWithAllocSizeArgs(
-      LLVMContext &Context, unsigned ElemSizeArg,
-      const std::optional<unsigned> &NumElemsArg);
+  static Attribute
+  getWithAllocSizeArgs(LLVMContext &Context, unsigned ElemSizeArg,
+                       const std::optional<unsigned> &NumElemsArg);
   static Attribute getWithVScaleRangeArgs(LLVMContext &Context,
                                           unsigned MinValue, unsigned MaxValue);
   static Attribute getWithByValType(LLVMContext &Context, Type *Ty);
@@ -316,13 +316,11 @@ public:
   void Profile(FoldingSetNodeID &ID) const;
 
   /// Return a raw pointer that uniquely identifies this attribute.
-  void *getRawPointer() const {
-    return pImpl;
-  }
+  void *getRawPointer() const { return pImpl; }
 
   /// Get an attribute from a raw pointer created by getRawPointer.
   static Attribute fromRawPointer(void *RawPtr) {
-    return Attribute(reinterpret_cast<AttributeImpl*>(RawPtr));
+    return Attribute(reinterpret_cast<AttributeImpl *>(RawPtr));
   }
 };
 
@@ -432,8 +430,8 @@ public:
   Type *getPreallocatedType() const;
   Type *getInAllocaType() const;
   Type *getElementType() const;
-  std::optional<std::pair<unsigned, std::optional<unsigned>>> getAllocSizeArgs()
-      const;
+  std::optional<std::pair<unsigned, std::optional<unsigned>>>
+  getAllocSizeArgs() const;
   unsigned getVScaleRangeMin() const;
   std::optional<unsigned> getVScaleRangeMax() const;
   UWTableKind getUWTableKind() const;
@@ -543,8 +541,7 @@ public:
                            ArrayRef<uint64_t> Values);
   static AttributeList get(LLVMContext &C, unsigned Index,
                            ArrayRef<StringRef> Kind);
-  static AttributeList get(LLVMContext &C, unsigned Index,
-                           AttributeSet Attrs);
+  static AttributeList get(LLVMContext &C, unsigned Index, AttributeSet Attrs);
   static AttributeList get(LLVMContext &C, unsigned Index,
                            const AttrBuilder &B);
 
@@ -1017,9 +1014,7 @@ public:
   bool operator!=(const AttributeList &RHS) const { return pImpl != RHS.pImpl; }
 
   /// Return a raw pointer that uniquely identifies this attribute list.
-  void *getRawPointer() const {
-    return pImpl;
-  }
+  void *getRawPointer() const { return pImpl; }
 
   /// Return true if there are no attributes.
   bool isEmpty() const { return pImpl == nullptr; }
@@ -1035,13 +1030,13 @@ public:
 template <> struct DenseMapInfo<AttributeList, void> {
   static AttributeList getEmptyKey() {
     auto Val = static_cast<uintptr_t>(-1);
-    Val <<= PointerLikeTypeTraits<void*>::NumLowBitsAvailable;
+    Val <<= PointerLikeTypeTraits<void *>::NumLowBitsAvailable;
     return AttributeList(reinterpret_cast<AttributeListImpl *>(Val));
   }
 
   static AttributeList getTombstoneKey() {
     auto Val = static_cast<uintptr_t>(-2);
-    Val <<= PointerLikeTypeTraits<void*>::NumLowBitsAvailable;
+    Val <<= PointerLikeTypeTraits<void *>::NumLowBitsAvailable;
     return AttributeList(reinterpret_cast<AttributeListImpl *>(Val));
   }
 
@@ -1182,8 +1177,8 @@ public:
 
   /// Retrieve the allocsize args, or std::nullopt if the attribute does not
   /// exist.
-  std::optional<std::pair<unsigned, std::optional<unsigned>>> getAllocSizeArgs()
-      const;
+  std::optional<std::pair<unsigned, std::optional<unsigned>>>
+  getAllocSizeArgs() const;
 
   /// Add integer attribute with raw value (packed/encoded if necessary).
   AttrBuilder &addRawIntAttr(Attribute::AttrKind Kind, uint64_t Value);
@@ -1324,7 +1319,6 @@ AttributeMask getUBImplyingAttributes();
 /// \returns Return true if the two functions have compatible target-independent
 /// attributes for inlining purposes.
 bool areInlineCompatible(const Function &Caller, const Function &Callee);
-
 
 /// Checks  if there are any incompatible function attributes between
 /// \p A and \p B.

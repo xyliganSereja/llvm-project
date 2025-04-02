@@ -159,8 +159,8 @@ TEST(FunctionTest, GetPointerAlignment) {
   LLVMContext Context;
   Type *VoidType(Type::getVoidTy(Context));
   FunctionType *FuncType(FunctionType::get(VoidType, false));
-  std::unique_ptr<Function> Func(Function::Create(
-      FuncType, GlobalValue::ExternalLinkage));
+  std::unique_ptr<Function> Func(
+      Function::Create(FuncType, GlobalValue::ExternalLinkage));
   EXPECT_EQ(Align(1), Func->getPointerAlignment(DataLayout("")));
   EXPECT_EQ(Align(1), Func->getPointerAlignment(DataLayout("Fi8")));
   EXPECT_EQ(Align(1), Func->getPointerAlignment(DataLayout("Fn8")));
@@ -443,7 +443,7 @@ TEST(FunctionTest, SpliceEndBeforeBegin) {
                            FromBB1->getIterator()),
                "FromBeginIt not before FromEndIt!");
 }
-#endif //EXPENSIVE_CHECKS
+#endif // EXPENSIVE_CHECKS
 
 TEST(FunctionTest, EraseBBs) {
   LLVMContext Ctx;

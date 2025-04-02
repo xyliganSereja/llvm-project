@@ -57,16 +57,14 @@ TEST(TwineTest, Concat) {
   // the result.
 
   // Concat with null.
-  EXPECT_EQ("(Twine null empty)", 
+  EXPECT_EQ("(Twine null empty)",
             repr(Twine("hi").concat(Twine::createNull())));
-  EXPECT_EQ("(Twine null empty)", 
+  EXPECT_EQ("(Twine null empty)",
             repr(Twine::createNull().concat(Twine("hi"))));
-  
+
   // Concat with empty.
-  EXPECT_EQ("(Twine cstring:\"hi\" empty)", 
-            repr(Twine("hi").concat(Twine())));
-  EXPECT_EQ("(Twine cstring:\"hi\" empty)", 
-            repr(Twine().concat(Twine("hi"))));
+  EXPECT_EQ("(Twine cstring:\"hi\" empty)", repr(Twine("hi").concat(Twine())));
+  EXPECT_EQ("(Twine cstring:\"hi\" empty)", repr(Twine().concat(Twine("hi"))));
   EXPECT_EQ("(Twine ptrAndLength:\"hi\" empty)",
             repr(Twine().concat(Twine(SmallString<5>("hi")))));
   EXPECT_EQ("(Twine formatv:\"howdy\" empty)",
@@ -79,11 +77,11 @@ TEST(TwineTest, Concat) {
             repr(Twine(std::string_view("hey")).concat(Twine("there"))));
 
   // Concatenation of unary ropes.
-  EXPECT_EQ("(Twine cstring:\"a\" cstring:\"b\")", 
+  EXPECT_EQ("(Twine cstring:\"a\" cstring:\"b\")",
             repr(Twine("a").concat(Twine("b"))));
 
   // Concatenation of other ropes.
-  EXPECT_EQ("(Twine rope:(Twine cstring:\"a\" cstring:\"b\") cstring:\"c\")", 
+  EXPECT_EQ("(Twine rope:(Twine cstring:\"a\" cstring:\"b\") cstring:\"c\")",
             repr(Twine("a").concat(Twine("b")).concat(Twine("c"))));
   EXPECT_EQ("(Twine cstring:\"a\" rope:(Twine cstring:\"b\" cstring:\"c\"))",
             repr(Twine("a").concat(Twine("b").concat(Twine("c")))));
@@ -95,8 +93,8 @@ TEST(TwineTest, Concat) {
 TEST(TwineTest, toNullTerminatedStringRef) {
   SmallString<8> storage;
   EXPECT_EQ(0, *Twine("hello").toNullTerminatedStringRef(storage).end());
-  EXPECT_EQ(0,
-           *Twine(StringRef("hello")).toNullTerminatedStringRef(storage).end());
+  EXPECT_EQ(
+      0, *Twine(StringRef("hello")).toNullTerminatedStringRef(storage).end());
   EXPECT_EQ(
       0,
       *Twine(StringLiteral("hello")).toNullTerminatedStringRef(storage).end());
@@ -130,7 +128,7 @@ TEST(TwineTest, LazyEvaluation) {
   EXPECT_EQ(1, Count);
 }
 
-  // I suppose linking in the entire code generator to add a unit test to check
-  // the code size of the concat operation is overkill... :)
+// I suppose linking in the entire code generator to add a unit test to check
+// the code size of the concat operation is overkill... :)
 
 } // end anonymous namespace

@@ -54,16 +54,10 @@ TEST(GlobalTest, CreateAddressSpace) {
   Type *Int8Ty = Type::getInt8Ty(Ctx);
   Type *Int32Ty = Type::getInt32Ty(Ctx);
 
-  GlobalVariable *Dummy0
-    = new GlobalVariable(*M,
-                         Int32Ty,
-                         true,
-                         GlobalValue::ExternalLinkage,
-                         Constant::getAllOnesValue(Int32Ty),
-                         "dummy",
-                         nullptr,
-                         GlobalVariable::NotThreadLocal,
-                         1);
+  GlobalVariable *Dummy0 =
+      new GlobalVariable(*M, Int32Ty, true, GlobalValue::ExternalLinkage,
+                         Constant::getAllOnesValue(Int32Ty), "dummy", nullptr,
+                         GlobalVariable::NotThreadLocal, 1);
 
   const Align kMaxAlignment(Value::MaximumAlignment);
   EXPECT_TRUE(kMaxAlignment.value() == 4294967296ULL);
@@ -76,18 +70,11 @@ TEST(GlobalTest, CreateAddressSpace) {
   EXPECT_EQ(Dummy0, Dummy1);
   EXPECT_EQ(1u, Dummy1->getType()->getPointerAddressSpace());
 
-
   // This one requires a bitcast, but the address space must also stay the same.
-  GlobalVariable *DummyCast0
-    = new GlobalVariable(*M,
-                         Int32Ty,
-                         true,
-                         GlobalValue::ExternalLinkage,
-                         Constant::getAllOnesValue(Int32Ty),
-                         "dummy_cast",
-                         nullptr,
-                         GlobalVariable::NotThreadLocal,
-                         1);
+  GlobalVariable *DummyCast0 =
+      new GlobalVariable(*M, Int32Ty, true, GlobalValue::ExternalLinkage,
+                         Constant::getAllOnesValue(Int32Ty), "dummy_cast",
+                         nullptr, GlobalVariable::NotThreadLocal, 1);
 
   // Make sure the address space isn't dropped when returning this.
   Constant *DummyCast1 = M->getOrInsertGlobal("dummy_cast", Int8Ty);

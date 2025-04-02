@@ -127,8 +127,8 @@ void PressureDiff::dump(const TargetRegisterInfo &TRI) const {
   for (const PressureChange &Change : *this) {
     if (!Change.isValid())
       break;
-    dbgs() << sep << TRI.getRegPressureSetName(Change.getPSet())
-           << " " << Change.getUnitInc();
+    dbgs() << sep << TRI.getRegPressureSetName(Change.getPSet()) << " "
+           << Change.getUnitInc();
     sep = "    ";
   }
   dbgs() << '\n';
@@ -229,9 +229,7 @@ void LiveRegSet::init(const MachineRegisterInfo &MRI) {
   this->NumRegUnits = NumRegUnits;
 }
 
-void LiveRegSet::clear() {
-  Regs.clear();
-}
+void LiveRegSet::clear() { Regs.clear(); }
 
 static const LiveRange *getLiveRange(const LiveIntervals &LIS, unsigned Reg) {
   if (Register::isVirtualRegister(Reg))
@@ -248,9 +246,9 @@ void RegPressureTracker::reset() {
   P.MaxSetPressure.clear();
 
   if (RequireIntervals)
-    static_cast<IntervalPressure&>(P).reset();
+    static_cast<IntervalPressure &>(P).reset();
   else
-    static_cast<RegionPressure&>(P).reset();
+    static_cast<RegionPressure &>(P).reset();
 
   LiveRegs.clear();
   UntiedDefs.clear();
@@ -293,22 +291,22 @@ void RegPressureTracker::init(const MachineFunction *mf,
 /// Does this pressure result have a valid top position and live ins.
 bool RegPressureTracker::isTopClosed() const {
   if (RequireIntervals)
-    return static_cast<IntervalPressure&>(P).TopIdx.isValid();
-  return (static_cast<RegionPressure&>(P).TopPos ==
+    return static_cast<IntervalPressure &>(P).TopIdx.isValid();
+  return (static_cast<RegionPressure &>(P).TopPos ==
           MachineBasicBlock::const_iterator());
 }
 
 /// Does this pressure result have a valid bottom position and live outs.
 bool RegPressureTracker::isBottomClosed() const {
   if (RequireIntervals)
-    return static_cast<IntervalPressure&>(P).BottomIdx.isValid();
-  return (static_cast<RegionPressure&>(P).BottomPos ==
+    return static_cast<IntervalPressure &>(P).BottomIdx.isValid();
+  return (static_cast<RegionPressure &>(P).BottomPos ==
           MachineBasicBlock::const_iterator());
 }
 
 SlotIndex RegPressureTracker::getCurrSlot() const {
   MachineBasicBlock::const_iterator IdxPos =
-    skipDebugInstructionsForward(CurrPos, MBB->end());
+      skipDebugInstructionsForward(CurrPos, MBB->end());
   if (IdxPos == MBB->end())
     return LIS->getMBBEndIdx(MBB);
   return LIS->getInstructionIndex(*IdxPos).getRegSlot();
@@ -317,9 +315,9 @@ SlotIndex RegPressureTracker::getCurrSlot() const {
 /// Set the boundary for the top of the region and summarize live ins.
 void RegPressureTracker::closeTop() {
   if (RequireIntervals)
-    static_cast<IntervalPressure&>(P).TopIdx = getCurrSlot();
+    static_cast<IntervalPressure &>(P).TopIdx = getCurrSlot();
   else
-    static_cast<RegionPressure&>(P).TopPos = CurrPos;
+    static_cast<RegionPressure &>(P).TopPos = CurrPos;
 
   assert(P.LiveInRegs.empty() && "inconsistent max pressure result");
   P.LiveInRegs.reserve(LiveRegs.size());
@@ -329,9 +327,9 @@ void RegPressureTracker::closeTop() {
 /// Set the boundary for the bottom of the region and summarize live outs.
 void RegPressureTracker::closeBottom() {
   if (RequireIntervals)
-    static_cast<IntervalPressure&>(P).BottomIdx = getCurrSlot();
+    static_cast<IntervalPressure &>(P).BottomIdx = getCurrSlot();
   else
-    static_cast<RegionPressure&>(P).BottomPos = CurrPos;
+    static_cast<RegionPressure &>(P).BottomPos = CurrPos;
 
   assert(P.LiveOutRegs.empty() && "inconsistent max pressure result");
   P.LiveOutRegs.reserve(LiveRegs.size());
@@ -425,10 +423,10 @@ getLanesWithProperty(const LiveIntervals &LIS, const MachineRegisterInfo &MRI,
     const LiveInterval &LI = LIS.getInterval(RegUnit);
     LaneBitmask Result;
     if (TrackLaneMasks && LI.hasSubRanges()) {
-        for (const LiveInterval::SubRange &SR : LI.subranges()) {
-          if (Property(SR, Pos))
-            Result |= SR.LaneMask;
-        }
+      for (const LiveInterval::SubRange &SR : LI.subranges()) {
+        if (Property(SR, Pos))
+          Result |= SR.LaneMask;
+      }
     } else if (Property(LI, Pos)) {
       Result = TrackLaneMasks ? MRI.getMaxLaneMaskForVReg(RegUnit)
                               : LaneBitmask::getAll();
@@ -449,11 +447,9 @@ static LaneBitmask getLiveLanesAt(const LiveIntervals &LIS,
                                   const MachineRegisterInfo &MRI,
                                   bool TrackLaneMasks, Register RegUnit,
                                   SlotIndex Pos) {
-  return getLanesWithProperty(LIS, MRI, TrackLaneMasks, RegUnit, Pos,
-                              LaneBitmask::getAll(),
-                              [](const LiveRange &LR, SlotIndex Pos) {
-                                return LR.liveAt(Pos);
-                              });
+  return getLanesWithProperty(
+      LIS, MRI, TrackLaneMasks, RegUnit, Pos, LaneBitmask::getAll(),
+      [](const LiveRange &LR, SlotIndex Pos) { return LR.liveAt(Pos); });
 }
 
 namespace {
@@ -473,7 +469,7 @@ class RegisterOperandsCollector {
   RegisterOperandsCollector(RegisterOperands &RegOpers,
                             const TargetRegisterInfo &TRI,
                             const MachineRegisterInfo &MRI, bool IgnoreDead)
-    : RegOpers(RegOpers), TRI(TRI), MRI(MRI), IgnoreDead(IgnoreDead) {}
+      : RegOpers(RegOpers), TRI(TRI), MRI(MRI), IgnoreDead(IgnoreDead) {}
 
   void collectInstr(const MachineInstr &MI) const {
     for (ConstMIBundleOperands OperI(MI); OperI.isValid(); ++OperI)
@@ -550,8 +546,8 @@ class RegisterOperandsCollector {
                     SmallVectorImpl<VRegMaskOrUnit> &RegUnits) const {
     if (Reg.isVirtual()) {
       LaneBitmask LaneMask = SubRegIdx != 0
-                             ? TRI.getSubRegIndexLaneMask(SubRegIdx)
-                             : MRI.getMaxLaneMaskForVReg(Reg);
+                                 ? TRI.getSubRegIndexLaneMask(SubRegIdx)
+                                 : MRI.getMaxLaneMaskForVReg(Reg);
       addRegLanes(RegUnits, VRegMaskOrUnit(Reg, LaneMask));
     } else if (MRI.isAllocatable(Reg)) {
       for (MCRegUnit Unit : TRI.regunits(Reg.asMCReg()))
@@ -598,8 +594,8 @@ void RegisterOperands::adjustLaneLiveness(const LiveIntervals &LIS,
                                           SlotIndex Pos,
                                           MachineInstr *AddFlagsMI) {
   for (auto *I = Defs.begin(); I != Defs.end();) {
-    LaneBitmask LiveAfter = getLiveLanesAt(LIS, MRI, true, I->RegUnit,
-                                           Pos.getDeadSlot());
+    LaneBitmask LiveAfter =
+        getLiveLanesAt(LIS, MRI, true, I->RegUnit, Pos.getDeadSlot());
     // If the def is all that is live after the instruction, then in case
     // of a subregister def we need a read-undef flag.
     Register RegUnit = I->RegUnit;
@@ -625,8 +621,8 @@ void RegisterOperands::adjustLaneLiveness(const LiveIntervals &LIS,
       Register RegUnit = P.RegUnit;
       if (!RegUnit.isVirtual())
         continue;
-      LaneBitmask LiveAfter = getLiveLanesAt(LIS, MRI, true, RegUnit,
-                                             Pos.getDeadSlot());
+      LaneBitmask LiveAfter =
+          getLiveLanesAt(LIS, MRI, true, RegUnit, Pos.getDeadSlot());
       if (LiveAfter.none())
         AddFlagsMI->setRegisterDefReadUndef(RegUnit);
     }
@@ -642,7 +638,8 @@ void PressureDiffs::init(unsigned N) {
   }
   Max = Size;
   free(PDiffArray);
-  PDiffArray = static_cast<PressureDiff*>(safe_calloc(N, sizeof(PressureDiff)));
+  PDiffArray =
+      static_cast<PressureDiff *>(safe_calloc(N, sizeof(PressureDiff)));
 }
 
 void PressureDiffs::addInstruction(unsigned Idx,
@@ -845,7 +842,7 @@ void RegPressureTracker::recedeSkipDebugValues() {
 
   // Open the top of the region using block iterators.
   if (!RequireIntervals && isTopClosed())
-    static_cast<RegionPressure&>(P).openTop(CurrPos);
+    static_cast<RegionPressure &>(P).openTop(CurrPos);
 
   // Find the previous instruction.
   CurrPos = prev_nodbg(CurrPos, MBB->begin());
@@ -856,7 +853,7 @@ void RegPressureTracker::recedeSkipDebugValues() {
 
   // Open the top of the region using slot indexes.
   if (RequireIntervals && isTopClosed())
-    static_cast<IntervalPressure&>(P).openTop(SlotIdx);
+    static_cast<IntervalPressure &>(P).openTop(SlotIdx);
 }
 
 void RegPressureTracker::recede(SmallVectorImpl<VRegMaskOrUnit> *LiveUses) {
@@ -895,9 +892,9 @@ void RegPressureTracker::advance(const RegisterOperands &RegOpers) {
   // Open the bottom of the region using slot indexes.
   if (isBottomClosed()) {
     if (RequireIntervals)
-      static_cast<IntervalPressure&>(P).openBottom(SlotIdx);
+      static_cast<IntervalPressure &>(P).openBottom(SlotIdx);
     else
-      static_cast<RegionPressure&>(P).openBottom(CurrPos);
+      static_cast<RegionPressure &>(P).openBottom(CurrPos);
   }
 
   for (const VRegMaskOrUnit &Use : RegOpers.Uses) {
@@ -964,11 +961,11 @@ static void computeExcessPressureDelta(ArrayRef<unsigned> OldPressureVec,
 
     if (Limit > POld) {
       if (Limit > PNew)
-        PDiff = 0;            // Under the limit
+        PDiff = 0; // Under the limit
       else
         PDiff = PNew - Limit; // Just exceeded limit.
     } else if (Limit > PNew)
-      PDiff = Limit - POld;   // Just obeyed limit.
+      PDiff = Limit - POld; // Just obeyed limit.
 
     if (PDiff) {
       Delta.Excess = PressureChange(i);
@@ -1082,11 +1079,10 @@ void RegPressureTracker::bumpUpwardPressure(const MachineInstr *MI) {
 /// liveness. This mainly exists to verify correctness, e.g. with
 /// -verify-misched. getUpwardPressureDelta is the fast version of this query
 /// that uses the per-SUnit cache of the PressureDiff.
-void RegPressureTracker::
-getMaxUpwardPressureDelta(const MachineInstr *MI, PressureDiff *PDiff,
-                          RegPressureDelta &Delta,
-                          ArrayRef<PressureChange> CriticalPSets,
-                          ArrayRef<unsigned> MaxPressureLimit) {
+void RegPressureTracker::getMaxUpwardPressureDelta(
+    const MachineInstr *MI, PressureDiff *PDiff, RegPressureDelta &Delta,
+    ArrayRef<PressureChange> CriticalPSets,
+    ArrayRef<unsigned> MaxPressureLimit) {
   // Snapshot Pressure.
   // FIXME: The snapshot heap space should persist. But I'm planning to
   // summarize the pressure effect so we don't need to snapshot at all.
@@ -1121,20 +1117,25 @@ getMaxUpwardPressureDelta(const MachineInstr *MI, PressureDiff *PDiff,
       dbgs() << "Excess1 " << TRI->getRegPressureSetName(Delta.Excess.getPSet())
              << " " << Delta.Excess.getUnitInc() << "\n";
     if (Delta.CriticalMax.isValid())
-      dbgs() << "Critic1 " << TRI->getRegPressureSetName(Delta.CriticalMax.getPSet())
-             << " " << Delta.CriticalMax.getUnitInc() << "\n";
+      dbgs() << "Critic1 "
+             << TRI->getRegPressureSetName(Delta.CriticalMax.getPSet()) << " "
+             << Delta.CriticalMax.getUnitInc() << "\n";
     if (Delta.CurrentMax.isValid())
-      dbgs() << "CurrMx1 " << TRI->getRegPressureSetName(Delta.CurrentMax.getPSet())
-             << " " << Delta.CurrentMax.getUnitInc() << "\n";
+      dbgs() << "CurrMx1 "
+             << TRI->getRegPressureSetName(Delta.CurrentMax.getPSet()) << " "
+             << Delta.CurrentMax.getUnitInc() << "\n";
     if (Delta2.Excess.isValid())
-      dbgs() << "Excess2 " << TRI->getRegPressureSetName(Delta2.Excess.getPSet())
-             << " " << Delta2.Excess.getUnitInc() << "\n";
+      dbgs() << "Excess2 "
+             << TRI->getRegPressureSetName(Delta2.Excess.getPSet()) << " "
+             << Delta2.Excess.getUnitInc() << "\n";
     if (Delta2.CriticalMax.isValid())
-      dbgs() << "Critic2 " << TRI->getRegPressureSetName(Delta2.CriticalMax.getPSet())
-             << " " << Delta2.CriticalMax.getUnitInc() << "\n";
+      dbgs() << "Critic2 "
+             << TRI->getRegPressureSetName(Delta2.CriticalMax.getPSet()) << " "
+             << Delta2.CriticalMax.getUnitInc() << "\n";
     if (Delta2.CurrentMax.isValid())
-      dbgs() << "CurrMx2 " << TRI->getRegPressureSetName(Delta2.CurrentMax.getPSet())
-             << " " << Delta2.CurrentMax.getUnitInc() << "\n";
+      dbgs() << "CurrMx2 "
+             << TRI->getRegPressureSetName(Delta2.CurrentMax.getPSet()) << " "
+             << Delta2.CurrentMax.getUnitInc() << "\n";
     llvm_unreachable("RegP Delta Mismatch");
   }
 #endif
@@ -1150,14 +1151,13 @@ getMaxUpwardPressureDelta(const MachineInstr *MI, PressureDiff *PDiff,
 ///
 /// @param MaxPressureLimit Is the max pressure within the region, not
 /// necessarily at the current position.
-void RegPressureTracker::
-getUpwardPressureDelta(const MachineInstr *MI, /*const*/ PressureDiff &PDiff,
-                       RegPressureDelta &Delta,
-                       ArrayRef<PressureChange> CriticalPSets,
-                       ArrayRef<unsigned> MaxPressureLimit) const {
+void RegPressureTracker::getUpwardPressureDelta(
+    const MachineInstr *MI, /*const*/ PressureDiff &PDiff,
+    RegPressureDelta &Delta, ArrayRef<PressureChange> CriticalPSets,
+    ArrayRef<unsigned> MaxPressureLimit) const {
   unsigned CritIdx = 0, CritEnd = CriticalPSets.size();
-  for (PressureDiff::const_iterator
-         PDiffI = PDiff.begin(), PDiffE = PDiff.end();
+  for (PressureDiff::const_iterator PDiffI = PDiff.begin(),
+                                    PDiffE = PDiff.end();
        PDiffI != PDiffE && PDiffI->isValid(); ++PDiffI) {
 
     unsigned PSetID = PDiffI->getPSet();
@@ -1170,8 +1170,8 @@ getUpwardPressureDelta(const MachineInstr *MI, /*const*/ PressureDiff &PDiff,
     unsigned MNew = MOld;
     // Ignore DeadDefs here because they aren't captured by PressureChange.
     unsigned PNew = POld + PDiffI->getUnitInc();
-    assert((PDiffI->getUnitInc() >= 0) == (PNew >= POld)
-           && "PSet overflow/underflow");
+    assert((PDiffI->getUnitInc() >= 0) == (PNew >= POld) &&
+           "PSet overflow/underflow");
     if (PNew > MOld)
       MNew = PNew;
     // Check if current pressure has exceeded the limit.
@@ -1236,19 +1236,17 @@ static LaneBitmask findUseBetween(unsigned Reg, LaneBitmask LastUseMask,
 LaneBitmask RegPressureTracker::getLiveLanesAt(Register RegUnit,
                                                SlotIndex Pos) const {
   assert(RequireIntervals);
-  return getLanesWithProperty(*LIS, *MRI, TrackLaneMasks, RegUnit, Pos,
-                              LaneBitmask::getAll(),
-      [](const LiveRange &LR, SlotIndex Pos) {
-        return LR.liveAt(Pos);
-      });
+  return getLanesWithProperty(
+      *LIS, *MRI, TrackLaneMasks, RegUnit, Pos, LaneBitmask::getAll(),
+      [](const LiveRange &LR, SlotIndex Pos) { return LR.liveAt(Pos); });
 }
 
 LaneBitmask RegPressureTracker::getLastUsedLanes(Register RegUnit,
                                                  SlotIndex Pos) const {
   assert(RequireIntervals);
-  return getLanesWithProperty(*LIS, *MRI, TrackLaneMasks, RegUnit,
-                              Pos.getBaseIndex(), LaneBitmask::getNone(),
-      [](const LiveRange &LR, SlotIndex Pos) {
+  return getLanesWithProperty(
+      *LIS, *MRI, TrackLaneMasks, RegUnit, Pos.getBaseIndex(),
+      LaneBitmask::getNone(), [](const LiveRange &LR, SlotIndex Pos) {
         const LiveRange::Segment *S = LR.getSegmentContaining(Pos);
         return S != nullptr && S->end == Pos.getRegSlot();
       });
@@ -1257,8 +1255,8 @@ LaneBitmask RegPressureTracker::getLastUsedLanes(Register RegUnit,
 LaneBitmask RegPressureTracker::getLiveThroughAt(Register RegUnit,
                                                  SlotIndex Pos) const {
   assert(RequireIntervals);
-  return getLanesWithProperty(*LIS, *MRI, TrackLaneMasks, RegUnit, Pos,
-                              LaneBitmask::getNone(),
+  return getLanesWithProperty(
+      *LIS, *MRI, TrackLaneMasks, RegUnit, Pos, LaneBitmask::getNone(),
       [](const LiveRange &LR, SlotIndex Pos) {
         const LiveRange::Segment *S = LR.getSegmentContaining(Pos);
         return S != nullptr && S->start < Pos.getRegSlot(true) &&
@@ -1297,8 +1295,8 @@ void RegPressureTracker::bumpDownwardPressure(const MachineInstr *MI) {
       // FIXME: allow the caller to pass in the list of vreg uses that remain
       // to be bottom-scheduled to avoid searching uses at each query.
       SlotIndex CurrIdx = getCurrSlot();
-      LastUseMask
-        = findUseBetween(Reg, LastUseMask, CurrIdx, SlotIdx, *MRI, LIS);
+      LastUseMask =
+          findUseBetween(Reg, LastUseMask, CurrIdx, SlotIdx, *MRI, LIS);
       if (LastUseMask.none())
         continue;
 
@@ -1331,10 +1329,10 @@ void RegPressureTracker::bumpDownwardPressure(const MachineInstr *MI) {
 /// bumpDownwardPressure to recompute the pressure sets based on current
 /// liveness. We don't yet have a fast version of downward pressure tracking
 /// analogous to getUpwardPressureDelta.
-void RegPressureTracker::
-getMaxDownwardPressureDelta(const MachineInstr *MI, RegPressureDelta &Delta,
-                            ArrayRef<PressureChange> CriticalPSets,
-                            ArrayRef<unsigned> MaxPressureLimit) {
+void RegPressureTracker::getMaxDownwardPressureDelta(
+    const MachineInstr *MI, RegPressureDelta &Delta,
+    ArrayRef<PressureChange> CriticalPSets,
+    ArrayRef<unsigned> MaxPressureLimit) {
   // Snapshot Pressure.
   std::vector<unsigned> SavedPressure = CurrSetPressure;
   std::vector<unsigned> SavedMaxPressure = P.MaxSetPressure;
@@ -1354,10 +1352,9 @@ getMaxDownwardPressureDelta(const MachineInstr *MI, RegPressureDelta &Delta,
 }
 
 /// Get the pressure of each PSet after traversing this instruction bottom-up.
-void RegPressureTracker::
-getUpwardPressure(const MachineInstr *MI,
-                  std::vector<unsigned> &PressureResult,
-                  std::vector<unsigned> &MaxPressureResult) {
+void RegPressureTracker::getUpwardPressure(
+    const MachineInstr *MI, std::vector<unsigned> &PressureResult,
+    std::vector<unsigned> &MaxPressureResult) {
   // Snapshot pressure.
   PressureResult = CurrSetPressure;
   MaxPressureResult = P.MaxSetPressure;
@@ -1370,10 +1367,9 @@ getUpwardPressure(const MachineInstr *MI,
 }
 
 /// Get the pressure of each PSet after traversing this instruction top-down.
-void RegPressureTracker::
-getDownwardPressure(const MachineInstr *MI,
-                    std::vector<unsigned> &PressureResult,
-                    std::vector<unsigned> &MaxPressureResult) {
+void RegPressureTracker::getDownwardPressure(
+    const MachineInstr *MI, std::vector<unsigned> &PressureResult,
+    std::vector<unsigned> &MaxPressureResult) {
   // Snapshot pressure.
   PressureResult = CurrSetPressure;
   MaxPressureResult = P.MaxSetPressure;

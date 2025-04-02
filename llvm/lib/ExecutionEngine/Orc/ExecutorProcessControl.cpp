@@ -61,8 +61,7 @@ SelfExecutorProcessControl::SelfExecutorProcessControl(
 
 Expected<std::unique_ptr<SelfExecutorProcessControl>>
 SelfExecutorProcessControl::Create(
-    std::shared_ptr<SymbolStringPool> SSP,
-    std::unique_ptr<TaskDispatcher> D,
+    std::shared_ptr<SymbolStringPool> SSP, std::unique_ptr<TaskDispatcher> D,
     std::unique_ptr<jitlink::JITLinkMemoryManager> MemMgr) {
 
   if (!SSP)

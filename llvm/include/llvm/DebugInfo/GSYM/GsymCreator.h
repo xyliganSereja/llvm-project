@@ -148,7 +148,6 @@ class GsymCreator {
   bool Finalized = false;
   bool Quiet;
 
-
   /// Get the first function start address.
   ///
   /// \returns The start address of the first FunctionInfo or std::nullopt if
@@ -287,9 +286,7 @@ class GsymCreator {
   /// When we have a segment, we know that function infos will be added in
   /// ascending address range order without having to be finalized. We also
   /// don't need to sort and unique entries during the finalize function call.
-  void setIsSegment() {
-    IsSegment = true;
-  }
+  void setIsSegment() { IsSegment = true; }
 
 public:
   GsymCreator(bool Quiet = false);
@@ -402,8 +399,7 @@ public:
   ///
   /// \param  Callback A callback function that will get called with each
   ///         FunctionInfo. If the callback returns false, stop iterating.
-  void forEachFunctionInfo(
-      std::function<bool(FunctionInfo &)> const &Callback);
+  void forEachFunctionInfo(std::function<bool(FunctionInfo &)> const &Callback);
 
   /// Thread safe const iteration over all function infos.
   ///
@@ -458,13 +454,10 @@ public:
   ///
   /// \param  Addr The address to use as the base address of the GSYM file
   ///              when it is saved to disk.
-  void setBaseAddress(uint64_t Addr) {
-    BaseAddress = Addr;
-  }
+  void setBaseAddress(uint64_t Addr) { BaseAddress = Addr; }
 
   /// Whether the transformation should be quiet, i.e. not output warnings.
   bool isQuiet() const { return Quiet; }
-
 
   /// Create a segmented GSYM creator starting with function info index
   /// \a FuncIdx.

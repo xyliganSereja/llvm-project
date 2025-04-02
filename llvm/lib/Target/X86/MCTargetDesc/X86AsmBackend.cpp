@@ -87,12 +87,12 @@ cl::opt<X86AlignBranchKind, true, cl::parser<std::string>> X86AlignBranch(
     "x86-align-branch",
     cl::desc(
         "Specify types of branches to align (plus separated list of types):"
-             "\njcc      indicates conditional jumps"
-             "\nfused    indicates fused conditional jumps"
-             "\njmp      indicates direct unconditional jumps"
-             "\ncall     indicates direct and indirect calls"
-             "\nret      indicates rets"
-             "\nindirect indicates indirect unconditional jumps"),
+        "\njcc      indicates conditional jumps"
+        "\nfused    indicates fused conditional jumps"
+        "\njmp      indicates direct unconditional jumps"
+        "\ncall     indicates direct and indirect calls"
+        "\nret      indicates rets"
+        "\nindirect indicates indirect unconditional jumps"),
     cl::location(X86AlignBranchKindLoc));
 
 cl::opt<bool> X86AlignBranchWithin32BBoundaries(
@@ -504,7 +504,8 @@ bool X86AsmBackend::needAlign(const MCInst &Inst) const {
 
 /// Insert BoundaryAlignFragment before instructions to align branches.
 void X86AsmBackend::emitInstructionBegin(MCObjectStreamer &OS,
-                                         const MCInst &Inst, const MCSubtargetInfo &STI) {
+                                         const MCInst &Inst,
+                                         const MCSubtargetInfo &STI) {
   // Used by canPadInst. Done here, because in emitInstructionEnd, the current
   // fragment will have changed.
   IsRightAfterData =
@@ -703,8 +704,8 @@ static unsigned getFixupKindSize(unsigned Kind) {
 
 void X86AsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
                                const MCValue &Target,
-                               MutableArrayRef<char> Data,
-                               uint64_t Value, bool IsResolved,
+                               MutableArrayRef<char> Data, uint64_t Value,
+                               bool IsResolved,
                                const MCSubtargetInfo *STI) const {
   unsigned Kind = Fixup.getKind();
   if (Kind >= FirstLiteralRelocationKind)
@@ -715,14 +716,13 @@ void X86AsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
 
   int64_t SignedValue = static_cast<int64_t>(Value);
   if ((Target.isAbsolute() || IsResolved) &&
-      getFixupKindInfo(Fixup.getKind()).Flags &
-      MCFixupKindInfo::FKF_IsPCRel) {
+      getFixupKindInfo(Fixup.getKind()).Flags & MCFixupKindInfo::FKF_IsPCRel) {
     // check that PC relative fixup fits into the fixup size.
     if (Size > 0 && !isIntN(Size * 8, SignedValue))
       Asm.getContext().reportError(
-                                   Fixup.getLoc(), "value of " + Twine(SignedValue) +
-                                   " is too large for field of " + Twine(Size) +
-                                   ((Size == 1) ? " byte." : " bytes."));
+          Fixup.getLoc(), "value of " + Twine(SignedValue) +
+                              " is too large for field of " + Twine(Size) +
+                              ((Size == 1) ? " byte." : " bytes."));
   } else {
     // Check that uppper bits are either all zeros or all ones.
     // Specifically ignore overflow/underflow as long as the leakage is
@@ -1032,15 +1032,14 @@ bool X86AsmBackend::writeNopData(raw_ostream &OS, uint64_t Count,
       "\x8d\xb4\x00\x00",
   };
 
-  const char(*Nops)[11] =
-      STI->hasFeature(X86::Is16Bit) ? Nops16Bit : Nops32Bit;
+  const char(*Nops)[11] = STI->hasFeature(X86::Is16Bit) ? Nops16Bit : Nops32Bit;
 
   uint64_t MaxNopLength = (uint64_t)getMaximumNopSize(*STI);
 
   // Emit as many MaxNopLength NOPs as needed, then emit a NOP of the remaining
   // length.
   do {
-    const uint8_t ThisNopLength = (uint8_t) std::min(Count, MaxNopLength);
+    const uint8_t ThisNopLength = (uint8_t)std::min(Count, MaxNopLength);
     const uint8_t Prefixes = ThisNopLength <= 10 ? 0 : ThisNopLength - 10;
     for (uint8_t i = 0; i < Prefixes; i++)
       OS << '\x66';
@@ -1068,7 +1067,7 @@ class ELFX86_32AsmBackend : public ELFX86AsmBackend {
 public:
   ELFX86_32AsmBackend(const Target &T, uint8_t OSABI,
                       const MCSubtargetInfo &STI)
-    : ELFX86AsmBackend(T, OSABI, STI) {}
+      : ELFX86AsmBackend(T, OSABI, STI) {}
 
   std::unique_ptr<MCObjectTargetWriter>
   createObjectTargetWriter() const override {
@@ -1084,8 +1083,7 @@ public:
 
   std::unique_ptr<MCObjectTargetWriter>
   createObjectTargetWriter() const override {
-    return createX86ELFObjectWriter(/*IsELF64*/ false, OSABI,
-                                    ELF::EM_X86_64);
+    return createX86ELFObjectWriter(/*IsELF64*/ false, OSABI, ELF::EM_X86_64);
   }
 };
 
@@ -1097,8 +1095,7 @@ public:
 
   std::unique_ptr<MCObjectTargetWriter>
   createObjectTargetWriter() const override {
-    return createX86ELFObjectWriter(/*IsELF64*/ false, OSABI,
-                                    ELF::EM_IAMCU);
+    return createX86ELFObjectWriter(/*IsELF64*/ false, OSABI, ELF::EM_IAMCU);
   }
 };
 
@@ -1106,7 +1103,7 @@ class ELFX86_64AsmBackend : public ELFX86AsmBackend {
 public:
   ELFX86_64AsmBackend(const Target &T, uint8_t OSABI,
                       const MCSubtargetInfo &STI)
-    : ELFX86AsmBackend(T, OSABI, STI) {}
+      : ELFX86AsmBackend(T, OSABI, STI) {}
 
   std::unique_ptr<MCObjectTargetWriter>
   createObjectTargetWriter() const override {
@@ -1120,9 +1117,7 @@ class WindowsX86AsmBackend : public X86AsmBackend {
 public:
   WindowsX86AsmBackend(const Target &T, bool is64Bit,
                        const MCSubtargetInfo &STI)
-    : X86AsmBackend(T, STI)
-    , Is64Bit(is64Bit) {
-  }
+      : X86AsmBackend(T, STI), Is64Bit(is64Bit) {}
 
   std::optional<MCFixupKind> getFixupKind(StringRef Name) const override {
     return StringSwitch<std::optional<MCFixupKind>>(Name)
@@ -1140,27 +1135,27 @@ public:
 
 namespace CU {
 
-  /// Compact unwind encoding values.
-  enum CompactUnwindEncodings {
-    /// [RE]BP based frame where [RE]BP is pused on the stack immediately after
-    /// the return address, then [RE]SP is moved to [RE]BP.
-    UNWIND_MODE_BP_FRAME                   = 0x01000000,
+/// Compact unwind encoding values.
+enum CompactUnwindEncodings {
+  /// [RE]BP based frame where [RE]BP is pused on the stack immediately after
+  /// the return address, then [RE]SP is moved to [RE]BP.
+  UNWIND_MODE_BP_FRAME = 0x01000000,
 
-    /// A frameless function with a small constant stack size.
-    UNWIND_MODE_STACK_IMMD                 = 0x02000000,
+  /// A frameless function with a small constant stack size.
+  UNWIND_MODE_STACK_IMMD = 0x02000000,
 
-    /// A frameless function with a large constant stack size.
-    UNWIND_MODE_STACK_IND                  = 0x03000000,
+  /// A frameless function with a large constant stack size.
+  UNWIND_MODE_STACK_IND = 0x03000000,
 
-    /// No compact unwind encoding is available.
-    UNWIND_MODE_DWARF                      = 0x04000000,
+  /// No compact unwind encoding is available.
+  UNWIND_MODE_DWARF = 0x04000000,
 
-    /// Mask for encoding the frame registers.
-    UNWIND_BP_FRAME_REGISTERS              = 0x00007FFF,
+  /// Mask for encoding the frame registers.
+  UNWIND_BP_FRAME_REGISTERS = 0x00007FFF,
 
-    /// Mask for encoding the frameless registers.
-    UNWIND_FRAMELESS_STACK_REG_PERMUTATION = 0x000003FF
-  };
+  /// Mask for encoding the frameless registers.
+  UNWIND_FRAMELESS_STACK_REG_PERMUTATION = 0x000003FF
+};
 
 } // namespace CU
 
@@ -1174,27 +1169,27 @@ class DarwinX86AsmBackend : public X86AsmBackend {
   Triple TT;
   bool Is64Bit;
 
-  unsigned OffsetSize;                   ///< Offset of a "push" instruction.
-  unsigned MoveInstrSize;                ///< Size of a "move" instruction.
-  unsigned StackDivide;                  ///< Amount to adjust stack size by.
+  unsigned OffsetSize;    ///< Offset of a "push" instruction.
+  unsigned MoveInstrSize; ///< Size of a "move" instruction.
+  unsigned StackDivide;   ///< Amount to adjust stack size by.
 protected:
   /// Size of a "push" instruction for the given register.
   unsigned PushInstrSize(unsigned Reg) const {
     switch (Reg) {
-      case X86::EBX:
-      case X86::ECX:
-      case X86::EDX:
-      case X86::EDI:
-      case X86::ESI:
-      case X86::EBP:
-      case X86::RBX:
-      case X86::RBP:
-        return 1;
-      case X86::R12:
-      case X86::R13:
-      case X86::R14:
-      case X86::R15:
-        return 2;
+    case X86::EBX:
+    case X86::ECX:
+    case X86::EDX:
+    case X86::EDI:
+    case X86::ESI:
+    case X86::EBP:
+    case X86::RBX:
+    case X86::RBP:
+      return 1;
+    case X86::R12:
+    case X86::R13:
+    case X86::R14:
+    case X86::R15:
+      return 2;
     }
     return 1;
   }
@@ -1204,11 +1199,9 @@ private:
   /// corresponds to the enum lists in compact_unwind_encoding.h.
   int getCompactUnwindRegNum(unsigned Reg) const {
     static const MCPhysReg CU32BitRegs[7] = {
-      X86::EBX, X86::ECX, X86::EDX, X86::EDI, X86::ESI, X86::EBP, 0
-    };
+        X86::EBX, X86::ECX, X86::EDX, X86::EDI, X86::ESI, X86::EBP, 0};
     static const MCPhysReg CU64BitRegs[] = {
-      X86::RBX, X86::R12, X86::R13, X86::R14, X86::R15, X86::RBP, 0
-    };
+        X86::RBX, X86::R12, X86::R13, X86::R14, X86::R15, X86::RBP, 0};
     const MCPhysReg *CURegs = Is64Bit ? CU64BitRegs : CU32BitRegs;
     for (int Idx = 1; *CURegs; ++CURegs, ++Idx)
       if (*CURegs == Reg)
@@ -1226,10 +1219,12 @@ private:
     uint32_t RegEnc = 0;
     for (int i = 0, Idx = 0; i != CU_NUM_SAVED_REGS; ++i) {
       unsigned Reg = SavedRegs[i];
-      if (Reg == 0) break;
+      if (Reg == 0)
+        break;
 
       int CURegNum = getCompactUnwindRegNum(Reg);
-      if (CURegNum == -1) return ~0U;
+      if (CURegNum == -1)
+        return ~0U;
 
       // Encode the 3-bit register number in order, skipping over 3-bits for
       // each register.
@@ -1260,7 +1255,8 @@ private:
     //
     for (unsigned i = 0; i < RegCount; ++i) {
       int CUReg = getCompactUnwindRegNum(SavedRegs[i]);
-      if (CUReg == -1) return ~0U;
+      if (CUReg == -1)
+        return ~0U;
       SavedRegs[i] = CUReg;
     }
 
@@ -1268,7 +1264,8 @@ private:
     std::reverse(&SavedRegs[0], &SavedRegs[CU_NUM_SAVED_REGS]);
 
     uint32_t RenumRegs[CU_NUM_SAVED_REGS];
-    for (unsigned i = CU_NUM_SAVED_REGS - RegCount; i < CU_NUM_SAVED_REGS; ++i){
+    for (unsigned i = CU_NUM_SAVED_REGS - RegCount; i < CU_NUM_SAVED_REGS;
+         ++i) {
       unsigned Countless = 0;
       for (unsigned j = CU_NUM_SAVED_REGS - RegCount; j < i; ++j)
         if (SavedRegs[j] < SavedRegs[i])
@@ -1281,28 +1278,26 @@ private:
     uint32_t permutationEncoding = 0;
     switch (RegCount) {
     case 6:
-      permutationEncoding |= 120 * RenumRegs[0] + 24 * RenumRegs[1]
-                             + 6 * RenumRegs[2] +  2 * RenumRegs[3]
-                             +     RenumRegs[4];
+      permutationEncoding |= 120 * RenumRegs[0] + 24 * RenumRegs[1] +
+                             6 * RenumRegs[2] + 2 * RenumRegs[3] + RenumRegs[4];
       break;
     case 5:
-      permutationEncoding |= 120 * RenumRegs[1] + 24 * RenumRegs[2]
-                             + 6 * RenumRegs[3] +  2 * RenumRegs[4]
-                             +     RenumRegs[5];
+      permutationEncoding |= 120 * RenumRegs[1] + 24 * RenumRegs[2] +
+                             6 * RenumRegs[3] + 2 * RenumRegs[4] + RenumRegs[5];
       break;
     case 4:
-      permutationEncoding |=  60 * RenumRegs[2] + 12 * RenumRegs[3]
-                             + 3 * RenumRegs[4] +      RenumRegs[5];
+      permutationEncoding |= 60 * RenumRegs[2] + 12 * RenumRegs[3] +
+                             3 * RenumRegs[4] + RenumRegs[5];
       break;
     case 3:
-      permutationEncoding |=  20 * RenumRegs[3] +  4 * RenumRegs[4]
-                             +     RenumRegs[5];
+      permutationEncoding |=
+          20 * RenumRegs[3] + 4 * RenumRegs[4] + RenumRegs[5];
       break;
     case 2:
-      permutationEncoding |=   5 * RenumRegs[4] +      RenumRegs[5];
+      permutationEncoding |= 5 * RenumRegs[4] + RenumRegs[5];
       break;
     case 1:
-      permutationEncoding |=       RenumRegs[5];
+      permutationEncoding |= RenumRegs[5];
       break;
     }
 
@@ -1334,7 +1329,8 @@ public:
   uint64_t generateCompactUnwindEncoding(const MCDwarfFrameInfo *FI,
                                          const MCContext *Ctxt) const override {
     ArrayRef<MCCFIInstruction> Instrs = FI->Instructions;
-    if (Instrs.empty()) return 0;
+    if (Instrs.empty())
+      return 0;
     if (!isDarwinCanonicalPersonality(FI->Personality) &&
         !Ctxt->emitCompactUnwindNonCanonical())
       return CU::UNWIND_MODE_DWARF;
@@ -1443,7 +1439,8 @@ public:
 
       // Get the encoding of the saved registers when we have a frame pointer.
       uint32_t RegEnc = encodeCompactUnwindRegistersWithFrame();
-      if (RegEnc == ~0U) return CU::UNWIND_MODE_DWARF;
+      if (RegEnc == ~0U)
+        return CU::UNWIND_MODE_DWARF;
 
       CompactUnwindEncoding |= CU::UNWIND_MODE_BP_FRAME;
       CompactUnwindEncoding |= (StackAdjust & 0xFF) << 16;
@@ -1481,11 +1478,12 @@ public:
       // Get the encoding of the saved registers when we don't have a frame
       // pointer.
       uint32_t RegEnc = encodeCompactUnwindRegistersWithoutFrame(SavedRegIdx);
-      if (RegEnc == ~0U) return CU::UNWIND_MODE_DWARF;
+      if (RegEnc == ~0U)
+        return CU::UNWIND_MODE_DWARF;
 
       // Encode the register encoding.
       CompactUnwindEncoding |=
-        RegEnc & CU::UNWIND_FRAMELESS_STACK_REG_PERMUTATION;
+          RegEnc & CU::UNWIND_FRAMELESS_STACK_REG_PERMUTATION;
     }
 
     return CompactUnwindEncoding;
@@ -1526,7 +1524,7 @@ MCAsmBackend *llvm::createX86_64AsmBackend(const Target &T,
 
   if (TheTriple.isUEFI()) {
     assert(TheTriple.isOSBinFormatCOFF() &&
-         "Only COFF format is supported in UEFI environment.");
+           "Only COFF format is supported in UEFI environment.");
     return new WindowsX86AsmBackend(T, true, STI);
   }
 

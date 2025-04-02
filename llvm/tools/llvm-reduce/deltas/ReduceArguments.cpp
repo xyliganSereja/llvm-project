@@ -27,7 +27,7 @@ using namespace llvm;
 static void replaceFunctionCalls(Function &OldF, Function &NewF,
                                  const std::set<int> &ArgIndexesToKeep) {
   const auto &Users = OldF.users();
-  for (auto I = Users.begin(), E = Users.end(); I != E; )
+  for (auto I = Users.begin(), E = Users.end(); I != E;)
     if (auto *CI = dyn_cast<CallInst>(*I++)) {
       // Skip uses in call instructions where OldF isn't the called function
       // (e.g. if OldF is an argument of the call).

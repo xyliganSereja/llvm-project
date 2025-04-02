@@ -49,10 +49,10 @@ public:
                         const MCFragment *Fragment, const MCFixup &Fixup,
                         MCValue Target, uint64_t &FixedValue) override;
 };
-}
+} // namespace
 
 static bool getARMFixupKindMachOInfo(unsigned Kind, unsigned &RelocType,
-                              unsigned &Log2Size) {
+                                     unsigned &Log2Size) {
   RelocType = unsigned(MachO::ARM_RELOC_VANILLA);
   Log2Size = ~0U;
 
@@ -135,10 +135,9 @@ void ARMMachObjectWriter::recordARMScatteredHalfRelocation(
   uint32_t FixupOffset = Asm.getFragmentOffset(*Fragment) + Fixup.getOffset();
 
   if (FixupOffset & 0xff000000) {
-    Asm.getContext().reportError(Fixup.getLoc(),
-                                 "can not encode offset '0x" +
-                                     utohexstr(FixupOffset) +
-                                     "' in resulting scattered relocation.");
+    Asm.getContext().reportError(
+        Fixup.getLoc(), "can not encode offset '0x" + utohexstr(FixupOffset) +
+                            "' in resulting scattered relocation.");
     return;
   }
 
@@ -149,9 +148,10 @@ void ARMMachObjectWriter::recordARMScatteredHalfRelocation(
   const MCSymbol *A = &Target.getSymA()->getSymbol();
 
   if (!A->getFragment()) {
-    Asm.getContext().reportError(Fixup.getLoc(),
-                       "symbol '" + A->getName() +
-                       "' can not be undefined in a subtraction expression");
+    Asm.getContext().reportError(
+        Fixup.getLoc(),
+        "symbol '" + A->getName() +
+            "' can not be undefined in a subtraction expression");
     return;
   }
 
@@ -164,9 +164,10 @@ void ARMMachObjectWriter::recordARMScatteredHalfRelocation(
     const MCSymbol *SB = &B->getSymbol();
 
     if (!SB->getFragment()) {
-      Asm.getContext().reportError(Fixup.getLoc(),
-                         "symbol '" + B->getSymbol().getName() +
-                         "' can not be undefined in a subtraction expression");
+      Asm.getContext().reportError(
+          Fixup.getLoc(),
+          "symbol '" + B->getSymbol().getName() +
+              "' can not be undefined in a subtraction expression");
       return;
     }
 
@@ -193,7 +194,8 @@ void ARMMachObjectWriter::recordARMScatteredHalfRelocation(
   unsigned ThumbBit = 0;
   unsigned MovtBit = 0;
   switch (Fixup.getTargetKind()) {
-  default: break;
+  default:
+    break;
   case ARM::fixup_arm_movt_hi16:
     MovtBit = 1;
     // The thumb bit shouldn't be set in the 'other-half' bit of the
@@ -213,27 +215,20 @@ void ARMMachObjectWriter::recordARMScatteredHalfRelocation(
   }
 
   if (Type == MachO::ARM_RELOC_HALF_SECTDIFF) {
-    uint32_t OtherHalf = MovtBit
-      ? (FixedValue & 0xffff) : ((FixedValue & 0xffff0000) >> 16);
+    uint32_t OtherHalf =
+        MovtBit ? (FixedValue & 0xffff) : ((FixedValue & 0xffff0000) >> 16);
 
     MachO::any_relocation_info MRE;
-    MRE.r_word0 = ((OtherHalf             <<  0) |
-                   (MachO::ARM_RELOC_PAIR << 24) |
-                   (MovtBit               << 28) |
-                   (ThumbBit              << 29) |
-                   (IsPCRel               << 30) |
-                   MachO::R_SCATTERED);
+    MRE.r_word0 =
+        ((OtherHalf << 0) | (MachO::ARM_RELOC_PAIR << 24) | (MovtBit << 28) |
+         (ThumbBit << 29) | (IsPCRel << 30) | MachO::R_SCATTERED);
     MRE.r_word1 = Value2;
     Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
   }
 
   MachO::any_relocation_info MRE;
-  MRE.r_word0 = ((FixupOffset <<  0) |
-                 (Type        << 24) |
-                 (MovtBit     << 28) |
-                 (ThumbBit    << 29) |
-                 (IsPCRel     << 30) |
-                 MachO::R_SCATTERED);
+  MRE.r_word0 = ((FixupOffset << 0) | (Type << 24) | (MovtBit << 28) |
+                 (ThumbBit << 29) | (IsPCRel << 30) | MachO::R_SCATTERED);
   MRE.r_word1 = Value;
   Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
 }
@@ -245,10 +240,9 @@ void ARMMachObjectWriter::recordARMScatteredRelocation(
   uint32_t FixupOffset = Asm.getFragmentOffset(*Fragment) + Fixup.getOffset();
 
   if (FixupOffset & 0xff000000) {
-    Asm.getContext().reportError(Fixup.getLoc(),
-                                 "can not encode offset '0x" +
-                                     utohexstr(FixupOffset) +
-                                     "' in resulting scattered relocation.");
+    Asm.getContext().reportError(
+        Fixup.getLoc(), "can not encode offset '0x" + utohexstr(FixupOffset) +
+                            "' in resulting scattered relocation.");
     return;
   }
 
@@ -258,9 +252,10 @@ void ARMMachObjectWriter::recordARMScatteredRelocation(
   const MCSymbol *A = &Target.getSymA()->getSymbol();
 
   if (!A->getFragment()) {
-    Asm.getContext().reportError(Fixup.getLoc(),
-                       "symbol '" + A->getName() +
-                       "' can not be undefined in a subtraction expression");
+    Asm.getContext().reportError(
+        Fixup.getLoc(),
+        "symbol '" + A->getName() +
+            "' can not be undefined in a subtraction expression");
     return;
   }
 
@@ -274,9 +269,10 @@ void ARMMachObjectWriter::recordARMScatteredRelocation(
     const MCSymbol *SB = &B->getSymbol();
 
     if (!SB->getFragment()) {
-      Asm.getContext().reportError(Fixup.getLoc(),
-                         "symbol '" + B->getSymbol().getName() +
-                         "' can not be undefined in a subtraction expression");
+      Asm.getContext().reportError(
+          Fixup.getLoc(),
+          "symbol '" + B->getSymbol().getName() +
+              "' can not be undefined in a subtraction expression");
       return;
     }
 
@@ -290,21 +286,15 @@ void ARMMachObjectWriter::recordARMScatteredRelocation(
   if (Type == MachO::ARM_RELOC_SECTDIFF ||
       Type == MachO::ARM_RELOC_LOCAL_SECTDIFF) {
     MachO::any_relocation_info MRE;
-    MRE.r_word0 = ((0                     <<  0) |
-                   (MachO::ARM_RELOC_PAIR << 24) |
-                   (Log2Size              << 28) |
-                   (IsPCRel               << 30) |
-                   MachO::R_SCATTERED);
+    MRE.r_word0 = ((0 << 0) | (MachO::ARM_RELOC_PAIR << 24) | (Log2Size << 28) |
+                   (IsPCRel << 30) | MachO::R_SCATTERED);
     MRE.r_word1 = Value2;
     Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
   }
 
   MachO::any_relocation_info MRE;
-  MRE.r_word0 = ((FixupOffset <<  0) |
-                 (Type        << 24) |
-                 (Log2Size    << 28) |
-                 (IsPCRel     << 30) |
-                 MachO::R_SCATTERED);
+  MRE.r_word0 = ((FixupOffset << 0) | (Type << 24) | (Log2Size << 28) |
+                 (IsPCRel << 30) | MachO::R_SCATTERED);
   MRE.r_word1 = Value;
   Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
 }
@@ -318,7 +308,7 @@ bool ARMMachObjectWriter::requiresExternRelocation(MachObjectWriter *Writer,
   // Most cases can be identified purely from the symbol.
   if (Writer->doesSymbolRequireExternRelocation(S))
     return true;
-  int64_t Value = (int64_t)FixedValue;  // The displacement is signed.
+  int64_t Value = (int64_t)FixedValue; // The displacement is signed.
   int64_t Range;
   switch (RelocType) {
   default:
@@ -330,7 +320,7 @@ bool ARMMachObjectWriter::requiresExternRelocation(MachObjectWriter *Writer,
     // to a temporary "Lwhatever" symbol though, and in fact trying to use an
     // external relocation there causes more issues.
     if (!S.isTemporary())
-       return true;
+      return true;
 
     // PC pre-adjustment of 8 for these instructions.
     Value -= 8;
@@ -462,7 +452,8 @@ void ARMMachObjectWriter::recordRelocation(MachObjectWriter *Writer,
     // MOVW case here.  relocation entries.
     uint32_t Value = 0;
     switch (Fixup.getTargetKind()) {
-    default: break;
+    default:
+      break;
     case ARM::fixup_arm_movw_lo16:
     case ARM::fixup_t2_movw_lo16:
       Value = (FixedValue >> 16) & 0xffff;
@@ -474,9 +465,8 @@ void ARMMachObjectWriter::recordRelocation(MachObjectWriter *Writer,
     }
     MachO::any_relocation_info MREPair;
     MREPair.r_word0 = Value;
-    MREPair.r_word1 = ((0xffffff              <<  0) |
-                       (Log2Size              << 25) |
-                       (MachO::ARM_RELOC_PAIR << 28));
+    MREPair.r_word1 =
+        ((0xffffff << 0) | (Log2Size << 25) | (MachO::ARM_RELOC_PAIR << 28));
 
     Writer->addRelocation(nullptr, Fragment->getParent(), MREPair);
   }

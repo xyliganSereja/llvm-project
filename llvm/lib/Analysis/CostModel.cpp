@@ -26,19 +26,20 @@
 #include "llvm/Support/raw_ostream.h"
 using namespace llvm;
 
-static cl::opt<TargetTransformInfo::TargetCostKind> CostKind(
-    "cost-kind", cl::desc("Target cost kind"),
-    cl::init(TargetTransformInfo::TCK_RecipThroughput),
-    cl::values(clEnumValN(TargetTransformInfo::TCK_RecipThroughput,
-                          "throughput", "Reciprocal throughput"),
-               clEnumValN(TargetTransformInfo::TCK_Latency,
-                          "latency", "Instruction latency"),
-               clEnumValN(TargetTransformInfo::TCK_CodeSize,
-                          "code-size", "Code size"),
-               clEnumValN(TargetTransformInfo::TCK_SizeAndLatency,
-                          "size-latency", "Code size and latency")));
+static cl::opt<TargetTransformInfo::TargetCostKind>
+    CostKind("cost-kind", cl::desc("Target cost kind"),
+             cl::init(TargetTransformInfo::TCK_RecipThroughput),
+             cl::values(clEnumValN(TargetTransformInfo::TCK_RecipThroughput,
+                                   "throughput", "Reciprocal throughput"),
+                        clEnumValN(TargetTransformInfo::TCK_Latency, "latency",
+                                   "Instruction latency"),
+                        clEnumValN(TargetTransformInfo::TCK_CodeSize,
+                                   "code-size", "Code size"),
+                        clEnumValN(TargetTransformInfo::TCK_SizeAndLatency,
+                                   "size-latency", "Code size and latency")));
 
-static cl::opt<bool> TypeBasedIntrinsicCost("type-based-intrinsic-cost",
+static cl::opt<bool> TypeBasedIntrinsicCost(
+    "type-based-intrinsic-cost",
     cl::desc("Calculate intrinsics cost based only on argument types"),
     cl::init(false));
 
@@ -48,7 +49,8 @@ static cl::opt<bool> TypeBasedIntrinsicCost("type-based-intrinsic-cost",
 PreservedAnalyses CostModelPrinterPass::run(Function &F,
                                             FunctionAnalysisManager &AM) {
   auto &TTI = AM.getResult<TargetIRAnalysis>(F);
-  OS << "Printing analysis 'Cost Model Analysis' for function '" << F.getName() << "':\n";
+  OS << "Printing analysis 'Cost Model Analysis' for function '" << F.getName()
+     << "':\n";
   for (BasicBlock &B : F) {
     for (Instruction &Inst : B) {
       // TODO: Use a pass parameter instead of cl::opt CostKind to determine
@@ -59,8 +61,7 @@ PreservedAnalyses CostModelPrinterPass::run(Function &F,
         IntrinsicCostAttributes ICA(II->getIntrinsicID(), *II,
                                     InstructionCost::getInvalid(), true);
         Cost = TTI.getIntrinsicInstrCost(ICA, CostKind);
-      }
-      else {
+      } else {
         Cost = TTI.getInstructionCost(&Inst, CostKind);
       }
 

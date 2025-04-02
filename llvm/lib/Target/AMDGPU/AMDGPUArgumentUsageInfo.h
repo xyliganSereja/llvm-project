@@ -55,17 +55,11 @@ public:
     return ArgDescriptor(Arg.Reg, Mask, Arg.IsStack, Arg.IsSet);
   }
 
-  bool isSet() const {
-    return IsSet;
-  }
+  bool isSet() const { return IsSet; }
 
-  explicit operator bool() const {
-    return isSet();
-  }
+  explicit operator bool() const { return isSet(); }
 
-  bool isRegister() const {
-    return !IsStack;
-  }
+  bool isRegister() const { return !IsStack; }
 
   MCRegister getRegister() const {
     assert(!IsStack);
@@ -83,9 +77,7 @@ public:
     return Mask;
   }
 
-  bool isMasked() const {
-    return Mask != ~0u;
-  }
+  bool isMasked() const { return Mask != ~0u; }
 
   void print(raw_ostream &OS, const TargetRegisterInfo *TRI = nullptr) const;
 };
@@ -181,7 +173,7 @@ public:
   static const AMDGPUFunctionArgInfo ExternFunctionInfo;
   static const AMDGPUFunctionArgInfo FixedABIFunctionInfo;
 
-  AMDGPUArgumentUsageInfo() : ImmutablePass(ID) { }
+  AMDGPUArgumentUsageInfo() : ImmutablePass(ID) {}
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();

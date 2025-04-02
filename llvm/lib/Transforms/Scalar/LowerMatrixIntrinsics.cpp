@@ -316,7 +316,8 @@ class LowerMatrixIntrinsics {
   LoopInfo *LI = nullptr;
   OptimizationRemarkEmitter *ORE = nullptr;
 
-  /// Contains estimates of the number of operations (loads, stores, compute) required to lower a matrix operation.
+  /// Contains estimates of the number of operations (loads, stores, compute)
+  /// required to lower a matrix operation.
   struct OpInfoTy {
     /// Number of stores emitted to generate this matrix.
     unsigned NumStores = 0;
@@ -523,9 +524,7 @@ public:
   }
 
   /// Is this the minimal version executed in the backend pipelines.
-  bool isMinimal() const {
-    return !DT;
-  }
+  bool isMinimal() const { return !DT; }
 
   /// Return the estimated number of vector ops required for an operation on
   /// \p VT * N.
@@ -1160,8 +1159,8 @@ public:
           EltPtr, Builder.getIntN(Stride->getType()->getScalarSizeInBits(), I),
           Stride, Shape.getStride(), EltTy, Builder);
       Value *Vector = Builder.CreateAlignedLoad(
-          VecTy, GEP, getAlignForIndex(I, Stride, EltTy, MAlign),
-          IsVolatile, "col.load");
+          VecTy, GEP, getAlignForIndex(I, Stride, EltTy, MAlign), IsVolatile,
+          "col.load");
 
       Result.addVector(Vector);
     }
@@ -2461,9 +2460,7 @@ public:
       write(")");
     }
 
-    const std::string &getResult() {
-      return Str;
-    }
+    const std::string &getResult() { return Str; }
   };
 
   /// Generate remarks for matrix operations in a function. To generate remarks

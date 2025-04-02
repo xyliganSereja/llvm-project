@@ -97,7 +97,8 @@ TEST(VerifierTest, Freeze) {
 TEST(VerifierTest, InvalidRetAttribute) {
   LLVMContext C;
   Module M("M", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy =
+      FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
   Function *F = Function::Create(FTy, Function::ExternalLinkage, "foo", M);
   AttributeList AS = F->getAttributes();
   F->setAttributes(AS.addRetAttribute(
@@ -150,7 +151,8 @@ TEST(VerifierTest, CrossModuleRef) {
   Module M1("M1", C);
   Module M2("M2", C);
   Module M3("M3", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy =
+      FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
   Function *F1 = Function::Create(FTy, Function::ExternalLinkage, "foo1", M1);
   Function *F2 = Function::Create(FTy, Function::ExternalLinkage, "foo2", M2);
   Function *F3 = Function::Create(FTy, Function::ExternalLinkage, "foo3", M3);
@@ -159,7 +161,7 @@ TEST(VerifierTest, CrossModuleRef) {
   BasicBlock *Entry3 = BasicBlock::Create(C, "entry", F3);
 
   // BAD: Referencing function in another module
-  CallInst::Create(F2,"call",Entry1);
+  CallInst::Create(F2, "call", Entry1);
 
   // BAD: Referencing personality routine in another module
   F3->setPersonalityFn(F2);

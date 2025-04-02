@@ -24,7 +24,7 @@ class BinaryStream;
 namespace object {
 struct FpoData;
 struct coff_section;
-}
+} // namespace object
 namespace msf {
 class MappedBlockStream;
 }
@@ -128,13 +128,13 @@ private:
 
   std::unique_ptr<msf::MappedBlockStream> OldFpoStream;
   FixedStreamArray<object::FpoData> OldFpoRecords;
-  
+
   std::unique_ptr<msf::MappedBlockStream> NewFpoStream;
   codeview::DebugFrameDataSubsectionRef NewFpoRecords;
 
   const DbiStreamHeader *Header;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

@@ -21,11 +21,11 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/GlobalValue.h"
 #include "llvm/ProfileData/FunctionId.h"
+#include "llvm/ProfileData/HashKeyMap.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/MathExtras.h"
-#include "llvm/ProfileData/HashKeyMap.h"
 #include <algorithm>
 #include <cstdint>
 #include <list>
@@ -297,7 +297,7 @@ struct LineLocation {
   }
 
   uint64_t getHashCode() const {
-    return ((uint64_t) Discriminator << 32) | LineOffset;
+    return ((uint64_t)Discriminator << 32) | LineOffset;
   }
 
   uint32_t LineOffset;
@@ -432,9 +432,7 @@ public:
     return NumSamples == Other.NumSamples && CallTargets == Other.CallTargets;
   }
 
-  bool operator!=(const SampleRecord &Other) const {
-    return !(*this == Other);
-  }
+  bool operator!=(const SampleRecord &Other) const { return !(*this == Other); }
 
 private:
   uint64_t NumSamples = 0;
@@ -526,8 +524,8 @@ public:
 
   SampleContext(StringRef Name)
       : Func(Name), State(UnknownContext), Attributes(ContextNone) {
-        assert(!Name.empty() && "Name is empty");
-      }
+    assert(!Name.empty() && "Name is empty");
+  }
 
   SampleContext(FunctionId Func)
       : Func(Func), State(UnknownContext), Attributes(ContextNone) {}
@@ -582,8 +580,7 @@ public:
 
   // Decode context string for a frame to get function name and location.
   // `ContextStr` is in the form of `FuncName:StartLine.Discriminator`.
-  static void decodeContextString(StringRef ContextStr,
-                                  FunctionId &Func,
+  static void decodeContextString(StringRef ContextStr, FunctionId &Func,
                                   LineLocation &LineLoc) {
     // Get function name
     auto EntrySplit = ContextStr.split(':');
@@ -784,8 +781,7 @@ public:
 
   sampleprof_error addCalledTargetSamples(uint32_t LineOffset,
                                           uint32_t Discriminator,
-                                          FunctionId Func,
-                                          uint64_t Num,
+                                          FunctionId Func, uint64_t Num,
                                           uint64_t Weight = 1) {
     return BodySamples[LineLocation(LineOffset, Discriminator)].addCalledTarget(
         Func, Num, Weight);
@@ -815,9 +811,7 @@ public:
 
   // Remove all call site samples for inlinees. This is needed when flattening
   // a nested profile.
-  void removeAllCallsiteSamples() {
-    CallsiteSamples.clear();
-  }
+  void removeAllCallsiteSamples() { CallsiteSamples.clear(); }
 
   // Accumulate all call target samples to update the body samples.
   void updateCallsiteSamples() {
@@ -1038,10 +1032,10 @@ public:
   /// corresponding function is no less than \p Threshold, add its corresponding
   /// GUID to \p S. Also traverse the BodySamples to add hot CallTarget's GUID
   /// to \p S.
-  void findInlinedFunctions(DenseSet<GlobalValue::GUID> &S,
-                            const HashKeyMap<std::unordered_map, FunctionId,
-                                             Function *>  &SymbolMap,
-                            uint64_t Threshold) const {
+  void findInlinedFunctions(
+      DenseSet<GlobalValue::GUID> &S,
+      const HashKeyMap<std::unordered_map, FunctionId, Function *> &SymbolMap,
+      uint64_t Threshold) const {
     if (TotalSamples <= Threshold)
       return;
     auto IsDeclaration = [](const Function *F) {
@@ -1141,7 +1135,8 @@ public:
     if (!UseMD5)
       return Func.stringRef();
 
-    assert(GUIDToFuncNameMap && "GUIDToFuncNameMap needs to be populated first");
+    assert(GUIDToFuncNameMap &&
+           "GUIDToFuncNameMap needs to be populated first");
     return GUIDToFuncNameMap->lookup(Func.getHashCode());
   }
 
@@ -1208,9 +1203,7 @@ public:
 
   /// Return the GUID of the context's name. If the context is already using
   /// MD5, don't hash it again.
-  uint64_t getGUID() const {
-    return getFunction().getHashCode();
-  }
+  uint64_t getGUID() const { return getFunction().getHashCode(); }
 
   // Find all the names in the current FunctionSamples including names in
   // all the inline instances and names of call targets.
@@ -1332,8 +1325,8 @@ public:
   }
 
   size_t erase(const SampleContext &Ctx) {
-    return HashKeyMap<std::unordered_map, SampleContext, FunctionSamples>::
-        erase(Ctx);
+    return HashKeyMap<std::unordered_map, SampleContext,
+                      FunctionSamples>::erase(Ctx);
   }
 
   size_t erase(const key_type &Key) { return base_type::erase(Key); }
@@ -1374,7 +1367,7 @@ private:
 /// sure ProfileMap's key is consistent with FunctionSample's name/context.
 class SampleContextTrimmer {
 public:
-  SampleContextTrimmer(SampleProfileMap &Profiles) : ProfileMap(Profiles){};
+  SampleContextTrimmer(SampleProfileMap &Profiles) : ProfileMap(Profiles) {};
   // Trim and merge cold context profile when requested. TrimBaseProfileOnly
   // should only be effective when TrimColdContext is true. On top of
   // TrimColdContext, TrimBaseProfileOnly can be used to specify to trim all
@@ -1406,7 +1399,7 @@ public:
     FrameNode(FunctionId FName = FunctionId(),
               FunctionSamples *FSamples = nullptr,
               LineLocation CallLoc = {0, 0})
-        : FuncName(FName), FuncSamples(FSamples), CallSiteLoc(CallLoc){};
+        : FuncName(FName), FuncSamples(FSamples), CallSiteLoc(CallLoc) {};
 
     // Map line+discriminator location to child frame
     std::map<uint64_t, FrameNode> AllChildFrames;
@@ -1480,10 +1473,10 @@ private:
         Profile.addBodySamples(I.first.LineOffset, I.first.Discriminator,
                                CalleeProfile.getHeadSamplesEstimate());
         // Add callsite sample.
-        Profile.addCalledTargetSamples(
-            I.first.LineOffset, I.first.Discriminator,
-            CalleeProfile.getFunction(),
-            CalleeProfile.getHeadSamplesEstimate());
+        Profile.addCalledTargetSamples(I.first.LineOffset,
+                                       I.first.Discriminator,
+                                       CalleeProfile.getFunction(),
+                                       CalleeProfile.getHeadSamplesEstimate());
         // Update total samples.
         TotalSamples = TotalSamples >= CalleeProfile.getTotalSamples()
                            ? TotalSamples - CalleeProfile.getTotalSamples()

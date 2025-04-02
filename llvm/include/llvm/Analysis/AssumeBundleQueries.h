@@ -47,10 +47,8 @@ inline bool hasAttributeInAssume(AssumeInst &Assume, Value *IsOn,
                               Attribute::getNameFromAttrKind(Kind), ArgVal);
 }
 
-template<> struct DenseMapInfo<Attribute::AttrKind> {
-  static Attribute::AttrKind getEmptyKey() {
-    return Attribute::EmptyKey;
-  }
+template <> struct DenseMapInfo<Attribute::AttrKind> {
+  static Attribute::AttrKind getEmptyKey() { return Attribute::EmptyKey; }
   static Attribute::AttrKind getTombstoneKey() {
     return Attribute::TombstoneKey;
   }
@@ -154,7 +152,7 @@ RetainedKnowledge getKnowledgeForValue(
     const Value *V, ArrayRef<Attribute::AttrKind> AttrKinds,
     AssumptionCache *AC = nullptr,
     function_ref<bool(RetainedKnowledge, Instruction *,
-                            const CallBase::BundleOpInfo *)>
+                      const CallBase::BundleOpInfo *)>
         Filter = [](auto...) { return true; });
 
 /// Return a valid Knowledge associated to the Value V if its Attribute kind is

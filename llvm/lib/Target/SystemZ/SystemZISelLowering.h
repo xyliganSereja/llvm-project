@@ -98,7 +98,12 @@ enum NodeType : unsigned {
   // Add/subtract with overflow/carry.  These have the same operands as
   // the corresponding standard operations, except with the carry flag
   // replaced by a condition code value.
-  SADDO, SSUBO, UADDO, USUBO, ADDCARRY, SUBCARRY,
+  SADDO,
+  SSUBO,
+  UADDO,
+  USUBO,
+  ADDCARRY,
+  SUBCARRY,
 
   // Set the condition code from a boolean value in operand 0.
   // Operand 1 is a mask of all condition-code values that may result of this
@@ -228,11 +233,14 @@ enum NodeType : unsigned {
   VSUM,
 
   // Compute carry/borrow indication for add/subtract.
-  VACC, VSCBI,
+  VACC,
+  VSCBI,
   // Add/subtract with carry/borrow.
-  VAC, VSBI,
+  VAC,
+  VSBI,
   // Compute carry/borrow indication for add/subtract with carry/borrow.
-  VACCC, VSBCBI,
+  VACCC,
+  VSBCBI,
 
   // Compare integer vector operands 0 and 1 to produce the usual 0/-1
   // vector result.  VICMPE is for equality, VICMPH for "signed greater than"
@@ -376,10 +384,12 @@ enum NodeType : unsigned {
   ATOMIC_CMP_SWAP_128,
 
   // Byte swapping load/store.  Same operands as regular load/store.
-  LRV, STRV,
+  LRV,
+  STRV,
 
   // Element swapping load/store.  Same operands as regular load/store.
-  VLER, VSTER,
+  VLER,
+  VSTER,
 
   // Use STORE CLOCK FAST to store current TOD clock value.
   STCKF,
@@ -400,11 +410,7 @@ inline bool isPCREL(unsigned Opcode) {
 namespace SystemZICMP {
 // Describes whether an integer comparison needs to be signed or unsigned,
 // or whether either type is OK.
-enum {
-  Any,
-  UnsignedOnly,
-  SignedOnly
-};
+enum { Any, UnsignedOnly, SignedOnly };
 } // end namespace SystemZICMP
 
 class SystemZSubtarget;
@@ -425,8 +431,8 @@ public:
     // want to clobber the upper 32 bits of a GPR unnecessarily.
     return MVT::i32;
   }
-  TargetLoweringBase::LegalizeTypeAction getPreferredVectorAction(MVT VT)
-    const override {
+  TargetLoweringBase::LegalizeTypeAction
+  getPreferredVectorAction(MVT VT) const override {
     // Widen subvectors to the full width rather than promoting integer
     // elements.  This is better because:
     //
@@ -442,9 +448,8 @@ public:
       return TypeWidenVector;
     return TargetLoweringBase::getPreferredVectorAction(VT);
   }
-  unsigned
-  getNumRegisters(LLVMContext &Context, EVT VT,
-                  std::optional<MVT> RegisterVT) const override {
+  unsigned getNumRegisters(LLVMContext &Context, EVT VT,
+                           std::optional<MVT> RegisterVT) const override {
     // i128 inline assembly operand.
     if (VT == MVT::i128 && RegisterVT && *RegisterVT == MVT::Untyped)
       return 1;
@@ -463,7 +468,7 @@ public:
   bool isCheapToSpeculateCttz(Type *) const override { return true; }
   bool preferZeroCompareBranch() const override { return true; }
   bool isMaskAndCmp0FoldingBeneficial(const Instruction &AndI) const override {
-    ConstantInt* Mask = dyn_cast<ConstantInt>(AndI.getOperand(1));
+    ConstantInt *Mask = dyn_cast<ConstantInt>(AndI.getOperand(1));
     return Mask && Mask->getValue().isIntN(16);
   }
   bool convertSetCCLogicToBitwiseLogic(EVT VT) const override {
@@ -526,8 +531,8 @@ public:
   TargetLowering::ConstraintType
   getConstraintType(StringRef Constraint) const override;
   TargetLowering::ConstraintWeight
-    getSingleConstraintMatchWeight(AsmOperandInfo &info,
-                                   const char *constraint) const override;
+  getSingleConstraintMatchWeight(AsmOperandInfo &info,
+                                 const char *constraint) const override;
   void LowerAsmOperandForConstraint(SDValue Op, StringRef Constraint,
                                     std::vector<SDValue> &Ops,
                                     SelectionDAG &DAG) const override;
@@ -535,7 +540,7 @@ public:
   InlineAsm::ConstraintCode
   getInlineAsmMemConstraint(StringRef ConstraintCode) const override {
     if (ConstraintCode.size() == 1) {
-      switch(ConstraintCode[0]) {
+      switch (ConstraintCode[0]) {
       default:
         break;
       case 'o':
@@ -581,8 +586,7 @@ public:
 
   /// Override to support customized stack guard loading.
   bool useLoadStackGuardNode(const Module &M) const override { return true; }
-  void insertSSPDeclarations(Module &M) const override {
-  }
+  void insertSSPDeclarations(Module &M) const override {}
 
   MachineBasicBlock *
   EmitInstrWithCustomInserter(MachineInstr &MI,
@@ -590,19 +594,20 @@ public:
   SDValue LowerOperation(SDValue Op, SelectionDAG &DAG) const override;
   void LowerOperationWrapper(SDNode *N, SmallVectorImpl<SDValue> &Results,
                              SelectionDAG &DAG) const override;
-  void ReplaceNodeResults(SDNode *N, SmallVectorImpl<SDValue>&Results,
+  void ReplaceNodeResults(SDNode *N, SmallVectorImpl<SDValue> &Results,
                           SelectionDAG &DAG) const override;
   const MCPhysReg *getScratchRegisters(CallingConv::ID CC) const override;
   bool allowTruncateForTailCall(Type *, Type *) const override;
   bool mayBeEmittedAsTailCall(const CallInst *CI) const override;
-  bool splitValueIntoRegisterParts(
-      SelectionDAG & DAG, const SDLoc &DL, SDValue Val, SDValue *Parts,
-      unsigned NumParts, MVT PartVT, std::optional<CallingConv::ID> CC)
-      const override;
-  SDValue joinRegisterPartsIntoValue(
-      SelectionDAG & DAG, const SDLoc &DL, const SDValue *Parts,
-      unsigned NumParts, MVT PartVT, EVT ValueVT,
-      std::optional<CallingConv::ID> CC) const override;
+  bool
+  splitValueIntoRegisterParts(SelectionDAG &DAG, const SDLoc &DL, SDValue Val,
+                              SDValue *Parts, unsigned NumParts, MVT PartVT,
+                              std::optional<CallingConv::ID> CC) const override;
+  SDValue
+  joinRegisterPartsIntoValue(SelectionDAG &DAG, const SDLoc &DL,
+                             const SDValue *Parts, unsigned NumParts,
+                             MVT PartVT, EVT ValueVT,
+                             std::optional<CallingConv::ID> CC) const override;
   SDValue LowerFormalArguments(SDValue Chain, CallingConv::ID CallConv,
                                bool isVarArg,
                                const SmallVectorImpl<ISD::InputArg> &Ins,
@@ -620,8 +625,7 @@ public:
   bool CanLowerReturn(CallingConv::ID CallConv, MachineFunction &MF,
                       bool isVarArg,
                       const SmallVectorImpl<ISD::OutputArg> &Outs,
-                      LLVMContext &Context,
-                      const Type *RetTy) const override;
+                      LLVMContext &Context, const Type *RetTy) const override;
   SDValue LowerReturn(SDValue Chain, CallingConv::ID CallConv, bool IsVarArg,
                       const SmallVectorImpl<ISD::OutputArg> &Outs,
                       const SmallVectorImpl<SDValue> &OutVals, const SDLoc &DL,
@@ -630,8 +634,7 @@ public:
 
   /// Determine which of the bits specified in Mask are known to be either
   /// zero or one and return them in the KnownZero/KnownOne bitsets.
-  void computeKnownBitsForTargetNode(const SDValue Op,
-                                     KnownBits &Known,
+  void computeKnownBitsForTargetNode(const SDValue Op, KnownBits &Known,
                                      const APInt &DemandedElts,
                                      const SelectionDAG &DAG,
                                      unsigned Depth = 0) const override;
@@ -653,9 +656,7 @@ public:
     return ISD::ZERO_EXTEND;
   }
 
-  bool supportSwiftError() const override {
-    return true;
-  }
+  bool supportSwiftError() const override { return true; }
 
   unsigned getStackProbeSize(const MachineFunction &MF) const;
 
@@ -663,12 +664,11 @@ private:
   const SystemZSubtarget &Subtarget;
 
   // Implement LowerOperation for individual opcodes.
-  SDValue getVectorCmp(SelectionDAG &DAG, unsigned Opcode,
-                       const SDLoc &DL, EVT VT,
-                       SDValue CmpOp0, SDValue CmpOp1, SDValue Chain) const;
-  SDValue lowerVectorSETCC(SelectionDAG &DAG, const SDLoc &DL,
-                           EVT VT, ISD::CondCode CC,
-                           SDValue CmpOp0, SDValue CmpOp1,
+  SDValue getVectorCmp(SelectionDAG &DAG, unsigned Opcode, const SDLoc &DL,
+                       EVT VT, SDValue CmpOp0, SDValue CmpOp1,
+                       SDValue Chain) const;
+  SDValue lowerVectorSETCC(SelectionDAG &DAG, const SDLoc &DL, EVT VT,
+                           ISD::CondCode CC, SDValue CmpOp0, SDValue CmpOp1,
                            SDValue Chain = SDValue(),
                            bool IsSignaling = false) const;
   SDValue lowerSETCC(SDValue Op, SelectionDAG &DAG) const;
@@ -678,14 +678,12 @@ private:
   SDValue lowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerGlobalAddress(GlobalAddressSDNode *Node,
                              SelectionDAG &DAG) const;
-  SDValue lowerTLSGetOffset(GlobalAddressSDNode *Node,
-                            SelectionDAG &DAG, unsigned Opcode,
-                            SDValue GOTOffset) const;
+  SDValue lowerTLSGetOffset(GlobalAddressSDNode *Node, SelectionDAG &DAG,
+                            unsigned Opcode, SDValue GOTOffset) const;
   SDValue lowerThreadPointer(const SDLoc &DL, SelectionDAG &DAG) const;
   SDValue lowerGlobalTLSAddress(GlobalAddressSDNode *Node,
                                 SelectionDAG &DAG) const;
-  SDValue lowerBlockAddress(BlockAddressSDNode *Node,
-                            SelectionDAG &DAG) const;
+  SDValue lowerBlockAddress(BlockAddressSDNode *Node, SelectionDAG &DAG) const;
   SDValue lowerJumpTable(JumpTableSDNode *JT, SelectionDAG &DAG) const;
   SDValue lowerConstantPool(ConstantPoolSDNode *CP, SelectionDAG &DAG) const;
   SDValue lowerFRAMEADDR(SDValue Op, SelectionDAG &DAG) const;
@@ -826,11 +824,12 @@ private:
 
 struct SystemZVectorConstantInfo {
 private:
-  APInt IntBits;             // The 128 bits as an integer.
-  APInt SplatBits;           // Smallest splat value.
-  APInt SplatUndef;          // Bits correspoding to undef operands of the BVN.
+  APInt IntBits;    // The 128 bits as an integer.
+  APInt SplatBits;  // Smallest splat value.
+  APInt SplatUndef; // Bits correspoding to undef operands of the BVN.
   unsigned SplatBitSize = 0;
   bool isFP128 = false;
+
 public:
   unsigned Opcode = 0;
   SmallVector<unsigned, 2> OpVals;

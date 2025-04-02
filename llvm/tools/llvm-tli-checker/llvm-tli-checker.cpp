@@ -171,7 +171,7 @@ void SDKNameMap::maybeInsertSymbol(const SymbolRef &S, const ObjectFile &O) {
   if (Type == SymbolRef::ST_Function && (Flags & SymbolRef::SF_Global) &&
       Section != O.section_end()) {
     StringRef Name = unwrapIgnoreError(S.getName());
-    insert({ Name, true });
+    insert({Name, true});
   }
 }
 
@@ -326,10 +326,18 @@ int main(int argc, char *argv[]) {
       bool SDKHas = SDKNames.count(TLIName.first) == 1;
       int Which = int(TLIHas) * 2 + int(SDKHas);
       switch (Which) {
-      case 0: ++TLIandSDKneither; break;
-      case 1: ++TLIdoesntSDKdoes; break;
-      case 2: ++TLIdoesSDKdoesnt; break;
-      case 3: ++TLIandSDKboth;    break;
+      case 0:
+        ++TLIandSDKneither;
+        break;
+      case 1:
+        ++TLIdoesntSDKdoes;
+        break;
+      case 2:
+        ++TLIdoesSDKdoesnt;
+        break;
+      case 3:
+        ++TLIandSDKboth;
+        break;
       }
       // If the results match, report only if user requested a full report.
       ReportKind Threshold =
@@ -346,7 +354,7 @@ int main(int argc, char *argv[]) {
     assert(TLIandSDKboth + TLIandSDKneither + TLIdoesSDKdoesnt +
                TLIdoesntSDKdoes ==
            LibFunc::NumLibFuncs);
-    (void) TLIandSDKneither;
+    (void)TLIandSDKneither;
     outs() << "<< Total TLI yes SDK no:  " << TLIdoesSDKdoesnt
            << "\n>> Total TLI no  SDK yes: " << TLIdoesntSDKdoes
            << "\n== Total TLI yes SDK yes: " << TLIandSDKboth;

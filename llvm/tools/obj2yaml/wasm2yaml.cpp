@@ -55,7 +55,7 @@ WasmDumper::dumpCustomSection(const WasmSection &WasmSec) {
   if (WasmSec.Name == "dylink" || WasmSec.Name == "dylink.0") {
     std::unique_ptr<WasmYAML::DylinkSection> DylinkSec =
         std::make_unique<WasmYAML::DylinkSection>();
-    const wasm::WasmDylinkInfo& Info = Obj.dylinkInfo();
+    const wasm::WasmDylinkInfo &Info = Obj.dylinkInfo();
     DylinkSec->MemorySize = Info.MemorySize;
     DylinkSec->MemoryAlignment = Info.MemoryAlignment;
     DylinkSec->TableSize = Info.TableSize;

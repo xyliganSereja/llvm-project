@@ -237,15 +237,15 @@ TEST_F(HTTPClientServerTest, ClientTimeout) {
 TEST_F(HTTPClientServerTest, PathMatching) {
   HTTPServer Server;
 
-  EXPECT_THAT_ERROR(
-      Server.get(R"(/abc/(.*)/(.*))",
-                 [&](HTTPServerRequest &Request) {
-                   EXPECT_EQ(Request.UrlPath, "/abc/1/2");
-                   ASSERT_THAT(Request.UrlPathMatches,
-                               testing::ElementsAre("1", "2"));
-                   Request.setResponse({200u, "text/plain", Request.UrlPath});
-                 }),
-      Succeeded());
+  EXPECT_THAT_ERROR(Server.get(R"(/abc/(.*)/(.*))",
+                               [&](HTTPServerRequest &Request) {
+                                 EXPECT_EQ(Request.UrlPath, "/abc/1/2");
+                                 ASSERT_THAT(Request.UrlPathMatches,
+                                             testing::ElementsAre("1", "2"));
+                                 Request.setResponse(
+                                     {200u, "text/plain", Request.UrlPath});
+                               }),
+                    Succeeded());
   EXPECT_THAT_ERROR(Server.get(UrlPathPattern,
                                [&](HTTPServerRequest &Request) {
                                  llvm_unreachable(

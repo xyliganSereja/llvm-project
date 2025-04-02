@@ -242,8 +242,7 @@ public:
     /// Does the insertion point is at the beginning or end of MBB.
     bool Beginning;
 
-    void materialize() override { /*Nothing to do to materialize*/
-    }
+    void materialize() override { /*Nothing to do to materialize*/ }
 
     MachineBasicBlock::iterator getPointImpl() override {
       return Beginning ? MBB.begin() : MBB.end();
@@ -635,8 +634,8 @@ public:
   }
 
   MachineFunctionProperties getClearedProperties() const override {
-    return MachineFunctionProperties()
-      .set(MachineFunctionProperties::Property::NoPHIs);
+    return MachineFunctionProperties().set(
+        MachineFunctionProperties::Property::NoPHIs);
   }
 
   /// Check that our input is fully legal: we require the function to have the

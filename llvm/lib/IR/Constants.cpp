@@ -63,7 +63,8 @@ bool Constant::isNegativeZeroValue() const {
     if (const auto *SplatCFP = dyn_cast_or_null<ConstantFP>(getSplatValue()))
       return SplatCFP->isNegativeZeroValue();
 
-  // We've already handled true FP case; any other FP vectors can't represent -0.0.
+  // We've already handled true FP case; any other FP vectors can't represent
+  // -0.0.
   if (getType()->isFPOrFPVectorTy())
     return false;
 
@@ -708,12 +709,14 @@ Constant::PossibleRelocationsTy Constant::getRelocationInfo() const {
 /// recursively traversing users of the constantexpr.
 /// If RemoveDeadUsers is true, also remove dead users at the same time.
 static bool constantIsDead(const Constant *C, bool RemoveDeadUsers) {
-  if (isa<GlobalValue>(C)) return false; // Cannot remove this
+  if (isa<GlobalValue>(C))
+    return false; // Cannot remove this
 
   Value::const_user_iterator I = C->user_begin(), E = C->user_end();
   while (I != E) {
     const Constant *User = dyn_cast<Constant>(*I);
-    if (!User) return false; // Non-constant usage;
+    if (!User)
+      return false; // Non-constant usage;
     if (!constantIsDead(User, RemoveDeadUsers))
       return false; // Constant wasn't dead
 
@@ -732,7 +735,7 @@ static bool constantIsDead(const Constant *C, bool RemoveDeadUsers) {
     ReplaceableMetadataImpl::SalvageDebugInfo(*C);
     const_cast<Constant *>(C)->destroyConstant();
   }
-  
+
   return true;
 }
 
@@ -955,7 +958,7 @@ ConstantInt *ConstantInt::get(IntegerType *Ty, uint64_t V, bool isSigned) {
              APInt(Ty->getBitWidth(), V, isSigned, /*implicitTrunc=*/true));
 }
 
-Constant *ConstantInt::get(Type *Ty, const APInt& V) {
+Constant *ConstantInt::get(Type *Ty, const APInt &V) {
   ConstantInt *C = get(Ty->getContext(), V);
   assert(C->getType() == Ty->getScalarType() &&
          "ConstantInt type doesn't match the type implied by its value!");
@@ -967,7 +970,7 @@ Constant *ConstantInt::get(Type *Ty, const APInt& V) {
   return C;
 }
 
-ConstantInt *ConstantInt::get(IntegerType* Ty, StringRef Str, uint8_t radix) {
+ConstantInt *ConstantInt::get(IntegerType *Ty, StringRef Str, uint8_t radix) {
   return get(Ty->getContext(), APInt(Ty->getBitWidth(), Str, radix));
 }
 
@@ -1065,10 +1068,9 @@ Constant *ConstantFP::getZero(Type *Ty, bool Negative) {
   return C;
 }
 
-
 // ConstantFP accessors.
-ConstantFP* ConstantFP::get(LLVMContext &Context, const APFloat& V) {
-  LLVMContextImpl* pImpl = Context.pImpl;
+ConstantFP *ConstantFP::get(LLVMContext &Context, const APFloat &V) {
+  LLVMContextImpl *pImpl = Context.pImpl;
 
   std::unique_ptr<ConstantFP> &Slot = pImpl->FPConstants[V];
 
@@ -1309,13 +1311,13 @@ ConstantArray::ConstantArray(ArrayType *T, ArrayRef<Constant *> V,
          "Invalid initializer for constant array");
 }
 
-Constant *ConstantArray::get(ArrayType *Ty, ArrayRef<Constant*> V) {
+Constant *ConstantArray::get(ArrayType *Ty, ArrayRef<Constant *> V) {
   if (Constant *C = getImpl(Ty, V))
     return C;
   return Ty->getContext().pImpl->ArrayConstants.getOrCreate(Ty, V);
 }
 
-Constant *ConstantArray::getImpl(ArrayType *Ty, ArrayRef<Constant*> V) {
+Constant *ConstantArray::getImpl(ArrayType *Ty, ArrayRef<Constant *> V) {
   // Empty arrays are canonicalized to ConstantAggregateZero.
   if (V.empty())
     return ConstantAggregateZero::get(Ty);
@@ -1349,18 +1351,17 @@ Constant *ConstantArray::getImpl(ArrayType *Ty, ArrayRef<Constant*> V) {
 }
 
 StructType *ConstantStruct::getTypeForElements(LLVMContext &Context,
-                                               ArrayRef<Constant*> V,
+                                               ArrayRef<Constant *> V,
                                                bool Packed) {
   unsigned VecSize = V.size();
-  SmallVector<Type*, 16> EltTypes(VecSize);
+  SmallVector<Type *, 16> EltTypes(VecSize);
   for (unsigned i = 0; i != VecSize; ++i)
     EltTypes[i] = V[i]->getType();
 
   return StructType::get(Context, EltTypes, Packed);
 }
 
-
-StructType *ConstantStruct::getTypeForElements(ArrayRef<Constant*> V,
+StructType *ConstantStruct::getTypeForElements(ArrayRef<Constant *> V,
                                                bool Packed) {
   assert(!V.empty() &&
          "ConstantStruct::getTypeForElements cannot be called on empty list");
@@ -1375,7 +1376,7 @@ ConstantStruct::ConstantStruct(StructType *T, ArrayRef<Constant *> V,
 }
 
 // ConstantStruct accessors.
-Constant *ConstantStruct::get(StructType *ST, ArrayRef<Constant*> V) {
+Constant *ConstantStruct::get(StructType *ST, ArrayRef<Constant *> V) {
   assert((ST->isOpaque() || ST->getNumElements() == V.size()) &&
          "Incorrect # elements specified to ConstantStruct::get");
 
@@ -1418,14 +1419,14 @@ ConstantVector::ConstantVector(VectorType *T, ArrayRef<Constant *> V,
 }
 
 // ConstantVector accessors.
-Constant *ConstantVector::get(ArrayRef<Constant*> V) {
+Constant *ConstantVector::get(ArrayRef<Constant *> V) {
   if (Constant *C = getImpl(V))
     return C;
   auto *Ty = FixedVectorType::get(V.front()->getType(), V.size());
   return Ty->getContext().pImpl->VectorConstants.getOrCreate(Ty, V);
 }
 
-Constant *ConstantVector::getImpl(ArrayRef<Constant*> V) {
+Constant *ConstantVector::getImpl(ArrayRef<Constant *> V) {
   assert(!V.empty() && "Vectors can't be empty");
   auto *T = FixedVectorType::get(V.front()->getType(), V.size());
 
@@ -1550,7 +1551,7 @@ Constant *ConstantExpr::getWithOperands(ArrayRef<Constant *> Ops, Type *Ty,
 
   // If no operands changed return self.
   if (Ty == getType() && std::equal(Ops.begin(), Ops.end(), op_begin()))
-    return const_cast<ConstantExpr*>(this);
+    return const_cast<ConstantExpr *>(this);
 
   Type *OnlyIfReducedTy = OnlyIfReduced ? Ty : nullptr;
   switch (getOpcode()) {
@@ -1590,7 +1591,6 @@ Constant *ConstantExpr::getWithOperands(ArrayRef<Constant *> Ops, Type *Ty,
   }
 }
 
-
 //===----------------------------------------------------------------------===//
 //                      isValueValidForType implementations
 
@@ -1608,13 +1608,13 @@ bool ConstantInt::isValueValidForType(Type *Ty, int64_t Val) {
   return isIntN(NumBits, Val);
 }
 
-bool ConstantFP::isValueValidForType(Type *Ty, const APFloat& Val) {
+bool ConstantFP::isValueValidForType(Type *Ty, const APFloat &Val) {
   // convert modifies in place, so make a copy.
   APFloat Val2 = APFloat(Val);
   bool losesInfo;
   switch (Ty->getTypeID()) {
   default:
-    return false;         // These can't be represented as floating point!
+    return false; // These can't be represented as floating point!
 
   // FIXME rounding mode needs to be more flexible
   case Type::HalfTyID: {
@@ -1632,7 +1632,8 @@ bool ConstantFP::isValueValidForType(Type *Ty, const APFloat& Val) {
   case Type::FloatTyID: {
     if (&Val2.getSemantics() == &APFloat::IEEEsingle())
       return true;
-    Val2.convert(APFloat::IEEEsingle(), APFloat::rmNearestTiesToEven, &losesInfo);
+    Val2.convert(APFloat::IEEEsingle(), APFloat::rmNearestTiesToEven,
+                 &losesInfo);
     return !losesInfo;
   }
   case Type::DoubleTyID: {
@@ -1641,7 +1642,8 @@ bool ConstantFP::isValueValidForType(Type *Ty, const APFloat& Val) {
         &Val2.getSemantics() == &APFloat::IEEEsingle() ||
         &Val2.getSemantics() == &APFloat::IEEEdouble())
       return true;
-    Val2.convert(APFloat::IEEEdouble(), APFloat::rmNearestTiesToEven, &losesInfo);
+    Val2.convert(APFloat::IEEEdouble(), APFloat::rmNearestTiesToEven,
+                 &losesInfo);
     return !losesInfo;
   }
   case Type::X86_FP80TyID:
@@ -1664,7 +1666,6 @@ bool ConstantFP::isValueValidForType(Type *Ty, const APFloat& Val) {
            &Val2.getSemantics() == &APFloat::PPCDoubleDouble();
   }
 }
-
 
 //===----------------------------------------------------------------------===//
 //                      Factory Function Implementation
@@ -1690,7 +1691,6 @@ void ConstantAggregateZero::destroyConstantImpl() {
 void ConstantArray::destroyConstantImpl() {
   getType()->getContext().pImpl->ArrayConstants.remove(this);
 }
-
 
 //---- ConstantStruct::get() implementation...
 //
@@ -1790,8 +1790,8 @@ ConstantRange Constant::toConstantRange() const {
   if (!getType()->isVectorTy())
     return ConstantRange::getFull(BitWidth);
 
-  if (auto *CI = dyn_cast_or_null<ConstantInt>(
-          getSplatValue(/*AllowPoison=*/true)))
+  if (auto *CI =
+          dyn_cast_or_null<ConstantInt>(getSplatValue(/*AllowPoison=*/true)))
     return ConstantRange(CI->getValue());
 
   if (auto *CDV = dyn_cast<ConstantDataVector>(this)) {
@@ -1896,7 +1896,7 @@ BlockAddress *BlockAddress::get(BasicBlock *BB) {
 
 BlockAddress *BlockAddress::get(Function *F, BasicBlock *BB) {
   BlockAddress *&BA =
-    F->getContext().pImpl->BlockAddresses[std::make_pair(F, BB)];
+      F->getContext().pImpl->BlockAddresses[std::make_pair(F, BB)];
   if (!BA)
     BA = new BlockAddress(F, BB);
 
@@ -1926,8 +1926,8 @@ BlockAddress *BlockAddress::lookup(const BasicBlock *BB) {
 
 /// Remove the constant from the constant table.
 void BlockAddress::destroyConstantImpl() {
-  getFunction()->getType()->getContext().pImpl
-    ->BlockAddresses.erase(std::make_pair(getFunction(), getBasicBlock()));
+  getFunction()->getType()->getContext().pImpl->BlockAddresses.erase(
+      std::make_pair(getFunction(), getBasicBlock()));
   getBasicBlock()->AdjustBlockAddressRefCount(-1);
 }
 
@@ -1947,7 +1947,7 @@ Value *BlockAddress::handleOperandChangeImpl(Value *From, Value *To) {
   // See if the 'new' entry already exists, if not, just update this in place
   // and return early.
   BlockAddress *&NewBA =
-    getContext().pImpl->BlockAddresses[std::make_pair(NewF, NewBB)];
+      getContext().pImpl->BlockAddresses[std::make_pair(NewF, NewBB)];
   if (NewBA)
     return NewBA;
 
@@ -1955,8 +1955,8 @@ Value *BlockAddress::handleOperandChangeImpl(Value *From, Value *To) {
 
   // Remove the old entry, this can't cause the map to rehash (just a
   // tombstone will get added).
-  getContext().pImpl->BlockAddresses.erase(std::make_pair(getFunction(),
-                                                          getBasicBlock()));
+  getContext().pImpl->BlockAddresses.erase(
+      std::make_pair(getFunction(), getBasicBlock()));
   NewBA = this;
   setOperand(0, NewF);
   setOperand(1, NewBB);
@@ -2253,7 +2253,7 @@ Constant *ConstantExpr::getTruncOrBitCast(Constant *C, Type *Ty) {
 Constant *ConstantExpr::getPointerCast(Constant *S, Type *Ty) {
   assert(S->getType()->isPtrOrPtrVectorTy() && "Invalid cast");
   assert((Ty->isIntOrIntVectorTy() || Ty->isPtrOrPtrVectorTy()) &&
-          "Invalid cast");
+         "Invalid cast");
 
   if (Ty->isIntOrIntVectorTy())
     return getPtrToInt(S, Ty);
@@ -2284,7 +2284,7 @@ Constant *ConstantExpr::getTrunc(Constant *C, Type *Ty, bool OnlyIfReduced) {
   assert((fromVec == toVec) && "Cannot convert from scalar to/from vector");
   assert(C->getType()->isIntOrIntVectorTy() && "Trunc operand must be integer");
   assert(Ty->isIntOrIntVectorTy() && "Trunc produces only integral");
-  assert(C->getType()->getScalarSizeInBits() > Ty->getScalarSizeInBits()&&
+  assert(C->getType()->getScalarSizeInBits() > Ty->getScalarSizeInBits() &&
          "SrcTy must be larger than DestTy for Trunc!");
 
   return getFoldedCast(Instruction::Trunc, C, Ty, OnlyIfReduced);
@@ -2325,7 +2325,8 @@ Constant *ConstantExpr::getBitCast(Constant *C, Type *DstTy,
 
   // It is common to ask for a bitcast of a value to its own type, handle this
   // speedily.
-  if (C->getType() == DstTy) return C;
+  if (C->getType() == DstTy)
+    return C;
 
   return getFoldedCast(Instruction::BitCast, C, DstTy, OnlyIfReduced);
 }
@@ -2477,18 +2478,17 @@ bool ConstantExpr::isSupportedCastOp(unsigned Opcode) {
   }
 }
 
-Constant *ConstantExpr::getSizeOf(Type* Ty) {
+Constant *ConstantExpr::getSizeOf(Type *Ty) {
   // sizeof is implemented as: (i64) gep (Ty*)null, 1
   // Note that a non-inbounds gep is used, as null isn't within any object.
   Constant *GEPIdx = ConstantInt::get(Type::getInt32Ty(Ty->getContext()), 1);
   Constant *GEP = getGetElementPtr(
       Ty, Constant::getNullValue(PointerType::getUnqual(Ty->getContext())),
       GEPIdx);
-  return getPtrToInt(GEP,
-                     Type::getInt64Ty(Ty->getContext()));
+  return getPtrToInt(GEP, Type::getInt64Ty(Ty->getContext()));
 }
 
-Constant *ConstantExpr::getAlignOf(Type* Ty) {
+Constant *ConstantExpr::getAlignOf(Type *Ty) {
   // alignof is implemented as: (i64) gep ({i1,Ty}*)null, 0, 1
   // Note that a non-inbounds gep is used, as null isn't within any object.
   Type *AligningTy = StructType::get(Type::getInt1Ty(Ty->getContext()), Ty);
@@ -2525,16 +2525,15 @@ Constant *ConstantExpr::getGetElementPtr(Type *Ty, Constant *C,
     EltCount = VecTy->getElementCount();
 
   // Look up the constant in the table first to ensure uniqueness
-  std::vector<Constant*> ArgVec;
+  std::vector<Constant *> ArgVec;
   ArgVec.reserve(1 + Idxs.size());
   ArgVec.push_back(C);
   auto GTI = gep_type_begin(Ty, Idxs), GTE = gep_type_end(Ty, Idxs);
   for (; GTI != GTE; ++GTI) {
     auto *Idx = cast<Constant>(GTI.getOperand());
-    assert(
-        (!isa<VectorType>(Idx->getType()) ||
-         cast<VectorType>(Idx->getType())->getElementCount() == EltCount) &&
-        "getelementptr index type missmatch");
+    assert((!isa<VectorType>(Idx->getType()) ||
+            cast<VectorType>(Idx->getType())->getElementCount() == EltCount) &&
+           "getelementptr index type missmatch");
 
     if (GTI.isStruct() && Idx->getType()->isVectorTy()) {
       Idx = Idx->getSplatValue();
@@ -2560,14 +2559,14 @@ Constant *ConstantExpr::getExtractElement(Constant *Val, Constant *Idx,
          "Extractelement index must be an integer type!");
 
   if (Constant *FC = ConstantFoldExtractElementInstruction(Val, Idx))
-    return FC;          // Fold a few common cases.
+    return FC; // Fold a few common cases.
 
   Type *ReqTy = cast<VectorType>(Val->getType())->getElementType();
   if (OnlyIfReducedTy == ReqTy)
     return nullptr;
 
   // Look up the constant in the table first to ensure uniqueness
-  Constant *ArgVec[] = { Val, Idx };
+  Constant *ArgVec[] = {Val, Idx};
   const ConstantExprKeyType Key(Instruction::ExtractElement, ArgVec);
 
   LLVMContextImpl *pImpl = Val->getContext().pImpl;
@@ -2584,13 +2583,13 @@ Constant *ConstantExpr::getInsertElement(Constant *Val, Constant *Elt,
          "Insertelement index must be i32 type!");
 
   if (Constant *FC = ConstantFoldInsertElementInstruction(Val, Elt, Idx))
-    return FC;          // Fold a few common cases.
+    return FC; // Fold a few common cases.
 
   if (OnlyIfReducedTy == Val->getType())
     return nullptr;
 
   // Look up the constant in the table first to ensure uniqueness
-  Constant *ArgVec[] = { Val, Elt, Idx };
+  Constant *ArgVec[] = {Val, Elt, Idx};
   const ConstantExprKeyType Key(Instruction::InsertElement, ArgVec);
 
   LLVMContextImpl *pImpl = Val->getContext().pImpl;
@@ -2604,7 +2603,7 @@ Constant *ConstantExpr::getShuffleVector(Constant *V1, Constant *V2,
          "Invalid shuffle vector constant expr operands!");
 
   if (Constant *FC = ConstantFoldShuffleVectorInstruction(V1, V2, Mask))
-    return FC;          // Fold a few common cases.
+    return FC; // Fold a few common cases.
 
   unsigned NElts = Mask.size();
   auto V1VTy = cast<VectorType>(V1->getType());
@@ -2635,24 +2634,24 @@ Constant *ConstantExpr::getNot(Constant *C) {
   return get(Instruction::Xor, C, Constant::getAllOnesValue(C->getType()));
 }
 
-Constant *ConstantExpr::getAdd(Constant *C1, Constant *C2,
-                               bool HasNUW, bool HasNSW) {
+Constant *ConstantExpr::getAdd(Constant *C1, Constant *C2, bool HasNUW,
+                               bool HasNSW) {
   unsigned Flags = (HasNUW ? OverflowingBinaryOperator::NoUnsignedWrap : 0) |
-                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap   : 0);
+                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap : 0);
   return get(Instruction::Add, C1, C2, Flags);
 }
 
-Constant *ConstantExpr::getSub(Constant *C1, Constant *C2,
-                               bool HasNUW, bool HasNSW) {
+Constant *ConstantExpr::getSub(Constant *C1, Constant *C2, bool HasNUW,
+                               bool HasNSW) {
   unsigned Flags = (HasNUW ? OverflowingBinaryOperator::NoUnsignedWrap : 0) |
-                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap   : 0);
+                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap : 0);
   return get(Instruction::Sub, C1, C2, Flags);
 }
 
-Constant *ConstantExpr::getMul(Constant *C1, Constant *C2,
-                               bool HasNUW, bool HasNSW) {
+Constant *ConstantExpr::getMul(Constant *C1, Constant *C2, bool HasNUW,
+                               bool HasNSW) {
   unsigned Flags = (HasNUW ? OverflowingBinaryOperator::NoUnsignedWrap : 0) |
-                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap   : 0);
+                   (HasNSW ? OverflowingBinaryOperator::NoSignedWrap : 0);
   return get(Instruction::Mul, C1, C2, Flags);
 }
 
@@ -2696,20 +2695,20 @@ Constant *ConstantExpr::getBinOpIdentity(unsigned Opcode, Type *Ty,
   // Commutative opcodes: it does not matter if AllowRHSConstant is set.
   if (Instruction::isCommutative(Opcode)) {
     switch (Opcode) {
-      case Instruction::Add: // X + 0 = X
-      case Instruction::Or:  // X | 0 = X
-      case Instruction::Xor: // X ^ 0 = X
-        return Constant::getNullValue(Ty);
-      case Instruction::Mul: // X * 1 = X
-        return ConstantInt::get(Ty, 1);
-      case Instruction::And: // X & -1 = X
-        return Constant::getAllOnesValue(Ty);
-      case Instruction::FAdd: // X + -0.0 = X
-        return ConstantFP::getZero(Ty, !NSZ);
-      case Instruction::FMul: // X * 1.0 = X
-        return ConstantFP::get(Ty, 1.0);
-      default:
-        llvm_unreachable("Every commutative binop has an identity constant");
+    case Instruction::Add: // X + 0 = X
+    case Instruction::Or:  // X | 0 = X
+    case Instruction::Xor: // X ^ 0 = X
+      return Constant::getNullValue(Ty);
+    case Instruction::Mul: // X * 1 = X
+      return ConstantInt::get(Ty, 1);
+    case Instruction::And: // X & -1 = X
+      return Constant::getAllOnesValue(Ty);
+    case Instruction::FAdd: // X + -0.0 = X
+      return ConstantFP::getZero(Ty, !NSZ);
+    case Instruction::FMul: // X * 1.0 = X
+      return ConstantFP::get(Ty, 1.0);
+    default:
+      llvm_unreachable("Every commutative binop has an identity constant");
     }
   }
 
@@ -2718,19 +2717,19 @@ Constant *ConstantExpr::getBinOpIdentity(unsigned Opcode, Type *Ty,
     return nullptr;
 
   switch (Opcode) {
-    case Instruction::Sub:  // X - 0 = X
-    case Instruction::Shl:  // X << 0 = X
-    case Instruction::LShr: // X >>u 0 = X
-    case Instruction::AShr: // X >> 0 = X
-    case Instruction::FSub: // X - 0.0 = X
-      return Constant::getNullValue(Ty);
-    case Instruction::SDiv: // X / 1 = X
-    case Instruction::UDiv: // X /u 1 = X
-      return ConstantInt::get(Ty, 1);
-    case Instruction::FDiv: // X / 1.0 = X
-      return ConstantFP::get(Ty, 1.0);
-    default:
-      return nullptr;
+  case Instruction::Sub:  // X - 0 = X
+  case Instruction::Shl:  // X << 0 = X
+  case Instruction::LShr: // X >>u 0 = X
+  case Instruction::AShr: // X >> 0 = X
+  case Instruction::FSub: // X - 0.0 = X
+    return Constant::getNullValue(Ty);
+  case Instruction::SDiv: // X / 1 = X
+  case Instruction::UDiv: // X /u 1 = X
+    return ConstantInt::get(Ty, 1);
+  case Instruction::FDiv: // X / 1.0 = X
+    return ConstantFP::get(Ty, 1.0);
+  default:
+    return nullptr;
   }
 }
 
@@ -2811,7 +2810,7 @@ GetElementPtrConstantExpr::GetElementPtrConstantExpr(
   Op<0>() = C;
   Use *OperandList = getOperandList();
   for (unsigned i = 0, E = IdxList.size(); i != E; ++i)
-    OperandList[i+1] = IdxList[i];
+    OperandList[i + 1] = IdxList[i];
 }
 
 Type *GetElementPtrConstantExpr::getSourceElementType() const {
@@ -2836,7 +2835,7 @@ Type *ConstantDataSequential::getElementType() const {
 }
 
 StringRef ConstantDataSequential::getRawDataValues() const {
-  return StringRef(DataElements, getNumElements()*getElementByteSize());
+  return StringRef(DataElements, getNumElements() * getElementByteSize());
 }
 
 bool ConstantDataSequential::isElementTypeCompatible(Type *Ty) {
@@ -2849,7 +2848,8 @@ bool ConstantDataSequential::isElementTypeCompatible(Type *Ty) {
     case 32:
     case 64:
       return true;
-    default: break;
+    default:
+      break;
     }
   }
   return false;
@@ -2861,17 +2861,15 @@ unsigned ConstantDataSequential::getNumElements() const {
   return cast<FixedVectorType>(getType())->getNumElements();
 }
 
-
 uint64_t ConstantDataSequential::getElementByteSize() const {
-  return getElementType()->getPrimitiveSizeInBits()/8;
+  return getElementType()->getPrimitiveSizeInBits() / 8;
 }
 
 /// Return the start of the specified element.
 const char *ConstantDataSequential::getElementPointer(unsigned Elt) const {
   assert(Elt < getNumElements() && "Invalid Elt");
-  return DataElements+Elt*getElementByteSize();
+  return DataElements + Elt * getElementByteSize();
 }
-
 
 /// Return true if the array is empty or all zeros.
 static bool isAllZeros(StringRef Arr) {
@@ -2988,8 +2986,8 @@ Constant *ConstantDataArray::getFP(Type *ElementType, ArrayRef<uint64_t> Elts) {
   return getImpl(StringRef(Data, Elts.size() * 8), Ty);
 }
 
-Constant *ConstantDataArray::getString(LLVMContext &Context,
-                                       StringRef Str, bool AddNull) {
+Constant *ConstantDataArray::getString(LLVMContext &Context, StringRef Str,
+                                       bool AddNull) {
   if (!AddNull) {
     const uint8_t *Data = Str.bytes_begin();
     return get(Context, ArrayRef(Data, Str.size()));
@@ -3004,22 +3002,26 @@ Constant *ConstantDataArray::getString(LLVMContext &Context,
 /// get() constructors - Return a constant with vector type with an element
 /// count and element type matching the ArrayRef passed in.  Note that this
 /// can return a ConstantAggregateZero object.
-Constant *ConstantDataVector::get(LLVMContext &Context, ArrayRef<uint8_t> Elts){
+Constant *ConstantDataVector::get(LLVMContext &Context,
+                                  ArrayRef<uint8_t> Elts) {
   auto *Ty = FixedVectorType::get(Type::getInt8Ty(Context), Elts.size());
   const char *Data = reinterpret_cast<const char *>(Elts.data());
   return getImpl(StringRef(Data, Elts.size() * 1), Ty);
 }
-Constant *ConstantDataVector::get(LLVMContext &Context, ArrayRef<uint16_t> Elts){
+Constant *ConstantDataVector::get(LLVMContext &Context,
+                                  ArrayRef<uint16_t> Elts) {
   auto *Ty = FixedVectorType::get(Type::getInt16Ty(Context), Elts.size());
   const char *Data = reinterpret_cast<const char *>(Elts.data());
   return getImpl(StringRef(Data, Elts.size() * 2), Ty);
 }
-Constant *ConstantDataVector::get(LLVMContext &Context, ArrayRef<uint32_t> Elts){
+Constant *ConstantDataVector::get(LLVMContext &Context,
+                                  ArrayRef<uint32_t> Elts) {
   auto *Ty = FixedVectorType::get(Type::getInt32Ty(Context), Elts.size());
   const char *Data = reinterpret_cast<const char *>(Elts.data());
   return getImpl(StringRef(Data, Elts.size() * 4), Ty);
 }
-Constant *ConstantDataVector::get(LLVMContext &Context, ArrayRef<uint64_t> Elts){
+Constant *ConstantDataVector::get(LLVMContext &Context,
+                                  ArrayRef<uint64_t> Elts) {
   auto *Ty = FixedVectorType::get(Type::getInt64Ty(Context), Elts.size());
   const char *Data = reinterpret_cast<const char *>(Elts.data());
   return getImpl(StringRef(Data, Elts.size() * 8), Ty);
@@ -3111,7 +3113,6 @@ Constant *ConstantDataVector::getSplat(unsigned NumElts, Constant *V) {
   return ConstantVector::getSplat(ElementCount::getFixed(NumElts), V);
 }
 
-
 uint64_t ConstantDataSequential::getElementAsInteger(unsigned Elt) const {
   assert(isa<IntegerType>(getElementType()) &&
          "Accessor can only be used when element is an integer");
@@ -3120,7 +3121,8 @@ uint64_t ConstantDataSequential::getElementAsInteger(unsigned Elt) const {
   // The data is stored in host byte order, make sure to cast back to the right
   // type to load with the right endianness.
   switch (getElementType()->getIntegerBitWidth()) {
-  default: llvm_unreachable("Invalid bitwidth for CDS");
+  default:
+    llvm_unreachable("Invalid bitwidth for CDS");
   case 8:
     return *reinterpret_cast<const uint8_t *>(EltPtr);
   case 16:
@@ -3140,7 +3142,8 @@ APInt ConstantDataSequential::getElementAsAPInt(unsigned Elt) const {
   // The data is stored in host byte order, make sure to cast back to the right
   // type to load with the right endianness.
   switch (getElementType()->getIntegerBitWidth()) {
-  default: llvm_unreachable("Invalid bitwidth for CDS");
+  default:
+    llvm_unreachable("Invalid bitwidth for CDS");
   case 8: {
     auto EltVal = *reinterpret_cast<const uint8_t *>(EltPtr);
     return APInt(8, EltVal);
@@ -3216,7 +3219,8 @@ bool ConstantDataSequential::isCString() const {
   StringRef Str = getAsString();
 
   // The last value must be nul.
-  if (Str.back() != 0) return false;
+  if (Str.back() != 0)
+    return false;
 
   // Other elements must be non-nul.
   return !Str.drop_back().contains(0);
@@ -3228,7 +3232,7 @@ bool ConstantDataVector::isSplatData() const {
   // Compare elements 1+ to the 0'th element.
   unsigned EltSize = getElementByteSize();
   for (unsigned i = 1, e = getNumElements(); i != e; ++i)
-    if (memcmp(Base, Base+i*EltSize, EltSize))
+    if (memcmp(Base, Base + i * EltSize, EltSize))
       return false;
 
   return true;
@@ -3292,8 +3296,8 @@ Value *ConstantArray::handleOperandChangeImpl(Value *From, Value *To) {
   assert(isa<Constant>(To) && "Cannot make Constant refer to non-constant!");
   Constant *ToC = cast<Constant>(To);
 
-  SmallVector<Constant*, 8> Values;
-  Values.reserve(getNumOperands());  // Build replacement array.
+  SmallVector<Constant *, 8> Values;
+  Values.reserve(getNumOperands()); // Build replacement array.
 
   // Fill values with the modified operands of the constant array.  Also,
   // compute whether this turns into an all-zeros array.
@@ -3303,7 +3307,7 @@ Value *ConstantArray::handleOperandChangeImpl(Value *From, Value *To) {
   bool AllSame = true;
   Use *OperandList = getOperandList();
   unsigned OperandNo = 0;
-  for (Use *O = OperandList, *E = OperandList+getNumOperands(); O != E; ++O) {
+  for (Use *O = OperandList, *E = OperandList + getNumOperands(); O != E; ++O) {
     Constant *Val = cast<Constant>(O->get());
     if (Val == From) {
       OperandNo = (O - OperandList);
@@ -3335,8 +3339,8 @@ Value *ConstantStruct::handleOperandChangeImpl(Value *From, Value *To) {
 
   Use *OperandList = getOperandList();
 
-  SmallVector<Constant*, 8> Values;
-  Values.reserve(getNumOperands());  // Build replacement struct.
+  SmallVector<Constant *, 8> Values;
+  Values.reserve(getNumOperands()); // Build replacement struct.
 
   // Fill values with the modified operands of the constant struct.  Also,
   // compute whether this turns into an all-zeros struct.
@@ -3369,8 +3373,8 @@ Value *ConstantVector::handleOperandChangeImpl(Value *From, Value *To) {
   assert(isa<Constant>(To) && "Cannot make Constant refer to non-constant!");
   Constant *ToC = cast<Constant>(To);
 
-  SmallVector<Constant*, 8> Values;
-  Values.reserve(getNumOperands());  // Build replacement array...
+  SmallVector<Constant *, 8> Values;
+  Values.reserve(getNumOperands()); // Build replacement array...
   unsigned NumUpdated = 0;
   unsigned OperandNo = 0;
   for (unsigned i = 0, e = getNumOperands(); i != e; ++i) {
@@ -3395,7 +3399,7 @@ Value *ConstantExpr::handleOperandChangeImpl(Value *From, Value *ToV) {
   assert(isa<Constant>(ToV) && "Cannot make Constant refer to non-constant!");
   Constant *To = cast<Constant>(ToV);
 
-  SmallVector<Constant*, 8> NewOps;
+  SmallVector<Constant *, 8> NewOps;
   unsigned NumUpdated = 0;
   unsigned OperandNo = 0;
   for (unsigned i = 0, e = getNumOperands(); i != e; ++i) {
@@ -3419,7 +3423,7 @@ Value *ConstantExpr::handleOperandChangeImpl(Value *From, Value *ToV) {
 
 Instruction *ConstantExpr::getAsInstruction() const {
   SmallVector<Value *, 4> ValueOperands(operands());
-  ArrayRef<Value*> Ops(ValueOperands);
+  ArrayRef<Value *> Ops(ValueOperands);
 
   switch (getOpcode()) {
   case Instruction::Trunc:

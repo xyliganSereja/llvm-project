@@ -106,8 +106,8 @@ TEST_F(ScalarEvolutionExpanderTest, ExpandPtrTypeSCEV) {
       GetElementPtrInst::Create(I8Ty, Gep0, Ci32, "gep1", Br->getIterator());
   GetElementPtrInst *Gep2 = GetElementPtrInst::Create(
       I8Ty, UndefPtr, Ci32, "gep2", Br->getIterator());
-  CmpInst *Cmp = CmpInst::Create(Instruction::ICmp, CmpInst::ICMP_ULT,
-                                 UndefPtr, Gep0, "cmp", Br->getIterator());
+  CmpInst *Cmp = CmpInst::Create(Instruction::ICmp, CmpInst::ICMP_ULT, UndefPtr,
+                                 Gep0, "cmp", Br->getIterator());
   SelectInst *Select =
       SelectInst::Create(Cmp, Gep1, Gep2, "select", Br->getIterator());
 

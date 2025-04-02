@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 #include "llvm/ADT/PostOrderIterator.h"
+#include "TestGraph.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
 #include "gtest/gtest.h"
-#include "TestGraph.h"
 
 #include <array>
 #include <iterator>
@@ -111,4 +111,4 @@ TEST(PostOrderIteratorTest, MultiPassSafeWithInternalSet) {
 
   EXPECT_EQ(NodesFirstPass, NodesSecondPass);
 }
-}
+} // namespace

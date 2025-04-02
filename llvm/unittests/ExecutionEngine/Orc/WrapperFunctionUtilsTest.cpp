@@ -69,6 +69,7 @@ class AddClass {
 public:
   AddClass(int32_t X) : X(X) {}
   int32_t addMethod(int32_t Y) { return X + Y; }
+
 private:
   int32_t X;
 };

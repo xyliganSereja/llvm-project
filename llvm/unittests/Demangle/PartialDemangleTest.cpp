@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <cstdlib>
 #include "llvm/Demangle/Demangle.h"
 #include "gtest/gtest.h"
+#include <cstdlib>
 
 struct ChoppedName {
   const char *Mangled;
@@ -141,7 +141,7 @@ TEST(PartialDemanglerTest, TestCtorOrDtor) {
       "_ZN1BIiEC1IcEET_", // B<int>::B<char>(char)
       "_ZN1AC1B1TEv",     // A::A[abi:T]()
       "_ZNSt1AD2Ev",      // std::A::~A()
-      "_ZN2ns1AD1Ev",      // ns::A::~A()
+      "_ZN2ns1AD1Ev",     // ns::A::~A()
   };
   static const char *Neg[] = {
       "_Z1fv",

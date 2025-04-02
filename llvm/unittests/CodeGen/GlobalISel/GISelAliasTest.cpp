@@ -127,7 +127,6 @@ TEST_F(AArch64GISelMITest, FrameIndexAliasing) {
   // Can't alias.
   EXPECT_FALSE(GISelAddressing::instMayAlias(*Ld1, *Ld2, *MRI, nullptr));
 
-
   auto GFixedFI1 = B.buildFrameIndex(P0, FixedFI1);
   auto GFixedFI2 = B.buildFrameIndex(P0, FixedFI2);
   auto FixedFILd1 = B.buildLoad(S64, GFixedFI1, *LoadMMO);

@@ -42,6 +42,6 @@ enum Fixups {
   NumTargetFixupKinds = LastTargetFixupKind - FirstTargetFixupKind
 };
 }
-}
+} // namespace llvm
 
 #endif

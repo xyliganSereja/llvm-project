@@ -56,7 +56,6 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
   const LLT v2s32 = LLT::fixed_vector(2, 32);
   const LLT v4s8 = LLT::fixed_vector(4, 8);
 
-
   const LLT v16s8 = LLT::fixed_vector(16, 8);
   const LLT v8s16 = LLT::fixed_vector(8, 16);
   const LLT v4s32 = LLT::fixed_vector(4, 32);
@@ -403,13 +402,11 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
 
   for (unsigned Op : {G_SEXTLOAD, G_ZEXTLOAD}) {
     auto &Action = getActionDefinitionsBuilder(Op);
-    Action.legalForTypesWithMemDesc({{s16, p0, s8, 1},
-                                     {s32, p0, s8, 1},
-                                     {s32, p0, s16, 1}});
+    Action.legalForTypesWithMemDesc(
+        {{s16, p0, s8, 1}, {s32, p0, s8, 1}, {s32, p0, s16, 1}});
     if (Is64Bit)
-      Action.legalForTypesWithMemDesc({{s64, p0, s8, 1},
-                                       {s64, p0, s16, 1},
-                                       {s64, p0, s32, 1}});
+      Action.legalForTypesWithMemDesc(
+          {{s64, p0, s8, 1}, {s64, p0, s16, 1}, {s64, p0, s32, 1}});
     // TODO - SSE41/AVX2/AVX512F/AVX512BW vector extensions
   }
 
@@ -417,8 +414,8 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
   getActionDefinitionsBuilder({G_SEXT, G_ZEXT, G_ANYEXT})
       .legalIf([=](const LegalityQuery &Query) {
         return typeInSet(0, {s8, s16, s32})(Query) ||
-          (Query.Opcode == G_ANYEXT && Query.Types[0] == s128) ||
-          (Is64Bit && Query.Types[0] == s64);
+               (Query.Opcode == G_ANYEXT && Query.Types[0] == s128) ||
+               (Is64Bit && Query.Types[0] == s64);
       })
       .widenScalarToNextPow2(0, /*Min=*/8)
       .clampScalar(0, s8, sMaxScalar)
@@ -617,9 +614,8 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
   // memory intrinsics
   getActionDefinitionsBuilder({G_MEMCPY, G_MEMMOVE, G_MEMSET}).libcall();
 
-  getActionDefinitionsBuilder({G_DYN_STACKALLOC,
-                               G_STACKSAVE,
-                               G_STACKRESTORE}).lower();
+  getActionDefinitionsBuilder({G_DYN_STACKALLOC, G_STACKSAVE, G_STACKRESTORE})
+      .lower();
 
   // fp intrinsics
   getActionDefinitionsBuilder(G_INTRINSIC_ROUNDEVEN)
@@ -628,9 +624,9 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
       .libcall();
 
   getActionDefinitionsBuilder({G_FREEZE, G_CONSTANT_FOLD_BARRIER})
-    .legalFor({s8, s16, s32, s64, p0})
-    .widenScalarToNextPow2(0, /*Min=*/8)
-    .clampScalar(0, s8, sMaxScalar);
+      .legalFor({s8, s16, s32, s64, p0})
+      .widenScalarToNextPow2(0, /*Min=*/8)
+      .clampScalar(0, s8, sMaxScalar);
 
   getLegacyLegalizerInfo().computeTables();
   verify(*STI.getInstrInfo());

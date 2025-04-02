@@ -45,11 +45,12 @@ private:
   /// Identify lowered values that originated from f128 arguments and record
   /// this for use by RetCC_MipsN.
   void PreAnalyzeCallResultForF128(const SmallVectorImpl<ISD::InputArg> &Ins,
-                                   const Type *RetTy, const char * Func);
+                                   const Type *RetTy, const char *Func);
 
   /// Identify lowered values that originated from f128 arguments and record
   /// this for use by RetCC_MipsN.
-  void PreAnalyzeCallReturnForF128(const SmallVectorImpl<ISD::OutputArg> &Outs, const Type *RetTy);
+  void PreAnalyzeCallReturnForF128(const SmallVectorImpl<ISD::OutputArg> &Outs,
+                                   const Type *RetTy);
 
   /// Identify lowered values that originated from f128 arguments and record
   /// this.
@@ -110,11 +111,10 @@ public:
     PreAnalyzeCallOperands(Outs, FuncArgs, Func);
   }
 
-  void
-  AnalyzeCallOperands(const SmallVectorImpl<ISD::OutputArg> &Outs,
-                      CCAssignFn Fn,
-                      std::vector<TargetLowering::ArgListEntry> &FuncArgs,
-                      const char *Func) {
+  void AnalyzeCallOperands(const SmallVectorImpl<ISD::OutputArg> &Outs,
+                           CCAssignFn Fn,
+                           std::vector<TargetLowering::ArgListEntry> &FuncArgs,
+                           const char *Func) {
     PreAnalyzeCallOperands(Outs, Fn, FuncArgs, Func);
     CCState::AnalyzeCallOperands(Outs, Fn);
   }
@@ -159,8 +159,7 @@ public:
   }
 
   void AnalyzeCallResult(const SmallVectorImpl<ISD::InputArg> &Ins,
-                         CCAssignFn Fn, const Type *RetTy,
-                         const char *Func) {
+                         CCAssignFn Fn, const Type *RetTy, const char *Func) {
     PreAnalyzeCallResult(Ins, Fn, RetTy, Func);
     CCState::AnalyzeCallResult(Ins, Fn);
   }
@@ -194,7 +193,7 @@ public:
   }
 
   bool CheckCallReturn(const SmallVectorImpl<ISD::OutputArg> &ArgsFlags,
-                   CCAssignFn Fn, const Type *RetTy) {
+                       CCAssignFn Fn, const Type *RetTy) {
     PreAnalyzeCallReturnForF128(ArgsFlags, RetTy);
     PreAnalyzeReturnForVectorFloat(ArgsFlags);
     bool Return = CCState::CheckReturn(ArgsFlags, Fn);
@@ -205,7 +204,7 @@ public:
   }
   bool WasOriginalArgF128(unsigned ValNo) { return OriginalArgWasF128[ValNo]; }
   bool WasOriginalArgFloat(unsigned ValNo) {
-      return OriginalArgWasFloat[ValNo];
+    return OriginalArgWasFloat[ValNo];
   }
   bool WasOriginalArgVectorFloat(unsigned ValNo) const {
     return OriginalArgWasFloatVector[ValNo];
@@ -216,6 +215,6 @@ public:
   bool IsCallOperandFixed(unsigned ValNo) { return CallOperandIsFixed[ValNo]; }
   SpecialCallingConvType getSpecialCallingConv() { return SpecialCallingConv; }
 };
-}
+} // namespace llvm
 
 #endif

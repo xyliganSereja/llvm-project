@@ -87,9 +87,8 @@ public:
 };
 
 template <>
-struct OperandTraits<UnaryInstruction> :
-  public FixedNumOperandTraits<UnaryInstruction, 1> {
-};
+struct OperandTraits<UnaryInstruction>
+    : public FixedNumOperandTraits<UnaryInstruction, 1> {};
 
 DEFINE_TRANSPARENT_OPERAND_ACCESSORS(UnaryInstruction, Value)
 
@@ -155,9 +154,7 @@ public:
   }
 
   // Methods for support type inquiry through isa, cast, and dyn_cast:
-  static bool classof(const Instruction *I) {
-    return I->isUnaryOp();
-  }
+  static bool classof(const Instruction *I) { return I->isUnaryOp(); }
   static bool classof(const Value *V) {
     return isa<Instruction>(V) && classof(cast<Instruction>(V));
   }
@@ -346,10 +343,10 @@ public:
   DEFINE_HELPERS(Shl, NSW) // CreateNSWShl
   DEFINE_HELPERS(Shl, NUW) // CreateNUWShl
 
-  DEFINE_HELPERS(SDiv, Exact)  // CreateExactSDiv
-  DEFINE_HELPERS(UDiv, Exact)  // CreateExactUDiv
-  DEFINE_HELPERS(AShr, Exact)  // CreateExactAShr
-  DEFINE_HELPERS(LShr, Exact)  // CreateExactLShr
+  DEFINE_HELPERS(SDiv, Exact) // CreateExactSDiv
+  DEFINE_HELPERS(UDiv, Exact) // CreateExactUDiv
+  DEFINE_HELPERS(AShr, Exact) // CreateExactAShr
+  DEFINE_HELPERS(LShr, Exact) // CreateExactLShr
 
   DEFINE_HELPERS(Or, Disjoint) // CreateDisjointOr
 
@@ -379,18 +376,15 @@ public:
   bool swapOperands();
 
   // Methods for support type inquiry through isa, cast, and dyn_cast:
-  static bool classof(const Instruction *I) {
-    return I->isBinaryOp();
-  }
+  static bool classof(const Instruction *I) { return I->isBinaryOp(); }
   static bool classof(const Value *V) {
     return isa<Instruction>(V) && classof(cast<Instruction>(V));
   }
 };
 
 template <>
-struct OperandTraits<BinaryOperator> :
-  public FixedNumOperandTraits<BinaryOperator, 2> {
-};
+struct OperandTraits<BinaryOperator>
+    : public FixedNumOperandTraits<BinaryOperator, 2> {};
 
 DEFINE_TRANSPARENT_OPERAND_ACCESSORS(BinaryOperator, Value)
 
@@ -536,9 +530,9 @@ public:
   );
 
   /// Check whether a bitcast between these types is valid
-  static bool isBitCastable(
-    Type *SrcTy, ///< The Type from which the value should be cast.
-    Type *DestTy ///< The Type to which the value should be cast.
+  static bool
+  isBitCastable(Type *SrcTy, ///< The Type from which the value should be cast.
+                Type *DestTy ///< The Type to which the value should be cast.
   );
 
   /// Check whether a bitcast, inttoptr, or ptrtoint cast between these
@@ -554,11 +548,11 @@ public:
   /// Returns the opcode necessary to cast Val into Ty using usual casting
   /// rules.
   /// Infer the opcode for cast operand and type
-  static Instruction::CastOps getCastOpcode(
-    const Value *Val, ///< The value to cast
-    bool SrcIsSigned, ///< Whether to treat the source as signed
-    Type *Ty,   ///< The Type to which the value should be casted
-    bool DstIsSigned  ///< Whether to treate the dest. as signed
+  static Instruction::CastOps
+  getCastOpcode(const Value *Val, ///< The value to cast
+                bool SrcIsSigned, ///< Whether to treat the source as signed
+                Type *Ty, ///< The Type to which the value should be casted
+                bool DstIsSigned ///< Whether to treate the dest. as signed
   );
 
   /// There are several places where we need to know if a cast instruction
@@ -575,11 +569,11 @@ public:
   /// is the same size as the pointer. However, pointer size varies with
   /// platform.  Note that a precondition of this method is that the cast is
   /// legal - i.e. the instruction formed with these operands would verify.
-  static bool isNoopCast(
-    Instruction::CastOps Opcode, ///< Opcode of cast
-    Type *SrcTy,         ///< SrcTy of cast
-    Type *DstTy,         ///< DstTy of cast
-    const DataLayout &DL ///< DataLayout to get the Int Ptr type from.
+  static bool
+  isNoopCast(Instruction::CastOps Opcode, ///< Opcode of cast
+             Type *SrcTy,                 ///< SrcTy of cast
+             Type *DstTy,                 ///< DstTy of cast
+             const DataLayout &DL ///< DataLayout to get the Int Ptr type from.
   );
 
   /// Determine if this cast is a no-op cast.
@@ -594,14 +588,14 @@ public:
   /// the pair, casting SrcTy to DstTy.
   /// Determine if a cast pair is eliminable
   static unsigned isEliminableCastPair(
-    Instruction::CastOps firstOpcode,  ///< Opcode of first cast
-    Instruction::CastOps secondOpcode, ///< Opcode of second cast
-    Type *SrcTy, ///< SrcTy of 1st cast
-    Type *MidTy, ///< DstTy of 1st cast & SrcTy of 2nd cast
-    Type *DstTy, ///< DstTy of 2nd cast
-    Type *SrcIntPtrTy, ///< Integer type corresponding to Ptr SrcTy, or null
-    Type *MidIntPtrTy, ///< Integer type corresponding to Ptr MidTy, or null
-    Type *DstIntPtrTy  ///< Integer type corresponding to Ptr DstTy, or null
+      Instruction::CastOps firstOpcode,  ///< Opcode of first cast
+      Instruction::CastOps secondOpcode, ///< Opcode of second cast
+      Type *SrcTy,                       ///< SrcTy of 1st cast
+      Type *MidTy,       ///< DstTy of 1st cast & SrcTy of 2nd cast
+      Type *DstTy,       ///< DstTy of 2nd cast
+      Type *SrcIntPtrTy, ///< Integer type corresponding to Ptr SrcTy, or null
+      Type *MidIntPtrTy, ///< Integer type corresponding to Ptr MidTy, or null
+      Type *DstIntPtrTy  ///< Integer type corresponding to Ptr DstTy, or null
   );
 
   /// Return the opcode of this CastInst
@@ -610,9 +604,9 @@ public:
   }
 
   /// Return the source type, as a convenience
-  Type* getSrcTy() const { return getOperand(0)->getType(); }
+  Type *getSrcTy() const { return getOperand(0)->getType(); }
   /// Return the destination type, as a convenience
-  Type* getDestTy() const { return getType(); }
+  Type *getDestTy() const { return getType(); }
 
   /// This method can be used to determine if a cast from SrcTy to DstTy using
   /// Opcode op is valid or not.
@@ -624,9 +618,7 @@ public:
   }
 
   /// Methods for support type inquiry through isa, cast, and dyn_cast:
-  static bool classof(const Instruction *I) {
-    return I->isCast();
-  }
+  static bool classof(const Instruction *I) { return I->isCast(); }
   static bool classof(const Value *V) {
     return isa<Instruction>(V) && classof(cast<Instruction>(V));
   }
@@ -925,27 +917,19 @@ public:
 
   /// @returns true if the comparison is signed, false otherwise.
   /// Determine if this instruction is using a signed comparison.
-  bool isSigned() const {
-    return isSigned(getPredicate());
-  }
+  bool isSigned() const { return isSigned(getPredicate()); }
 
   /// @returns true if the comparison is unsigned, false otherwise.
   /// Determine if this instruction is using an unsigned comparison.
-  bool isUnsigned() const {
-    return isUnsigned(getPredicate());
-  }
+  bool isUnsigned() const { return isUnsigned(getPredicate()); }
 
   /// This is just a convenience.
   /// Determine if this is true when both operands are the same.
-  bool isTrueWhenEqual() const {
-    return isTrueWhenEqual(getPredicate());
-  }
+  bool isTrueWhenEqual() const { return isTrueWhenEqual(getPredicate()); }
 
   /// This is just a convenience.
   /// Determine if this is false when both operands are the same.
-  bool isFalseWhenEqual() const {
-    return isFalseWhenEqual(getPredicate());
-  }
+  bool isFalseWhenEqual() const { return isFalseWhenEqual(getPredicate()); }
 
   /// @returns true if the predicate is unsigned, false otherwise.
   /// Determine if the predicate is an unsigned operation.
@@ -977,8 +961,8 @@ public:
   }
 
   /// Create a result type for fcmp/icmp
-  static Type* makeCmpResultType(Type* opnd_type) {
-    if (VectorType* vt = dyn_cast<VectorType>(opnd_type)) {
+  static Type *makeCmpResultType(Type *opnd_type) {
+    if (VectorType *vt = dyn_cast<VectorType>(opnd_type)) {
       return VectorType::get(Type::getInt1Ty(opnd_type->getContext()),
                              vt->getElementCount());
     }
@@ -995,8 +979,7 @@ private:
 
 // FIXME: these are redundant if CmpInst < BinaryOperator
 template <>
-struct OperandTraits<CmpInst> : public FixedNumOperandTraits<CmpInst, 2> {
-};
+struct OperandTraits<CmpInst> : public FixedNumOperandTraits<CmpInst, 2> {};
 
 DEFINE_TRANSPARENT_OPERAND_ACCESSORS(CmpInst, Value)
 
@@ -1023,18 +1006,14 @@ struct OperandBundleUse {
   }
 
   /// Return the tag of this operand bundle as a string.
-  StringRef getTagName() const {
-    return Tag->getKey();
-  }
+  StringRef getTagName() const { return Tag->getKey(); }
 
   /// Return the tag of this operand bundle as an integer.
   ///
   /// Operand bundle tags are interned by LLVMContextImpl::getOrInsertBundleTag,
   /// and this function returns the unique integer getOrInsertBundleTag
   /// associated the tag of this operand bundle to.
-  uint32_t getTagID() const {
-    return Tag->getValue();
-  }
+  uint32_t getTagID() const { return Tag->getValue(); }
 
   /// Return true if this is a "deopt" operand bundle.
   bool isDeoptOperandBundle() const {
@@ -1127,7 +1106,7 @@ protected:
   FunctionType *FTy;
 
   template <class... ArgsTy>
-  CallBase(AttributeList const &A, FunctionType *FT, ArgsTy &&... Args)
+  CallBase(AttributeList const &A, FunctionType *FT, ArgsTy &&...Args)
       : Instruction(std::forward<ArgsTy>(Args)...), Attrs(A), FTy(FT) {}
 
   using Instruction::Instruction;
@@ -2105,7 +2084,7 @@ public:
 
   /// Return true if the bundle operand at index \p OpIdx has the
   /// attribute \p A.
-  bool bundleOperandHasAttr(unsigned OpIdx,  Attribute::AttrKind A) const {
+  bool bundleOperandHasAttr(unsigned OpIdx, Attribute::AttrKind A) const {
     auto &BOI = getBundleOpInfoForOperand(OpIdx);
     auto OBU = operandBundleFromBundleOpInfo(BOI);
     return OBU.operandHasAttr(OpIdx - BOI.Begin, A);

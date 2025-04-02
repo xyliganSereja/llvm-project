@@ -125,7 +125,7 @@ void printSectionContents(const object::ObjectFile *O);
 void reportWarning(const Twine &Message, StringRef File);
 
 template <typename T, typename... Ts>
-T unwrapOrError(Expected<T> EO, Ts &&... Args) {
+T unwrapOrError(Expected<T> EO, Ts &&...Args) {
   if (EO)
     return std::move(*EO);
   reportError(EO.takeError(), std::forward<Ts>(Args)...);

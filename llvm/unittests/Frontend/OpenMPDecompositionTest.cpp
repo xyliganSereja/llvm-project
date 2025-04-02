@@ -1065,7 +1065,7 @@ TEST_F(OpenMPDecompositionTest, Linear1) {
   ASSERT_EQ(Dec.output.size(), 2u);
   std::string Dir0 = stringify(Dec.output[0]);
   std::string Dir1 = stringify(Dec.output[1]);
-  ASSERT_EQ(Dir0, "for firstprivate(x) lastprivate(, (x))"); // (15.1), (15.2)
+  ASSERT_EQ(Dir0, "for firstprivate(x) lastprivate(, (x))");  // (15.1), (15.2)
   ASSERT_EQ(Dir1, "simd linear(, , (x)) lastprivate(, (x))"); // (15.1)
 }
 

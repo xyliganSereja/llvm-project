@@ -37,21 +37,19 @@ private:
   int value;
 
 public:
-  Constructable() : constructed(true), value(0) {
-    ++numConstructorCalls;
-  }
+  Constructable() : constructed(true), value(0) { ++numConstructorCalls; }
 
   Constructable(int val) : constructed(true), value(val) {
     ++numConstructorCalls;
   }
 
-  Constructable(const Constructable & src) : constructed(true) {
+  Constructable(const Constructable &src) : constructed(true) {
     value = src.value;
     ++numConstructorCalls;
     ++numCopyConstructorCalls;
   }
 
-  Constructable(Constructable && src) : constructed(true) {
+  Constructable(Constructable &&src) : constructed(true) {
     value = src.value;
     src.value = 0;
     ++numConstructorCalls;
@@ -64,7 +62,7 @@ public:
     constructed = false;
   }
 
-  Constructable & operator=(const Constructable & src) {
+  Constructable &operator=(const Constructable &src) {
     EXPECT_TRUE(constructed);
     value = src.value;
     ++numAssignmentCalls;
@@ -72,7 +70,7 @@ public:
     return *this;
   }
 
-  Constructable & operator=(Constructable && src) {
+  Constructable &operator=(Constructable &&src) {
     EXPECT_TRUE(constructed);
     value = src.value;
     src.value = 0;
@@ -81,9 +79,7 @@ public:
     return *this;
   }
 
-  int getValue() const {
-    return abs(value);
-  }
+  int getValue() const { return abs(value); }
 
   static void reset() {
     numConstructorCalls = 0;
@@ -95,33 +91,19 @@ public:
     numCopyAssignmentCalls = 0;
   }
 
-  static int getNumConstructorCalls() {
-    return numConstructorCalls;
-  }
+  static int getNumConstructorCalls() { return numConstructorCalls; }
 
-  static int getNumMoveConstructorCalls() {
-    return numMoveConstructorCalls;
-  }
+  static int getNumMoveConstructorCalls() { return numMoveConstructorCalls; }
 
-  static int getNumCopyConstructorCalls() {
-    return numCopyConstructorCalls;
-  }
+  static int getNumCopyConstructorCalls() { return numCopyConstructorCalls; }
 
-  static int getNumDestructorCalls() {
-    return numDestructorCalls;
-  }
+  static int getNumDestructorCalls() { return numDestructorCalls; }
 
-  static int getNumAssignmentCalls() {
-    return numAssignmentCalls;
-  }
+  static int getNumAssignmentCalls() { return numAssignmentCalls; }
 
-  static int getNumMoveAssignmentCalls() {
-    return numMoveAssignmentCalls;
-  }
+  static int getNumMoveAssignmentCalls() { return numMoveAssignmentCalls; }
 
-  static int getNumCopyAssignmentCalls() {
-    return numCopyAssignmentCalls;
-  }
+  static int getNumCopyAssignmentCalls() { return numCopyAssignmentCalls; }
 
   friend bool operator==(const Constructable &c0, const Constructable &c1) {
     return c0.getValue() == c1.getValue();
@@ -161,6 +143,7 @@ struct NonCopyable {
   NonCopyable() {}
   NonCopyable(NonCopyable &&) {}
   NonCopyable &operator=(NonCopyable &&) { return *this; }
+
 private:
   NonCopyable(const NonCopyable &) = delete;
   NonCopyable &operator=(const NonCopyable &) = delete;
@@ -218,20 +201,17 @@ protected:
 };
 
 // Test fixture class
-template <typename VectorT>
-class SmallVectorTest : public SmallVectorTestBase {
+template <typename VectorT> class SmallVectorTest : public SmallVectorTestBase {
 protected:
   VectorT theVector;
   VectorT otherVector;
 };
 
-
-typedef ::testing::Types<SmallVector<Constructable, 0>,
-                         SmallVector<Constructable, 1>,
-                         SmallVector<Constructable, 2>,
-                         SmallVector<Constructable, 4>,
-                         SmallVector<Constructable, 5>
-                         > SmallVectorTestTypes;
+typedef ::testing::Types<
+    SmallVector<Constructable, 0>, SmallVector<Constructable, 1>,
+    SmallVector<Constructable, 2>, SmallVector<Constructable, 4>,
+    SmallVector<Constructable, 5>>
+    SmallVectorTestTypes;
 TYPED_TEST_SUITE(SmallVectorTest, SmallVectorTestTypes, );
 
 // Constructor test.
@@ -621,12 +601,12 @@ TYPED_TEST(SmallVectorTest, MoveAssignTest) {
   // Make sure the # of constructor/destructor calls line up. There
   // are two live objects after clearing the other vector.
   U.clear();
-  EXPECT_EQ(Constructable::getNumConstructorCalls()-2, 
+  EXPECT_EQ(Constructable::getNumConstructorCalls() - 2,
             Constructable::getNumDestructorCalls());
 
   // There shouldn't be any live objects any more.
   V.clear();
-  EXPECT_EQ(Constructable::getNumConstructorCalls(), 
+  EXPECT_EQ(Constructable::getNumConstructorCalls(),
             Constructable::getNumDestructorCalls());
 }
 
@@ -738,8 +718,8 @@ TYPED_TEST(SmallVectorTest, InsertRepeatedEmptyTest) {
 TYPED_TEST(SmallVectorTest, InsertRangeTest) {
   SCOPED_TRACE("InsertRangeTest");
   auto &V = this->theVector;
-  Constructable Arr[3] =
-    { Constructable(77), Constructable(77), Constructable(77) };
+  Constructable Arr[3] = {Constructable(77), Constructable(77),
+                          Constructable(77)};
 
   makeSequence(V, 1, 3);
   Constructable::reset();
@@ -759,12 +739,11 @@ TYPED_TEST(SmallVectorTest, InsertRangeTest) {
   assertValuesInOrder(V, 6u, 1, 77, 77, 77, 2, 3);
 }
 
-
 TYPED_TEST(SmallVectorTest, InsertRangeAtEndTest) {
   SCOPED_TRACE("InsertRangeTest");
   auto &V = this->theVector;
-  Constructable Arr[3] =
-    { Constructable(77), Constructable(77), Constructable(77) };
+  Constructable Arr[3] = {Constructable(77), Constructable(77),
+                          Constructable(77)};
 
   makeSequence(V, 1, 3);
 
@@ -880,7 +859,8 @@ TYPED_TEST(SmallVectorTest, IteratorTest) {
 template <typename InvalidType> class DualSmallVectorsTest;
 
 template <typename VectorT1, typename VectorT2>
-class DualSmallVectorsTest<std::pair<VectorT1, VectorT2>> : public SmallVectorTestBase {
+class DualSmallVectorsTest<std::pair<VectorT1, VectorT2>>
+    : public SmallVectorTestBase {
 protected:
   VectorT1 theVector;
   VectorT2 otherVector;
@@ -894,8 +874,8 @@ typedef ::testing::Types<
     // Big mode -> Small mode.
     std::pair<SmallVector<Constructable, 2>, SmallVector<Constructable, 4>>,
     // Big mode -> Big mode.
-    std::pair<SmallVector<Constructable, 2>, SmallVector<Constructable, 2>>
-  > DualSmallVectorTestTypes;
+    std::pair<SmallVector<Constructable, 2>, SmallVector<Constructable, 2>>>
+    DualSmallVectorTestTypes;
 
 TYPED_TEST_SUITE(DualSmallVectorsTest, DualSmallVectorTestTypes, );
 
@@ -918,7 +898,7 @@ TYPED_TEST(DualSmallVectorsTest, MoveAssignment) {
   // Make sure the # of constructor/destructor calls line up. There
   // are two live objects after clearing the other vector.
   U.clear();
-  EXPECT_EQ(Constructable::getNumConstructorCalls()-4,
+  EXPECT_EQ(Constructable::getNumConstructorCalls() - 4,
             Constructable::getNumDestructorCalls());
 
   // If the source vector (otherVector) was in small-mode, assert that we just
@@ -949,12 +929,9 @@ TEST(SmallVectorCustomTest, NoAssignTest) {
 
 struct MovedFrom {
   bool hasValue;
-  MovedFrom() : hasValue(true) {
-  }
-  MovedFrom(MovedFrom&& m) : hasValue(m.hasValue) {
-    m.hasValue = false;
-  }
-  MovedFrom &operator=(MovedFrom&& m) {
+  MovedFrom() : hasValue(true) {}
+  MovedFrom(MovedFrom &&m) : hasValue(m.hasValue) { m.hasValue = false; }
+  MovedFrom &operator=(MovedFrom &&m) {
     hasValue = m.hasValue;
     m.hasValue = false;
     return *this;

@@ -366,8 +366,8 @@ int llvm_ml_main(int Argc, char **Argv, const llvm::ToolContext &) {
   MCInstPrinter *IP = nullptr;
   if (FileType == "s") {
     const bool OutputATTAsm = InputArgs.hasArg(OPT_output_att_asm);
-    const unsigned OutputAsmVariant = OutputATTAsm ? 0U   // ATT dialect
-                                                   : 1U;  // Intel dialect
+    const unsigned OutputAsmVariant = OutputATTAsm ? 0U  // ATT dialect
+                                                   : 1U; // Intel dialect
     IP = TheTarget->createMCInstPrinter(TheTriple, OutputAsmVariant, *MAI,
                                         *MCII, *MRI);
 

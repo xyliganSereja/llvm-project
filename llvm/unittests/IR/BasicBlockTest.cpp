@@ -508,7 +508,7 @@ TEST(BasicBlockTest, SpliceEndBeforeBegin) {
                             FromI1->getIterator()),
                "FromBeginIt not before FromEndIt!");
 }
-#endif //EXPENSIVE_CHECKS
+#endif // EXPENSIVE_CHECKS
 
 TEST(BasicBlockTest, EraseRange) {
   LLVMContext Ctx;
@@ -584,4 +584,4 @@ TEST(BasicBlockTest, DiscardValueNames2) {
 }
 
 } // End anonymous namespace.
-} // End llvm namespace.
+} // namespace llvm

@@ -57,8 +57,7 @@
 
 using namespace llvm;
 
-template<typename T>
-static inline void eraseFromModule(T &ToErase) {
+template <typename T> static inline void eraseFromModule(T &ToErase) {
   ToErase.replaceAllUsesWith(PoisonValue::get(ToErase.getType()));
   ToErase.eraseFromParent();
 }
@@ -76,7 +75,7 @@ static inline bool checkIfSupported(GlobalVariable &G) {
   raw_string_ostream OS(W);
 
   OS << "Accelerator does not support the thread_local variable "
-    << G.getName();
+     << G.getName();
 
   Instruction *I = nullptr;
   SmallVector<User *> Tmp(G.users());
@@ -96,9 +95,8 @@ static inline bool checkIfSupported(GlobalVariable &G) {
 
   assert(I && "thread_local global should have at least one non-constant use.");
 
-  G.getContext().diagnose(
-    DiagnosticInfoUnsupported(*I->getParent()->getParent(), W,
-                              I->getDebugLoc(), DS_Error));
+  G.getContext().diagnose(DiagnosticInfoUnsupported(
+      *I->getParent()->getParent(), W, I->getDebugLoc(), DS_Error));
 
   return false;
 }
@@ -135,9 +133,10 @@ static inline void maybeHandleGlobals(Module &M) {
   }
 }
 
-template<unsigned N>
-static inline void removeUnreachableFunctions(
-  const SmallPtrSet<const Function *, N>& Reachable, Module &M) {
+template <unsigned N>
+static inline void
+removeUnreachableFunctions(const SmallPtrSet<const Function *, N> &Reachable,
+                           Module &M) {
   removeFromUsedLists(M, [&](Constant *C) {
     if (auto F = dyn_cast<Function>(C))
       return !Reachable.contains(F);
@@ -154,10 +153,10 @@ static inline void removeUnreachableFunctions(
 }
 
 static inline bool isAcceleratorExecutionRoot(const Function *F) {
-    if (!F)
-      return false;
+  if (!F)
+    return false;
 
-    return F->getCallingConv() == CallingConv::AMDGPU_KERNEL;
+  return F->getCallingConv() == CallingConv::AMDGPU_KERNEL;
 }
 
 static inline bool checkIfSupported(const Function *F, const CallBase *CB) {
@@ -173,21 +172,21 @@ static inline bool checkIfSupported(const Function *F, const CallBase *CB) {
 
   if (N == "__ASM")
     OS << "Accelerator does not support the ASM block:\n"
-      << cast<ConstantDataArray>(CB->getArgOperand(0))->getAsCString();
+       << cast<ConstantDataArray>(CB->getArgOperand(0))->getAsCString();
   else
     OS << "Accelerator does not support the " << N << " function.";
 
   auto Caller = CB->getParent()->getParent();
 
   Caller->getContext().diagnose(
-    DiagnosticInfoUnsupported(*Caller, W, CB->getDebugLoc(), DS_Error));
+      DiagnosticInfoUnsupported(*Caller, W, CB->getDebugLoc(), DS_Error));
 
   return false;
 }
 
 PreservedAnalyses
-  HipStdParAcceleratorCodeSelectionPass::run(Module &M,
-                                             ModuleAnalysisManager &MAM) {
+HipStdParAcceleratorCodeSelectionPass::run(Module &M,
+                                           ModuleAnalysisManager &MAM) {
   auto &CGA = MAM.getResult<CallGraphAnalysis>(M);
 
   SmallPtrSet<const Function *, 32> Reachable;
@@ -231,48 +230,47 @@ PreservedAnalyses
 }
 
 static constexpr std::pair<StringLiteral, StringLiteral> ReplaceMap[]{
-  {"aligned_alloc",             "__hipstdpar_aligned_alloc"},
-  {"calloc",                    "__hipstdpar_calloc"},
-  {"free",                      "__hipstdpar_free"},
-  {"malloc",                    "__hipstdpar_malloc"},
-  {"memalign",                  "__hipstdpar_aligned_alloc"},
-  {"posix_memalign",            "__hipstdpar_posix_aligned_alloc"},
-  {"realloc",                   "__hipstdpar_realloc"},
-  {"reallocarray",              "__hipstdpar_realloc_array"},
-  {"_ZdaPv",                    "__hipstdpar_operator_delete"},
-  {"_ZdaPvm",                   "__hipstdpar_operator_delete_sized"},
-  {"_ZdaPvSt11align_val_t",     "__hipstdpar_operator_delete_aligned"},
-  {"_ZdaPvmSt11align_val_t",    "__hipstdpar_operator_delete_aligned_sized"},
-  {"_ZdlPv",                    "__hipstdpar_operator_delete"},
-  {"_ZdlPvm",                   "__hipstdpar_operator_delete_sized"},
-  {"_ZdlPvSt11align_val_t",     "__hipstdpar_operator_delete_aligned"},
-  {"_ZdlPvmSt11align_val_t",    "__hipstdpar_operator_delete_aligned_sized"},
-  {"_Znam",                     "__hipstdpar_operator_new"},
-  {"_ZnamRKSt9nothrow_t",       "__hipstdpar_operator_new_nothrow"},
-  {"_ZnamSt11align_val_t",      "__hipstdpar_operator_new_aligned"},
-  {"_ZnamSt11align_val_tRKSt9nothrow_t",
-                                "__hipstdpar_operator_new_aligned_nothrow"},
+    {"aligned_alloc", "__hipstdpar_aligned_alloc"},
+    {"calloc", "__hipstdpar_calloc"},
+    {"free", "__hipstdpar_free"},
+    {"malloc", "__hipstdpar_malloc"},
+    {"memalign", "__hipstdpar_aligned_alloc"},
+    {"posix_memalign", "__hipstdpar_posix_aligned_alloc"},
+    {"realloc", "__hipstdpar_realloc"},
+    {"reallocarray", "__hipstdpar_realloc_array"},
+    {"_ZdaPv", "__hipstdpar_operator_delete"},
+    {"_ZdaPvm", "__hipstdpar_operator_delete_sized"},
+    {"_ZdaPvSt11align_val_t", "__hipstdpar_operator_delete_aligned"},
+    {"_ZdaPvmSt11align_val_t", "__hipstdpar_operator_delete_aligned_sized"},
+    {"_ZdlPv", "__hipstdpar_operator_delete"},
+    {"_ZdlPvm", "__hipstdpar_operator_delete_sized"},
+    {"_ZdlPvSt11align_val_t", "__hipstdpar_operator_delete_aligned"},
+    {"_ZdlPvmSt11align_val_t", "__hipstdpar_operator_delete_aligned_sized"},
+    {"_Znam", "__hipstdpar_operator_new"},
+    {"_ZnamRKSt9nothrow_t", "__hipstdpar_operator_new_nothrow"},
+    {"_ZnamSt11align_val_t", "__hipstdpar_operator_new_aligned"},
+    {"_ZnamSt11align_val_tRKSt9nothrow_t",
+     "__hipstdpar_operator_new_aligned_nothrow"},
 
-  {"_Znwm",                     "__hipstdpar_operator_new"},
-  {"_ZnwmRKSt9nothrow_t",       "__hipstdpar_operator_new_nothrow"},
-  {"_ZnwmSt11align_val_t",      "__hipstdpar_operator_new_aligned"},
-  {"_ZnwmSt11align_val_tRKSt9nothrow_t",
-                                "__hipstdpar_operator_new_aligned_nothrow"},
-  {"__builtin_calloc",          "__hipstdpar_calloc"},
-  {"__builtin_free",            "__hipstdpar_free"},
-  {"__builtin_malloc",          "__hipstdpar_malloc"},
-  {"__builtin_operator_delete", "__hipstdpar_operator_delete"},
-  {"__builtin_operator_new",    "__hipstdpar_operator_new"},
-  {"__builtin_realloc",         "__hipstdpar_realloc"},
-  {"__libc_calloc",             "__hipstdpar_calloc"},
-  {"__libc_free",               "__hipstdpar_free"},
-  {"__libc_malloc",             "__hipstdpar_malloc"},
-  {"__libc_memalign",           "__hipstdpar_aligned_alloc"},
-  {"__libc_realloc",            "__hipstdpar_realloc"}
-};
+    {"_Znwm", "__hipstdpar_operator_new"},
+    {"_ZnwmRKSt9nothrow_t", "__hipstdpar_operator_new_nothrow"},
+    {"_ZnwmSt11align_val_t", "__hipstdpar_operator_new_aligned"},
+    {"_ZnwmSt11align_val_tRKSt9nothrow_t",
+     "__hipstdpar_operator_new_aligned_nothrow"},
+    {"__builtin_calloc", "__hipstdpar_calloc"},
+    {"__builtin_free", "__hipstdpar_free"},
+    {"__builtin_malloc", "__hipstdpar_malloc"},
+    {"__builtin_operator_delete", "__hipstdpar_operator_delete"},
+    {"__builtin_operator_new", "__hipstdpar_operator_new"},
+    {"__builtin_realloc", "__hipstdpar_realloc"},
+    {"__libc_calloc", "__hipstdpar_calloc"},
+    {"__libc_free", "__hipstdpar_free"},
+    {"__libc_malloc", "__hipstdpar_malloc"},
+    {"__libc_memalign", "__hipstdpar_aligned_alloc"},
+    {"__libc_realloc", "__hipstdpar_realloc"}};
 
 PreservedAnalyses
-HipStdParAllocationInterpositionPass::run(Module &M, ModuleAnalysisManager&) {
+HipStdParAllocationInterpositionPass::run(Module &M, ModuleAnalysisManager &) {
   SmallDenseMap<StringRef, StringRef> AllocReplacements(std::cbegin(ReplaceMap),
                                                         std::cend(ReplaceMap));
 
@@ -290,12 +288,11 @@ HipStdParAllocationInterpositionPass::run(Module &M, ModuleAnalysisManager&) {
       raw_string_ostream OS(W);
 
       OS << "cannot be interposed, missing: " << AllocReplacements[F.getName()]
-        << ". Tried to run the allocation interposition pass without the "
-        << "replacement functions available.";
+         << ". Tried to run the allocation interposition pass without the "
+         << "replacement functions available.";
 
-      F.getContext().diagnose(DiagnosticInfoUnsupported(F, W,
-                                                        F.getSubprogram(),
-                                                        DS_Warning));
+      F.getContext().diagnose(
+          DiagnosticInfoUnsupported(F, W, F.getSubprogram(), DS_Warning));
     }
   }
 

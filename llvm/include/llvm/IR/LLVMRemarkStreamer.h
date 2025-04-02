@@ -82,11 +82,10 @@ struct LLVMRemarkSetupFormatError
 };
 
 /// Setup optimization remarks that output to a file.
-Expected<std::unique_ptr<ToolOutputFile>>
-setupLLVMOptimizationRemarks(LLVMContext &Context, StringRef RemarksFilename,
-                             StringRef RemarksPasses, StringRef RemarksFormat,
-                             bool RemarksWithHotness,
-                             std::optional<uint64_t> RemarksHotnessThreshold = 0);
+Expected<std::unique_ptr<ToolOutputFile>> setupLLVMOptimizationRemarks(
+    LLVMContext &Context, StringRef RemarksFilename, StringRef RemarksPasses,
+    StringRef RemarksFormat, bool RemarksWithHotness,
+    std::optional<uint64_t> RemarksHotnessThreshold = 0);
 
 /// Setup optimization remarks that output directly to a raw_ostream.
 /// \p OS is managed by the caller and should be open for writing as long as \p

@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/DebugInfo.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/AsmParser/Parser.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/DebugInfo.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instruction.h"
@@ -470,15 +470,14 @@ TEST(BasicBlockDbgInfoTest, InstrDbgAccess) {
 
     define i16 @f(i16 %a) !dbg !6 {
     entry:
-      call void @llvm.dbg.value(metadata i16 %a, metadata !9, metadata !DIExpression()), !dbg !11
-      %b = add i16 %a, 1, !dbg !11
-      call void @llvm.dbg.value(metadata i16 %b, metadata !9, metadata !DIExpression()), !dbg !11
-      br label %exit, !dbg !11
+      call void @llvm.dbg.value(metadata i16 %a, metadata !9, metadata
+  !DIExpression()), !dbg !11 %b = add i16 %a, 1, !dbg !11 call void
+  @llvm.dbg.value(metadata i16 %b, metadata !9, metadata !DIExpression()), !dbg
+  !11 br label %exit, !dbg !11
 
     exit:
-      call void @llvm.dbg.value(metadata i16 0, metadata !9, metadata !DIExpression()), !dbg !11
-      %c = add i16 %b, 1, !dbg !11
-      ret i16 0, !dbg !11
+      call void @llvm.dbg.value(metadata i16 0, metadata !9, metadata
+  !DIExpression()), !dbg !11 %c = add i16 %b, 1, !dbg !11 ret i16 0, !dbg !11
     }
 
   The iterators will be:

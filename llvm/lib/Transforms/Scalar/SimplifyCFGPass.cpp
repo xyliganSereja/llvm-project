@@ -77,9 +77,9 @@ static cl::opt<bool> UserHoistLoadsStoresWithCondFaulting(
     cl::desc("Hoist loads/stores if the target supports conditional faulting "
              "(default = false)"));
 
-static cl::opt<bool> UserSinkCommonInsts(
-    "sink-common-insts", cl::Hidden, cl::init(false),
-    cl::desc("Sink common instructions (default = false)"));
+static cl::opt<bool>
+    UserSinkCommonInsts("sink-common-insts", cl::Hidden, cl::init(false),
+                        cl::desc("Sink common instructions (default = false)"));
 
 static cl::opt<bool> UserSpeculateUnpredictables(
     "speculate-unpredictables", cl::Hidden, cl::init(false),
@@ -250,7 +250,7 @@ static bool iterativelySimplifyCFG(Function &F, const TargetTransformInfo &TTI,
     LocalChange = false;
 
     // Loop over all of the basic blocks and remove them if they are unneeded.
-    for (Function::iterator BBIt = F.begin(); BBIt != F.end(); ) {
+    for (Function::iterator BBIt = F.begin(); BBIt != F.end();) {
       BasicBlock &BB = *BBIt++;
       if (DTU) {
         assert(
@@ -282,7 +282,8 @@ static bool simplifyFunctionCFGImpl(Function &F, const TargetTransformInfo &TTI,
   EverChanged |= iterativelySimplifyCFG(F, TTI, DT ? &DTU : nullptr, Options);
 
   // If neither pass changed anything, we're done.
-  if (!EverChanged) return false;
+  if (!EverChanged)
+    return false;
 
   // iterativelySimplifyCFG can (rarely) make some loops dead.  If this happens,
   // removeUnreachableBlocks is needed to nuke them, which means we should
@@ -424,7 +425,7 @@ struct CFGSimplifyPass : public FunctionPass {
     AU.addPreserved<GlobalsAAWrapperPass>();
   }
 };
-}
+} // namespace
 
 char CFGSimplifyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(CFGSimplifyPass, "simplifycfg", "Simplify the CFG", false,

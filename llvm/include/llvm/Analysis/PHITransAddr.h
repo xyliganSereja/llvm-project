@@ -46,7 +46,7 @@ class PHITransAddr {
   AssumptionCache *AC;
 
   /// InstInputs - The inputs for our symbolic address.
-  SmallVector<Instruction*, 4> InstInputs;
+  SmallVector<Instruction *, 4> InstInputs;
 
 public:
   PHITransAddr(Value *Addr, const DataLayout &DL, AssumptionCache *AC)

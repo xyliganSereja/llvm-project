@@ -102,74 +102,139 @@ enum PPCMachineCombinerPattern : unsigned {
 // Define list of load and store spill opcodes.
 #define NoInstr PPC::INSTRUCTION_LIST_END
 #define Pwr8LoadOpcodes                                                        \
-  {                                                                            \
-    PPC::LWZ, PPC::LD, PPC::LFD, PPC::LFS, PPC::RESTORE_CR,                    \
-        PPC::RESTORE_CRBIT, PPC::LVX, PPC::LXVD2X, PPC::LXSDX, PPC::LXSSPX,    \
-        PPC::SPILLTOVSR_LD, NoInstr, NoInstr, NoInstr, NoInstr, PPC::EVLDD,    \
-        PPC::RESTORE_QUADWORD                                                  \
-  }
+  {PPC::LWZ,                                                                   \
+   PPC::LD,                                                                    \
+   PPC::LFD,                                                                   \
+   PPC::LFS,                                                                   \
+   PPC::RESTORE_CR,                                                            \
+   PPC::RESTORE_CRBIT,                                                         \
+   PPC::LVX,                                                                   \
+   PPC::LXVD2X,                                                                \
+   PPC::LXSDX,                                                                 \
+   PPC::LXSSPX,                                                                \
+   PPC::SPILLTOVSR_LD,                                                         \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   PPC::EVLDD,                                                                 \
+   PPC::RESTORE_QUADWORD}
 
 #define Pwr9LoadOpcodes                                                        \
-  {                                                                            \
-    PPC::LWZ, PPC::LD, PPC::LFD, PPC::LFS, PPC::RESTORE_CR,                    \
-        PPC::RESTORE_CRBIT, PPC::LVX, PPC::LXV, PPC::DFLOADf64,                \
-        PPC::DFLOADf32, PPC::SPILLTOVSR_LD, NoInstr, NoInstr, NoInstr,         \
-        NoInstr, NoInstr, PPC::RESTORE_QUADWORD                                \
-  }
+  {PPC::LWZ,                                                                   \
+   PPC::LD,                                                                    \
+   PPC::LFD,                                                                   \
+   PPC::LFS,                                                                   \
+   PPC::RESTORE_CR,                                                            \
+   PPC::RESTORE_CRBIT,                                                         \
+   PPC::LVX,                                                                   \
+   PPC::LXV,                                                                   \
+   PPC::DFLOADf64,                                                             \
+   PPC::DFLOADf32,                                                             \
+   PPC::SPILLTOVSR_LD,                                                         \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   PPC::RESTORE_QUADWORD}
 
 #define Pwr10LoadOpcodes                                                       \
-  {                                                                            \
-    PPC::LWZ, PPC::LD, PPC::LFD, PPC::LFS, PPC::RESTORE_CR,                    \
-        PPC::RESTORE_CRBIT, PPC::LVX, PPC::LXV, PPC::DFLOADf64,                \
-        PPC::DFLOADf32, PPC::SPILLTOVSR_LD, PPC::LXVP, PPC::RESTORE_ACC,       \
-        PPC::RESTORE_UACC, NoInstr, NoInstr, PPC::RESTORE_QUADWORD             \
-  }
+  {PPC::LWZ,                                                                   \
+   PPC::LD,                                                                    \
+   PPC::LFD,                                                                   \
+   PPC::LFS,                                                                   \
+   PPC::RESTORE_CR,                                                            \
+   PPC::RESTORE_CRBIT,                                                         \
+   PPC::LVX,                                                                   \
+   PPC::LXV,                                                                   \
+   PPC::DFLOADf64,                                                             \
+   PPC::DFLOADf32,                                                             \
+   PPC::SPILLTOVSR_LD,                                                         \
+   PPC::LXVP,                                                                  \
+   PPC::RESTORE_ACC,                                                           \
+   PPC::RESTORE_UACC,                                                          \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   PPC::RESTORE_QUADWORD}
 
 #define FutureLoadOpcodes                                                      \
-  {                                                                            \
-    PPC::LWZ, PPC::LD, PPC::LFD, PPC::LFS, PPC::RESTORE_CR,                    \
-        PPC::RESTORE_CRBIT, PPC::LVX, PPC::LXV, PPC::DFLOADf64,                \
-        PPC::DFLOADf32, PPC::SPILLTOVSR_LD, PPC::LXVP, PPC::RESTORE_ACC,       \
-        PPC::RESTORE_UACC, PPC::RESTORE_WACC, NoInstr, PPC::RESTORE_QUADWORD   \
-  }
+  {PPC::LWZ,                                                                   \
+   PPC::LD,                                                                    \
+   PPC::LFD,                                                                   \
+   PPC::LFS,                                                                   \
+   PPC::RESTORE_CR,                                                            \
+   PPC::RESTORE_CRBIT,                                                         \
+   PPC::LVX,                                                                   \
+   PPC::LXV,                                                                   \
+   PPC::DFLOADf64,                                                             \
+   PPC::DFLOADf32,                                                             \
+   PPC::SPILLTOVSR_LD,                                                         \
+   PPC::LXVP,                                                                  \
+   PPC::RESTORE_ACC,                                                           \
+   PPC::RESTORE_UACC,                                                          \
+   PPC::RESTORE_WACC,                                                          \
+   NoInstr,                                                                    \
+   PPC::RESTORE_QUADWORD}
 
 #define Pwr8StoreOpcodes                                                       \
-  {                                                                            \
-    PPC::STW, PPC::STD, PPC::STFD, PPC::STFS, PPC::SPILL_CR, PPC::SPILL_CRBIT, \
-        PPC::STVX, PPC::STXVD2X, PPC::STXSDX, PPC::STXSSPX,                    \
-        PPC::SPILLTOVSR_ST, NoInstr, NoInstr, NoInstr, NoInstr, PPC::EVSTDD,   \
-        PPC::SPILL_QUADWORD                                                    \
-  }
+  {PPC::STW,                                                                   \
+   PPC::STD,                                                                   \
+   PPC::STFD,                                                                  \
+   PPC::STFS,                                                                  \
+   PPC::SPILL_CR,                                                              \
+   PPC::SPILL_CRBIT,                                                           \
+   PPC::STVX,                                                                  \
+   PPC::STXVD2X,                                                               \
+   PPC::STXSDX,                                                                \
+   PPC::STXSSPX,                                                               \
+   PPC::SPILLTOVSR_ST,                                                         \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   PPC::EVSTDD,                                                                \
+   PPC::SPILL_QUADWORD}
 
 #define Pwr9StoreOpcodes                                                       \
-  {                                                                            \
-    PPC::STW, PPC::STD, PPC::STFD, PPC::STFS, PPC::SPILL_CR, PPC::SPILL_CRBIT, \
-        PPC::STVX, PPC::STXV, PPC::DFSTOREf64, PPC::DFSTOREf32,                \
-        PPC::SPILLTOVSR_ST, NoInstr, NoInstr, NoInstr, NoInstr, NoInstr,       \
-        PPC::SPILL_QUADWORD                                                    \
-  }
+  {PPC::STW,                                                                   \
+   PPC::STD,                                                                   \
+   PPC::STFD,                                                                  \
+   PPC::STFS,                                                                  \
+   PPC::SPILL_CR,                                                              \
+   PPC::SPILL_CRBIT,                                                           \
+   PPC::STVX,                                                                  \
+   PPC::STXV,                                                                  \
+   PPC::DFSTOREf64,                                                            \
+   PPC::DFSTOREf32,                                                            \
+   PPC::SPILLTOVSR_ST,                                                         \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   NoInstr,                                                                    \
+   PPC::SPILL_QUADWORD}
 
 #define Pwr10StoreOpcodes                                                      \
-  {                                                                            \
-    PPC::STW, PPC::STD, PPC::STFD, PPC::STFS, PPC::SPILL_CR, PPC::SPILL_CRBIT, \
-        PPC::STVX, PPC::STXV, PPC::DFSTOREf64, PPC::DFSTOREf32,                \
-        PPC::SPILLTOVSR_ST, PPC::STXVP, PPC::SPILL_ACC, PPC::SPILL_UACC,       \
-        NoInstr, NoInstr, PPC::SPILL_QUADWORD                                  \
-  }
+  {PPC::STW,        PPC::STD,           PPC::STFD,                             \
+   PPC::STFS,       PPC::SPILL_CR,      PPC::SPILL_CRBIT,                      \
+   PPC::STVX,       PPC::STXV,          PPC::DFSTOREf64,                       \
+   PPC::DFSTOREf32, PPC::SPILLTOVSR_ST, PPC::STXVP,                            \
+   PPC::SPILL_ACC,  PPC::SPILL_UACC,    NoInstr,                               \
+   NoInstr,         PPC::SPILL_QUADWORD}
 
 #define FutureStoreOpcodes                                                     \
-  {                                                                            \
-    PPC::STW, PPC::STD, PPC::STFD, PPC::STFS, PPC::SPILL_CR, PPC::SPILL_CRBIT, \
-        PPC::STVX, PPC::STXV, PPC::DFSTOREf64, PPC::DFSTOREf32,                \
-        PPC::SPILLTOVSR_ST, PPC::STXVP, PPC::SPILL_ACC, PPC::SPILL_UACC,       \
-        PPC::SPILL_WACC, NoInstr, PPC::SPILL_QUADWORD                          \
-  }
+  {PPC::STW,           PPC::STD,         PPC::STFD,          PPC::STFS,        \
+   PPC::SPILL_CR,      PPC::SPILL_CRBIT, PPC::STVX,          PPC::STXV,        \
+   PPC::DFSTOREf64,    PPC::DFSTOREf32,  PPC::SPILLTOVSR_ST, PPC::STXVP,       \
+   PPC::SPILL_ACC,     PPC::SPILL_UACC,  PPC::SPILL_WACC,    NoInstr,          \
+   PPC::SPILL_QUADWORD}
 
 // Initialize arrays for load and store spill opcodes on supported subtargets.
 #define StoreOpcodesForSpill                                                   \
-  { Pwr8StoreOpcodes, Pwr9StoreOpcodes, Pwr10StoreOpcodes, FutureStoreOpcodes }
+  {Pwr8StoreOpcodes, Pwr9StoreOpcodes, Pwr10StoreOpcodes, FutureStoreOpcodes}
 #define LoadOpcodesForSpill                                                    \
-  { Pwr8LoadOpcodes, Pwr9LoadOpcodes, Pwr10LoadOpcodes, FutureLoadOpcodes }
+  {Pwr8LoadOpcodes, Pwr9LoadOpcodes, Pwr10LoadOpcodes, FutureLoadOpcodes}
 
 class PPCSubtarget;
 class PPCInstrInfo : public PPCGenInstrInfo {
@@ -219,14 +284,12 @@ class PPCInstrInfo : public PPCGenInstrInfo {
   // forwarded from an add-immediate that feeds it?
   bool isUseMIElgibleForForwarding(MachineInstr &MI, const ImmInstrInfo &III,
                                    unsigned OpNoForForwarding) const;
-  bool isDefMIElgibleForForwarding(MachineInstr &DefMI,
-                                   const ImmInstrInfo &III,
+  bool isDefMIElgibleForForwarding(MachineInstr &DefMI, const ImmInstrInfo &III,
                                    MachineOperand *&ImmMO,
                                    MachineOperand *&RegMO) const;
   bool isImmElgibleForForwarding(const MachineOperand &ImmMO,
                                  const MachineInstr &DefMI,
-                                 const ImmInstrInfo &III,
-                                 int64_t &Imm,
+                                 const ImmInstrInfo &III, int64_t &Imm,
                                  int64_t BaseImm = 0) const;
   bool isRegElgibleForForwarding(const MachineOperand &RegMO,
                                  const MachineInstr &DefMI,
@@ -360,9 +423,7 @@ public:
     return false;
   }
 
-  bool useMachineCombiner() const override {
-    return true;
-  }
+  bool useMachineCombiner() const override { return true; }
 
   /// When getMachineCombinerPatterns() finds patterns, this function generates
   /// the instructions that could replace the original code sequence
@@ -419,9 +480,8 @@ public:
   using TargetInstrInfo::setSpecialOperandAttr;
   void setSpecialOperandAttr(MachineInstr &MI, uint32_t Flags) const;
 
-  bool isCoalescableExtInstr(const MachineInstr &MI,
-                             Register &SrcReg, Register &DstReg,
-                             unsigned &SubIdx) const override;
+  bool isCoalescableExtInstr(const MachineInstr &MI, Register &SrcReg,
+                             Register &DstReg, unsigned &SubIdx) const override;
   Register isLoadFromStackSlot(const MachineInstr &MI,
                                int &FrameIndex) const override;
   bool isReallyTriviallyReMaterializable(const MachineInstr &MI) const override;
@@ -433,7 +493,6 @@ public:
 
   void insertNoop(MachineBasicBlock &MBB,
                   MachineBasicBlock::iterator MI) const override;
-
 
   // Branch analysis.
   bool analyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
@@ -507,15 +566,14 @@ public:
   // If conversion by predication (only supported by some branch instructions).
   // All of the profitability checks always return true; it is always
   // profitable to use the predicated branches.
-  bool isProfitableToIfCvt(MachineBasicBlock &MBB,
-                          unsigned NumCycles, unsigned ExtraPredCycles,
-                          BranchProbability Probability) const override {
+  bool isProfitableToIfCvt(MachineBasicBlock &MBB, unsigned NumCycles,
+                           unsigned ExtraPredCycles,
+                           BranchProbability Probability) const override {
     return true;
   }
 
-  bool isProfitableToIfCvt(MachineBasicBlock &TMBB,
-                           unsigned NumT, unsigned ExtraT,
-                           MachineBasicBlock &FMBB,
+  bool isProfitableToIfCvt(MachineBasicBlock &TMBB, unsigned NumT,
+                           unsigned ExtraT, MachineBasicBlock &FMBB,
                            unsigned NumF, unsigned ExtraF,
                            BranchProbability Probability) const override;
 
@@ -555,7 +613,6 @@ public:
                             Register SrcReg2, int64_t Mask, int64_t Value,
                             const MachineRegisterInfo *MRI) const override;
 
-
   /// Return true if get the base operand, byte offset of an instruction and
   /// the memory width. Width is the size of memory that is being
   /// loaded/stored (e.g. 1, 2, 4, 8).
@@ -585,9 +642,8 @@ public:
 
   /// Return true if two MIs access different memory addresses and false
   /// otherwise
-  bool
-  areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
-                                  const MachineInstr &MIb) const override;
+  bool areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
+                                       const MachineInstr &MIb) const override;
 
   /// GetInstSize - Return the number of bytes of code the specified
   /// instruction may be.  This returns the maximum number of bytes.
@@ -683,6 +739,6 @@ public:
   analyzeLoopForPipelining(MachineBasicBlock *LoopBB) const override;
 };
 
-}
+} // namespace llvm
 
 #endif

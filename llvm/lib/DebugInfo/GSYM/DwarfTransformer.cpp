@@ -82,7 +82,6 @@ struct llvm::gsym::CUInfo {
   }
 };
 
-
 static DWARFDie GetParentDeclContextDIE(DWARFDie &Die) {
   if (DWARFDie SpecDie =
           Die.getAttributeValueAsReferencedDie(dwarf::DW_AT_specification)) {
@@ -170,7 +169,7 @@ getQualifiedNameIndex(DWARFDie &Die, uint64_t Language, GsymCreator &Gsym) {
         // templates
         if (ParentName.front() == '<' && ParentName.back() == '>')
           Name = "{" + ParentName.substr(1, ParentName.size() - 2).str() + "}" +
-                "::" + Name;
+                 "::" + Name;
         else
           Name = ParentName.str() + "::" + Name;
       }
@@ -317,7 +316,6 @@ static void convertFunctionLineTable(OutputAggregator &Out, CUInfo &CUI,
   const object::SectionedAddress SecAddress{
       StartAddress, object::SectionedAddress::UndefSection};
 
-
   if (!CUI.LineTable->lookupAddressRange(SecAddress, RangeSize, RowVector)) {
     // If we have a DW_TAG_subprogram but no line entries, fall back to using
     // the DW_AT_decl_file an d DW_AT_decl_line if we have both attributes.
@@ -420,7 +418,7 @@ static void convertFunctionLineTable(OutputAggregator &Out, CUInfo &CUI,
     // Skip multiple line entries for the same file and line.
     auto LastLE = FI.OptLineTable->last();
     if (LastLE && LastLE->File == FileIdx && LastLE->Line == Row.Line)
-        continue;
+      continue;
     // Only push a row if it isn't an end sequence. End sequence markers are
     // included for the last address in a function or the last contiguous
     // address in a sequence.
@@ -708,8 +706,8 @@ llvm::Error DwarfTransformer::verify(StringRef GsymPath,
   for (uint32_t I = 0; I < NumAddrs; ++I) {
     auto FuncAddr = Gsym->getAddress(I);
     if (!FuncAddr)
-        return createStringError(std::errc::invalid_argument,
-                                  "failed to extract address[%i]", I);
+      return createStringError(std::errc::invalid_argument,
+                               "failed to extract address[%i]", I);
 
     auto FI = Gsym->getFunctionInfo(*FuncAddr);
     if (!FI)
@@ -724,12 +722,10 @@ llvm::Error DwarfTransformer::verify(StringRef GsymPath,
       if (!LR)
         return LR.takeError();
 
-      auto DwarfInlineInfos =
-          DICtx.getInliningInfoForAddress(SectAddr, DLIS);
+      auto DwarfInlineInfos = DICtx.getInliningInfoForAddress(SectAddr, DLIS);
       uint32_t NumDwarfInlineInfos = DwarfInlineInfos.getNumberOfFrames();
       if (NumDwarfInlineInfos == 0) {
-        DwarfInlineInfos.addFrame(
-            DICtx.getLineInfoForAddress(SectAddr, DLIS));
+        DwarfInlineInfos.addFrame(DICtx.getLineInfoForAddress(SectAddr, DLIS));
       }
 
       // Check for 1 entry that has no file and line info
@@ -763,8 +759,7 @@ llvm::Error DwarfTransformer::verify(StringRef GsymPath,
         continue;
       }
 
-      for (size_t Idx = 0, count = LR->Locations.size(); Idx < count;
-            ++Idx) {
+      for (size_t Idx = 0, count = LR->Locations.size(); Idx < count; ++Idx) {
         const auto &gii = LR->Locations[Idx];
         if (Idx < NumDwarfInlineInfos) {
           const auto &dii = DwarfInlineInfos.getFrame(Idx);

@@ -91,10 +91,10 @@ TEST(IListIteratorTest, TwoNodeList) {
   // Check order.
   EXPECT_EQ(&A, &*L.begin());
   EXPECT_EQ(&B, &*++L.begin());
-  EXPECT_EQ(L.end(), ++++L.begin());
+  EXPECT_EQ(L.end(), ++ ++L.begin());
   EXPECT_EQ(&B, &*L.rbegin());
   EXPECT_EQ(&A, &*++L.rbegin());
-  EXPECT_EQ(L.rend(), ++++L.rbegin());
+  EXPECT_EQ(L.rend(), ++ ++L.rbegin());
 
   // Check conversions.
   EXPECT_EQ(++L.rbegin(), L.begin().getReverse());

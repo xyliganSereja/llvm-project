@@ -239,11 +239,11 @@ public:
                                                     bool IsZeroCmp) const;
   bool useNeonVector(const Type *Ty) const;
 
-  InstructionCost
-  getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                  unsigned AddressSpace, TTI::TargetCostKind CostKind,
-                  TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
-                  const Instruction *I = nullptr);
+  InstructionCost getMemoryOpCost(
+      unsigned Opcode, Type *Src, MaybeAlign Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind,
+      TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
+      const Instruction *I = nullptr);
 
   InstructionCost getCostOfKeepingLiveOverCall(ArrayRef<Type *> Tys);
 
@@ -382,15 +382,14 @@ public:
 
   bool shouldExpandReduction(const IntrinsicInst *II) const { return false; }
 
-  unsigned getGISelRematGlobalCost() const {
-    return 2;
-  }
+  unsigned getGISelRematGlobalCost() const { return 2; }
 
   unsigned getMinTripCountTailFoldingThreshold() const {
     return ST->hasSVE() ? 5 : 0;
   }
 
-  TailFoldingStyle getPreferredTailFoldingStyle(bool IVUpdateMayOverflow) const {
+  TailFoldingStyle
+  getPreferredTailFoldingStyle(bool IVUpdateMayOverflow) const {
     if (ST->hasSVE())
       return IVUpdateMayOverflow
                  ? TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck

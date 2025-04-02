@@ -241,9 +241,8 @@ struct Alias {
 
 const ExtensionInfo &getExtensionByID(ArchExtKind(ExtID));
 
-bool getExtensionFeatures(
-    const AArch64::ExtensionBitset &Extensions,
-    std::vector<StringRef> &Features);
+bool getExtensionFeatures(const AArch64::ExtensionBitset &Extensions,
+                          std::vector<StringRef> &Features);
 
 StringRef getArchExtFeature(StringRef ArchExt);
 StringRef resolveCPUAlias(StringRef CPU);

@@ -28,65 +28,66 @@
 namespace llvm {
 
 namespace pointer_union_detail {
-  /// Determine the number of bits required to store integers with values < n.
-  /// This is ceil(log2(n)).
-  constexpr int bitsRequired(unsigned n) {
-    return n > 1 ? 1 + bitsRequired((n + 1) / 2) : 0;
-  }
-
-  template <typename... Ts> constexpr int lowBitsAvailable() {
-    return std::min<int>({PointerLikeTypeTraits<Ts>::NumLowBitsAvailable...});
-  }
-
-  /// Find the first type in a list of types.
-  template <typename T, typename...> struct GetFirstType {
-    using type = T;
-  };
-
-  /// Provide PointerLikeTypeTraits for void* that is used by PointerUnion
-  /// for the template arguments.
-  template <typename ...PTs> class PointerUnionUIntTraits {
-  public:
-    static inline void *getAsVoidPointer(void *P) { return P; }
-    static inline void *getFromVoidPointer(void *P) { return P; }
-    static constexpr int NumLowBitsAvailable = lowBitsAvailable<PTs...>();
-  };
-
-  template <typename Derived, typename ValTy, int I, typename ...Types>
-  class PointerUnionMembers;
-
-  template <typename Derived, typename ValTy, int I>
-  class PointerUnionMembers<Derived, ValTy, I> {
-  protected:
-    ValTy Val;
-    PointerUnionMembers() = default;
-    PointerUnionMembers(ValTy Val) : Val(Val) {}
-
-    friend struct PointerLikeTypeTraits<Derived>;
-  };
-
-  template <typename Derived, typename ValTy, int I, typename Type,
-            typename ...Types>
-  class PointerUnionMembers<Derived, ValTy, I, Type, Types...>
-      : public PointerUnionMembers<Derived, ValTy, I + 1, Types...> {
-    using Base = PointerUnionMembers<Derived, ValTy, I + 1, Types...>;
-  public:
-    using Base::Base;
-    PointerUnionMembers() = default;
-    PointerUnionMembers(Type V)
-        : Base(ValTy(const_cast<void *>(
-                         PointerLikeTypeTraits<Type>::getAsVoidPointer(V)),
-                     I)) {}
-
-    using Base::operator=;
-    Derived &operator=(Type V) {
-      this->Val = ValTy(
-          const_cast<void *>(PointerLikeTypeTraits<Type>::getAsVoidPointer(V)),
-          I);
-      return static_cast<Derived &>(*this);
-    };
-  };
+/// Determine the number of bits required to store integers with values < n.
+/// This is ceil(log2(n)).
+constexpr int bitsRequired(unsigned n) {
+  return n > 1 ? 1 + bitsRequired((n + 1) / 2) : 0;
 }
+
+template <typename... Ts> constexpr int lowBitsAvailable() {
+  return std::min<int>({PointerLikeTypeTraits<Ts>::NumLowBitsAvailable...});
+}
+
+/// Find the first type in a list of types.
+template <typename T, typename...> struct GetFirstType {
+  using type = T;
+};
+
+/// Provide PointerLikeTypeTraits for void* that is used by PointerUnion
+/// for the template arguments.
+template <typename... PTs> class PointerUnionUIntTraits {
+public:
+  static inline void *getAsVoidPointer(void *P) { return P; }
+  static inline void *getFromVoidPointer(void *P) { return P; }
+  static constexpr int NumLowBitsAvailable = lowBitsAvailable<PTs...>();
+};
+
+template <typename Derived, typename ValTy, int I, typename... Types>
+class PointerUnionMembers;
+
+template <typename Derived, typename ValTy, int I>
+class PointerUnionMembers<Derived, ValTy, I> {
+protected:
+  ValTy Val;
+  PointerUnionMembers() = default;
+  PointerUnionMembers(ValTy Val) : Val(Val) {}
+
+  friend struct PointerLikeTypeTraits<Derived>;
+};
+
+template <typename Derived, typename ValTy, int I, typename Type,
+          typename... Types>
+class PointerUnionMembers<Derived, ValTy, I, Type, Types...>
+    : public PointerUnionMembers<Derived, ValTy, I + 1, Types...> {
+  using Base = PointerUnionMembers<Derived, ValTy, I + 1, Types...>;
+
+public:
+  using Base::Base;
+  PointerUnionMembers() = default;
+  PointerUnionMembers(Type V)
+      : Base(ValTy(const_cast<void *>(
+                       PointerLikeTypeTraits<Type>::getAsVoidPointer(V)),
+                   I)) {}
+
+  using Base::operator=;
+  Derived &operator=(Type V) {
+    this->Val = ValTy(
+        const_cast<void *>(PointerLikeTypeTraits<Type>::getAsVoidPointer(V)),
+        I);
+    return static_cast<Derived &>(*this);
+  };
+};
+} // namespace pointer_union_detail
 
 // This is a forward declaration of CastInfoPointerUnionImpl
 // Refer to its definition below for further details
@@ -204,17 +205,17 @@ public:
   }
 };
 
-template <typename ...PTs>
+template <typename... PTs>
 bool operator==(PointerUnion<PTs...> lhs, PointerUnion<PTs...> rhs) {
   return lhs.getOpaqueValue() == rhs.getOpaqueValue();
 }
 
-template <typename ...PTs>
+template <typename... PTs>
 bool operator!=(PointerUnion<PTs...> lhs, PointerUnion<PTs...> rhs) {
   return lhs.getOpaqueValue() != rhs.getOpaqueValue();
 }
 
-template <typename ...PTs>
+template <typename... PTs>
 bool operator<(PointerUnion<PTs...> lhs, PointerUnion<PTs...> rhs) {
   return lhs.getOpaqueValue() < rhs.getOpaqueValue();
 }
@@ -267,8 +268,7 @@ struct CastInfo<To, const PointerUnion<PTs...>>
 
 // Teach SmallPtrSet that PointerUnion is "basically a pointer", that has
 // # low bits available = min(PT1bits,PT2bits)-1.
-template <typename ...PTs>
-struct PointerLikeTypeTraits<PointerUnion<PTs...>> {
+template <typename... PTs> struct PointerLikeTypeTraits<PointerUnion<PTs...>> {
   static inline void *getAsVoidPointer(const PointerUnion<PTs...> &P) {
     return P.getOpaqueValue();
   }
@@ -279,12 +279,12 @@ struct PointerLikeTypeTraits<PointerUnion<PTs...>> {
 
   // The number of bits available are the min of the pointer types minus the
   // bits needed for the discriminator.
-  static constexpr int NumLowBitsAvailable = PointerLikeTypeTraits<decltype(
-      PointerUnion<PTs...>::Val)>::NumLowBitsAvailable;
+  static constexpr int NumLowBitsAvailable = PointerLikeTypeTraits<
+      decltype(PointerUnion<PTs...>::Val)>::NumLowBitsAvailable;
 };
 
 // Teach DenseMap how to use PointerUnions as keys.
-template <typename ...PTs> struct DenseMapInfo<PointerUnion<PTs...>> {
+template <typename... PTs> struct DenseMapInfo<PointerUnion<PTs...>> {
   using Union = PointerUnion<PTs...>;
   using FirstInfo =
       DenseMapInfo<typename pointer_union_detail::GetFirstType<PTs...>::type>;
@@ -300,9 +300,7 @@ template <typename ...PTs> struct DenseMapInfo<PointerUnion<PTs...>> {
     return DenseMapInfo<intptr_t>::getHashValue(key);
   }
 
-  static bool isEqual(const Union &LHS, const Union &RHS) {
-    return LHS == RHS;
-  }
+  static bool isEqual(const Union &LHS, const Union &RHS) { return LHS == RHS; }
 };
 
 } // end namespace llvm

@@ -88,7 +88,7 @@ public:
 //    %Z = add int 2, %X
 //
 FunctionPass *createInstructionCombiningPass();
-}
+} // namespace llvm
 
 #undef DEBUG_TYPE
 

@@ -44,7 +44,7 @@ public:
         return i;
     // Nope, insert it
     ImageHandleList.push_back(Symbol.str());
-    return ImageHandleList.size()-1;
+    return ImageHandleList.size() - 1;
   }
 
   /// Returns the symbol name at the given index.
@@ -60,6 +60,6 @@ public:
            std::find(ImageHandleList.begin(), ImageHandleList.end(), Symbol);
   }
 };
-}
+} // namespace llvm
 
 #endif

@@ -29,7 +29,9 @@ void PrintTo(const hash_code &code, std::ostream *os) {
 
 // Fake an object that is recognized as hashable data to test super large
 // objects.
-struct LargeTestInteger { uint64_t arr[8]; };
+struct LargeTestInteger {
+  uint64_t arr[8];
+};
 
 struct NonPOD {
   uint64_t x, y;
@@ -51,10 +53,7 @@ using namespace llvm;
 
 namespace {
 
-enum TestEnumeration {
-  TE_Foo = 42,
-  TE_Bar = 43
-};
+enum TestEnumeration { TE_Foo = 42, TE_Bar = 43 };
 
 TEST(HashingTest, HashValueBasicTest) {
   int x = 42, y = 43, c = 'x';
@@ -153,7 +152,9 @@ template <typename T, size_t N> T *end(T (&arr)[N]) { return arr + N; }
 
 // Provide a dummy, hashable type designed for easy verification: its hash is
 // the same as its value.
-struct HashableDummy { size_t value; };
+struct HashableDummy {
+  size_t value;
+};
 hash_code hash_value(HashableDummy dummy) { return dummy.value; }
 
 TEST(HashingTest, HashCombineRangeBasicTest) {
@@ -162,7 +163,7 @@ TEST(HashingTest, HashCombineRangeBasicTest) {
   hash_code dummy_hash = hash_combine_range(&dummy, &dummy);
   EXPECT_NE(hash_code(0), dummy_hash);
 
-  const int arr1[] = { 1, 2, 3 };
+  const int arr1[] = {1, 2, 3};
   hash_code arr1_hash = hash_combine_range(begin(arr1), end(arr1));
   EXPECT_NE(dummy_hash, arr1_hash);
   EXPECT_EQ(arr1_hash, hash_combine_range(begin(arr1), end(arr1)));
@@ -176,23 +177,23 @@ TEST(HashingTest, HashCombineRangeBasicTest) {
   const std::deque<int> deque(begin(arr1), end(arr1));
   EXPECT_EQ(arr1_hash, hash_combine_range(deque.begin(), deque.end()));
 
-  const int arr2[] = { 3, 2, 1 };
+  const int arr2[] = {3, 2, 1};
   hash_code arr2_hash = hash_combine_range(begin(arr2), end(arr2));
   EXPECT_NE(dummy_hash, arr2_hash);
   EXPECT_NE(arr1_hash, arr2_hash);
 
-  const int arr3[] = { 1, 1, 2, 3 };
+  const int arr3[] = {1, 1, 2, 3};
   hash_code arr3_hash = hash_combine_range(begin(arr3), end(arr3));
   EXPECT_NE(dummy_hash, arr3_hash);
   EXPECT_NE(arr1_hash, arr3_hash);
 
-  const int arr4[] = { 1, 2, 3, 3 };
+  const int arr4[] = {1, 2, 3, 3};
   hash_code arr4_hash = hash_combine_range(begin(arr4), end(arr4));
   EXPECT_NE(dummy_hash, arr4_hash);
   EXPECT_NE(arr1_hash, arr4_hash);
 
-  const size_t arr5[] = { 1, 2, 3 };
-  const HashableDummy d_arr5[] = { {1}, {2}, {3} };
+  const size_t arr5[] = {1, 2, 3};
+  const HashableDummy d_arr5[] = {{1}, {2}, {3}};
   hash_code arr5_hash = hash_combine_range(begin(arr5), end(arr5));
   hash_code d_arr5_hash = hash_combine_range(begin(d_arr5), end(d_arr5));
   EXPECT_EQ(arr5_hash, d_arr5_hash);
@@ -205,32 +206,33 @@ TEST(HashingTest, HashCombineRangeLengthDiff) {
   std::vector<char> all_one_c(256, '\xff');
   for (unsigned Idx = 1, Size = all_one_c.size(); Idx < Size; ++Idx) {
     hash_code code = hash_combine_range(&all_one_c[0], &all_one_c[0] + Idx);
-    std::map<size_t, size_t>::iterator
-      I = code_to_size.insert(std::make_pair(code, Idx)).first;
+    std::map<size_t, size_t>::iterator I =
+        code_to_size.insert(std::make_pair(code, Idx)).first;
     EXPECT_EQ(Idx, I->second);
   }
   code_to_size.clear();
   std::vector<char> all_zero_c(256, '\0');
   for (unsigned Idx = 1, Size = all_zero_c.size(); Idx < Size; ++Idx) {
     hash_code code = hash_combine_range(&all_zero_c[0], &all_zero_c[0] + Idx);
-    std::map<size_t, size_t>::iterator
-      I = code_to_size.insert(std::make_pair(code, Idx)).first;
+    std::map<size_t, size_t>::iterator I =
+        code_to_size.insert(std::make_pair(code, Idx)).first;
     EXPECT_EQ(Idx, I->second);
   }
   code_to_size.clear();
   std::vector<unsigned> all_one_int(512, -1);
   for (unsigned Idx = 1, Size = all_one_int.size(); Idx < Size; ++Idx) {
     hash_code code = hash_combine_range(&all_one_int[0], &all_one_int[0] + Idx);
-    std::map<size_t, size_t>::iterator
-      I = code_to_size.insert(std::make_pair(code, Idx)).first;
+    std::map<size_t, size_t>::iterator I =
+        code_to_size.insert(std::make_pair(code, Idx)).first;
     EXPECT_EQ(Idx, I->second);
   }
   code_to_size.clear();
   std::vector<unsigned> all_zero_int(512, 0);
   for (unsigned Idx = 1, Size = all_zero_int.size(); Idx < Size; ++Idx) {
-    hash_code code = hash_combine_range(&all_zero_int[0], &all_zero_int[0] + Idx);
-    std::map<size_t, size_t>::iterator
-      I = code_to_size.insert(std::make_pair(code, Idx)).first;
+    hash_code code =
+        hash_combine_range(&all_zero_int[0], &all_zero_int[0] + Idx);
+    std::map<size_t, size_t>::iterator I =
+        code_to_size.insert(std::make_pair(code, Idx)).first;
     EXPECT_EQ(Idx, I->second);
   }
 }
@@ -238,7 +240,7 @@ TEST(HashingTest, HashCombineRangeLengthDiff) {
 TEST(HashingTest, HashCombineBasicTest) {
   // Hashing a sequence of homogenous types matches range hashing.
   const int i1 = 42, i2 = 43, i3 = 123, i4 = 999, i5 = 0, i6 = 79;
-  const int arr1[] = { i1, i2, i3, i4, i5, i6 };
+  const int arr1[] = {i1, i2, i3, i4, i5, i6};
   EXPECT_EQ(hash_combine_range(arr1, arr1 + 1), hash_combine(i1));
   EXPECT_EQ(hash_combine_range(arr1, arr1 + 2), hash_combine(i1, i2));
   EXPECT_EQ(hash_combine_range(arr1, arr1 + 3), hash_combine(i1, i2, i3));
@@ -252,8 +254,8 @@ TEST(HashingTest, HashCombineBasicTest) {
   // same data for hashing produces the same as a range-based hash of the
   // fundamental values.
   const size_t s1 = 1024, s2 = 8888, s3 = 9000000;
-  const HashableDummy d1 = { 1024 }, d2 = { 8888 }, d3 = { 9000000 };
-  const size_t arr2[] = { s1, s2, s3 };
+  const HashableDummy d1 = {1024}, d2 = {8888}, d3 = {9000000};
+  const size_t arr2[] = {s1, s2, s3};
   EXPECT_EQ(hash_combine_range(begin(arr2), end(arr2)),
             hash_combine(s1, s2, s3));
   EXPECT_EQ(hash_combine(s1, s2, s3), hash_combine(s1, s2, d3));
@@ -280,34 +282,29 @@ TEST(HashingTest, HashCombineBasicTest) {
   // This is array of uint64, but it should have the exact same byte pattern as
   // an array of LargeTestIntegers.
   const uint64_t bigarr[] = {
-    0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
-    0xdeadbeafdeadbeefULL, 0xfefefefededededeULL, 0xafafafafededededULL,
-    0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL,
-    0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
-    0xdeadbeafdeadbeefULL, 0xfefefefededededeULL, 0xafafafafededededULL,
-    0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL,
-    0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
-    0xdeadbeafdeadbeefULL, 0xfefefefededededeULL, 0xafafafafededededULL,
-    0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL
-  };
+      0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
+      0xdeadbeafdeadbeefULL, 0xfefefefededededeULL, 0xafafafafededededULL,
+      0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL, 0xaaaaaaaaababababULL,
+      0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL,
+      0xfefefefededededeULL, 0xafafafafededededULL, 0xffffeeeeddddccccULL,
+      0xaaaacbcbffffababULL, 0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL,
+      0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL, 0xfefefefededededeULL,
+      0xafafafafededededULL, 0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL};
   // Hash a preposterously large integer, both aligned with the buffer and
   // misaligned.
-  const LargeTestInteger li = { {
-    0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
-    0xdeadbeafdeadbeefULL, 0xfefefefededededeULL, 0xafafafafededededULL,
-    0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL
-  } };
+  const LargeTestInteger li = {{0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL,
+                                0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL,
+                                0xfefefefededededeULL, 0xafafafafededededULL,
+                                0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL}};
   // Rotate the storage from 'li'.
-  const LargeTestInteger l2 = { {
-    0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL,
-    0xfefefefededededeULL, 0xafafafafededededULL, 0xffffeeeeddddccccULL,
-    0xaaaacbcbffffababULL, 0xaaaaaaaaababababULL
-  } };
-  const LargeTestInteger l3 = { {
-    0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL, 0xfefefefededededeULL,
-    0xafafafafededededULL, 0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL,
-    0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL
-  } };
+  const LargeTestInteger l2 = {{0xacacacacbcbcbcbcULL, 0xccddeeffeeddccbbULL,
+                                0xdeadbeafdeadbeefULL, 0xfefefefededededeULL,
+                                0xafafafafededededULL, 0xffffeeeeddddccccULL,
+                                0xaaaacbcbffffababULL, 0xaaaaaaaaababababULL}};
+  const LargeTestInteger l3 = {{0xccddeeffeeddccbbULL, 0xdeadbeafdeadbeefULL,
+                                0xfefefefededededeULL, 0xafafafafededededULL,
+                                0xffffeeeeddddccccULL, 0xaaaacbcbffffababULL,
+                                0xaaaaaaaaababababULL, 0xacacacacbcbcbcbcULL}};
   EXPECT_EQ(hash_combine_range(begin(bigarr), end(bigarr)),
             hash_combine(li, li, li));
   EXPECT_EQ(hash_combine_range(bigarr, bigarr + 9),

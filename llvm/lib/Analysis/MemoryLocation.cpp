@@ -51,8 +51,8 @@ MemoryLocation MemoryLocation::get(const StoreInst *SI) {
 }
 
 MemoryLocation MemoryLocation::get(const VAArgInst *VI) {
-  return MemoryLocation(VI->getPointerOperand(),
-                        LocationSize::afterPointer(), VI->getAAMetadata());
+  return MemoryLocation(VI->getPointerOperand(), LocationSize::afterPointer(),
+                        VI->getAAMetadata());
 }
 
 MemoryLocation MemoryLocation::get(const AtomicCmpXchgInst *CXI) {
@@ -208,17 +208,15 @@ MemoryLocation MemoryLocation::getForArgument(const CallBase *Call,
     case Intrinsic::masked_load:
       assert(ArgIdx == 0 && "Invalid argument index");
       return MemoryLocation(
-          Arg,
-          LocationSize::upperBound(DL.getTypeStoreSize(II->getType())),
+          Arg, LocationSize::upperBound(DL.getTypeStoreSize(II->getType())),
           AATags);
 
     case Intrinsic::masked_store:
       assert(ArgIdx == 1 && "Invalid argument index");
-      return MemoryLocation(
-          Arg,
-          LocationSize::upperBound(
-              DL.getTypeStoreSize(II->getArgOperand(0)->getType())),
-          AATags);
+      return MemoryLocation(Arg,
+                            LocationSize::upperBound(DL.getTypeStoreSize(
+                                II->getArgOperand(0)->getType())),
+                            AATags);
 
     case Intrinsic::invariant_end:
       // The first argument to an invariant.end is a "descriptor" type (e.g. a
@@ -263,7 +261,8 @@ MemoryLocation MemoryLocation::getForArgument(const CallBase *Call,
     case LibFunc_strcpy:
     case LibFunc_strcat:
     case LibFunc_strncat:
-      assert((ArgIdx == 0 || ArgIdx == 1) && "Invalid argument index for str function");
+      assert((ArgIdx == 0 || ArgIdx == 1) &&
+             "Invalid argument index for str function");
       return MemoryLocation::getAfter(Arg, AATags);
 
     case LibFunc_memset_chk:

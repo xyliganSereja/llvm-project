@@ -31,7 +31,9 @@ class AMDGPUAsmBackend : public MCAsmBackend {
 public:
   AMDGPUAsmBackend(const Target &T) : MCAsmBackend(llvm::endianness::little) {}
 
-  unsigned getNumFixupKinds() const override { return AMDGPU::NumTargetFixupKinds; };
+  unsigned getNumFixupKinds() const override {
+    return AMDGPU::NumTargetFixupKinds;
+  };
 
   void applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
                   const MCValue &Target, MutableArrayRef<char> Data,
@@ -57,7 +59,7 @@ public:
                              const MCSubtargetInfo *STI) override;
 };
 
-} //End anonymous namespace
+} // End anonymous namespace
 
 void AMDGPUAsmBackend::relaxInstruction(MCInst &Inst,
                                         const MCSubtargetInfo &STI) const {
@@ -73,11 +75,11 @@ bool AMDGPUAsmBackend::fixupNeedsRelaxation(const MCFixup &Fixup,
   // if the branch target has an offset of x3f this needs to be relaxed to
   // add a s_nop 0 immediately after branch to effectively increment offset
   // for hardware workaround in gfx1010
-  return (((int64_t(Value)/4)-1) == 0x3f);
+  return (((int64_t(Value) / 4) - 1) == 0x3f);
 }
 
 bool AMDGPUAsmBackend::mayNeedRelaxation(const MCInst &Inst,
-                       const MCSubtargetInfo &STI) const {
+                                         const MCSubtargetInfo &STI) const {
   if (!STI.hasFeature(AMDGPU::FeatureOffset3fBug))
     return false;
 
@@ -176,11 +178,11 @@ AMDGPUAsmBackend::getFixupKind(StringRef Name) const {
   return std::nullopt;
 }
 
-const MCFixupKindInfo &AMDGPUAsmBackend::getFixupKindInfo(
-                                                       MCFixupKind Kind) const {
+const MCFixupKindInfo &
+AMDGPUAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
   const static MCFixupKindInfo Infos[AMDGPU::NumTargetFixupKinds] = {
-    // name                   offset bits  flags
-    { "fixup_si_sopp_br",     0,     16,   MCFixupKindInfo::FKF_IsPCRel },
+      // name                   offset bits  flags
+      {"fixup_si_sopp_br", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
   };
 
   if (Kind >= FirstLiteralRelocationKind)
@@ -201,9 +203,7 @@ bool AMDGPUAsmBackend::shouldForceRelocation(const MCAssembler &,
   return Fixup.getKind() >= FirstLiteralRelocationKind;
 }
 
-unsigned AMDGPUAsmBackend::getMinimumNopSize() const {
-  return 4;
-}
+unsigned AMDGPUAsmBackend::getMinimumNopSize() const { return 4; }
 
 bool AMDGPUAsmBackend::writeNopData(raw_ostream &OS, uint64_t Count,
                                     const MCSubtargetInfo *STI) const {

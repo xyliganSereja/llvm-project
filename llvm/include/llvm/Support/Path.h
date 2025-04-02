@@ -75,7 +75,7 @@ class const_iterator
                                   const StringRef> {
   StringRef Path;          ///< The entire path.
   StringRef Component;     ///< The current component. Not necessarily in Path.
-  size_t    Position = 0;  ///< The iterators current position within Path.
+  size_t Position = 0;     ///< The iterators current position within Path.
   Style S = Style::native; ///< The path style to use.
 
   // An end iterator has Position = Path.size() + 1.
@@ -84,7 +84,7 @@ class const_iterator
 
 public:
   reference operator*() const { return Component; }
-  const_iterator &operator++();    // preincrement
+  const_iterator &operator++(); // preincrement
   bool operator==(const const_iterator &RHS) const;
 
   /// Difference in bytes between this and RHS.
@@ -101,7 +101,7 @@ class reverse_iterator
                                   const StringRef> {
   StringRef Path;          ///< The entire path.
   StringRef Component;     ///< The current component. Not necessarily in Path.
-  size_t    Position = 0;  ///< The iterators current position within Path.
+  size_t Position = 0;     ///< The iterators current position within Path.
   Style S = Style::native; ///< The path style to use.
 
   friend reverse_iterator rbegin(StringRef path, Style style);
@@ -109,7 +109,7 @@ class reverse_iterator
 
 public:
   reference operator*() const { return Component; }
-  reverse_iterator &operator++();    // preincrement
+  reverse_iterator &operator++(); // preincrement
   bool operator==(const reverse_iterator &RHS) const;
 
   /// Difference in bytes between this and RHS.
@@ -194,8 +194,7 @@ void replace_extension(SmallVectorImpl<char> &path, const Twine &extension,
 /// Posix style, case/separator insensitive match for Windows style.
 /// @result true if \a Path begins with OldPrefix
 bool replace_path_prefix(SmallVectorImpl<char> &Path, StringRef OldPrefix,
-                         StringRef NewPrefix,
-                         Style style = Style::native);
+                         StringRef NewPrefix, Style style = Style::native);
 
 /// Remove redundant leading "./" pieces and consecutive separators.
 ///
@@ -223,10 +222,8 @@ bool remove_dots(SmallVectorImpl<char> &path, bool remove_dot_dot = false,
 ///
 /// @param path Set to \a path + \a component.
 /// @param a The component to be appended to \a path.
-void append(SmallVectorImpl<char> &path, const Twine &a,
-                                         const Twine &b = "",
-                                         const Twine &c = "",
-                                         const Twine &d = "");
+void append(SmallVectorImpl<char> &path, const Twine &a, const Twine &b = "",
+            const Twine &c = "", const Twine &d = "");
 
 void append(SmallVectorImpl<char> &path, Style style, const Twine &a,
             const Twine &b = "", const Twine &c = "", const Twine &d = "");

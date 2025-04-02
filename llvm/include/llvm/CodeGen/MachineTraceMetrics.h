@@ -143,7 +143,7 @@ public:
   };
 
   /// Get the fixed resource information about MBB. Compute it on demand.
-  const FixedBlockInfo *getResources(const MachineBasicBlock*);
+  const FixedBlockInfo *getResources(const MachineBasicBlock *);
 
   /// Get the scaled number of cycles used per processor resource in MBB.
   /// This is an array with SchedModel.getNumProcResourceKinds() entries.
@@ -202,10 +202,16 @@ public:
     bool hasValidHeight() const { return InstrHeight != ~0u; }
 
     /// Invalidate depth resources when some block above this one has changed.
-    void invalidateDepth() { InstrDepth = ~0u; HasValidInstrDepths = false; }
+    void invalidateDepth() {
+      InstrDepth = ~0u;
+      HasValidInstrDepths = false;
+    }
 
     /// Invalidate height resources when a block below this one has changed.
-    void invalidateHeight() { InstrHeight = ~0u; HasValidInstrHeights = false; }
+    void invalidateHeight() {
+      InstrHeight = ~0u;
+      HasValidInstrHeights = false;
+    }
 
     /// Assuming that this is a dominator of TBI, determine if it contains
     /// useful instruction depths. A dominating block can be above the current
@@ -249,7 +255,7 @@ public:
     /// include PHI uses in deeper blocks.
     SmallVector<LiveInReg, 4> LiveIns;
 
-    void print(raw_ostream&) const;
+    void print(raw_ostream &) const;
     void dump() const { print(dbgs()); }
   };
 
@@ -278,13 +284,11 @@ public:
   public:
     explicit Trace(Ensemble &te, TraceBlockInfo &tbi) : TE(te), TBI(tbi) {}
 
-    void print(raw_ostream&) const;
+    void print(raw_ostream &) const;
     void dump() const { print(dbgs()); }
 
     /// Compute the total number of instructions in the trace.
-    unsigned getInstrCount() const {
-      return TBI.InstrDepth + TBI.InstrHeight;
-    }
+    unsigned getInstrCount() const { return TBI.InstrDepth + TBI.InstrHeight; }
 
     /// Return the resource depth of the top/bottom of the trace center block.
     /// This is the number of cycles required to execute all instructions from
@@ -340,29 +344,31 @@ public:
     friend class Trace;
 
     SmallVector<TraceBlockInfo, 4> BlockInfo;
-    DenseMap<const MachineInstr*, InstrCycles> Cycles;
+    DenseMap<const MachineInstr *, InstrCycles> Cycles;
     SmallVector<unsigned, 0> ProcResourceDepths;
     SmallVector<unsigned, 0> ProcResourceHeights;
 
-    void computeTrace(const MachineBasicBlock*);
-    void computeDepthResources(const MachineBasicBlock*);
-    void computeHeightResources(const MachineBasicBlock*);
-    unsigned computeCrossBlockCriticalPath(const TraceBlockInfo&);
-    void computeInstrDepths(const MachineBasicBlock*);
-    void computeInstrHeights(const MachineBasicBlock*);
+    void computeTrace(const MachineBasicBlock *);
+    void computeDepthResources(const MachineBasicBlock *);
+    void computeHeightResources(const MachineBasicBlock *);
+    unsigned computeCrossBlockCriticalPath(const TraceBlockInfo &);
+    void computeInstrDepths(const MachineBasicBlock *);
+    void computeInstrHeights(const MachineBasicBlock *);
     void addLiveIns(const MachineInstr *DefMI, unsigned DefOp,
-                    ArrayRef<const MachineBasicBlock*> Trace);
+                    ArrayRef<const MachineBasicBlock *> Trace);
 
   protected:
     MachineTraceMetrics &MTM;
 
-    explicit Ensemble(MachineTraceMetrics*);
+    explicit Ensemble(MachineTraceMetrics *);
 
-    virtual const MachineBasicBlock *pickTracePred(const MachineBasicBlock*) =0;
-    virtual const MachineBasicBlock *pickTraceSucc(const MachineBasicBlock*) =0;
-    const MachineLoop *getLoopFor(const MachineBasicBlock*) const;
-    const TraceBlockInfo *getDepthResources(const MachineBasicBlock*) const;
-    const TraceBlockInfo *getHeightResources(const MachineBasicBlock*) const;
+    virtual const MachineBasicBlock *
+    pickTracePred(const MachineBasicBlock *) = 0;
+    virtual const MachineBasicBlock *
+    pickTraceSucc(const MachineBasicBlock *) = 0;
+    const MachineLoop *getLoopFor(const MachineBasicBlock *) const;
+    const TraceBlockInfo *getDepthResources(const MachineBasicBlock *) const;
+    const TraceBlockInfo *getHeightResources(const MachineBasicBlock *) const;
     ArrayRef<unsigned> getProcResourceDepths(unsigned MBBNum) const;
     ArrayRef<unsigned> getProcResourceHeights(unsigned MBBNum) const;
 
@@ -380,16 +386,15 @@ public:
     Trace getTrace(const MachineBasicBlock *MBB);
 
     /// Updates the depth of an machine instruction, given RegUnits.
-    void updateDepth(TraceBlockInfo &TBI, const MachineInstr&,
+    void updateDepth(TraceBlockInfo &TBI, const MachineInstr &,
                      SparseSet<LiveRegUnit> &RegUnits);
-    void updateDepth(const MachineBasicBlock *, const MachineInstr&,
+    void updateDepth(const MachineBasicBlock *, const MachineInstr &,
                      SparseSet<LiveRegUnit> &RegUnits);
 
     /// Updates the depth of the instructions from Start to End.
     void updateDepths(MachineBasicBlock::iterator Start,
                       MachineBasicBlock::iterator End,
                       SparseSet<LiveRegUnit> &RegUnits);
-
   };
 
   /// Get the trace ensemble representing the given trace selection strategy.

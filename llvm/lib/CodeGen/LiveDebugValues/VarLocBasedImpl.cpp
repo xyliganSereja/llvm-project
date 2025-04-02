@@ -249,7 +249,7 @@ struct LocIndex {
     return (static_cast<uint64_t>(Location) << 32) | Index;
   }
 
-  template<typename IntT> static LocIndex fromRawInteger(IntT ID) {
+  template <typename IntT> static LocIndex fromRawInteger(IntT ID) {
     static_assert(std::is_unsigned_v<IntT> && sizeof(ID) == sizeof(uint64_t),
                   "Cannot convert raw integer to LocIndex");
     return {static_cast<u32_location_t>(ID >> 32),
@@ -306,9 +306,7 @@ private:
       bool operator==(const SpillLoc &Other) const {
         return SpillBase == Other.SpillBase && SpillOffset == Other.SpillOffset;
       }
-      bool operator!=(const SpillLoc &Other) const {
-        return !(*this == Other);
-      }
+      bool operator!=(const SpillLoc &Other) const { return !(*this == Other); }
     };
 
     // Target indices used for wasm-specific locations.
@@ -945,8 +943,7 @@ private:
     /// Return whether the set is empty or not.
     bool empty() const {
       assert(Vars.empty() == EntryValuesBackupVars.empty() &&
-             Vars.empty() == VarLocs.empty() &&
-             "open ranges are inconsistent");
+             Vars.empty() == VarLocs.empty() && "open ranges are inconsistent");
       return VarLocs.empty();
     }
 
@@ -1278,10 +1275,9 @@ void VarLocBasedLDV::getUsedRegs(const VarLocSet &CollectFrom,
 
 #ifndef NDEBUG
 void VarLocBasedLDV::printVarLocInMBB(const MachineFunction &MF,
-                                       const VarLocInMBB &V,
-                                       const VarLocMap &VarLocIDs,
-                                       const char *msg,
-                                       raw_ostream &Out) const {
+                                      const VarLocInMBB &V,
+                                      const VarLocMap &VarLocIDs,
+                                      const char *msg, raw_ostream &Out) const {
   Out << '\n' << msg << '\n';
   for (const MachineBasicBlock &BB : MF) {
     if (!V.count(&BB))
@@ -1681,7 +1677,7 @@ void VarLocBasedLDV::transferWasmDef(MachineInstr &MI,
 }
 
 bool VarLocBasedLDV::isSpillInstruction(const MachineInstr &MI,
-                                         MachineFunction *MF) {
+                                        MachineFunction *MF) {
   // TODO: Handle multiple stores folded into one.
   if (!MI.hasOneMemOperand())
     return false;
@@ -1694,7 +1690,7 @@ bool VarLocBasedLDV::isSpillInstruction(const MachineInstr &MI,
 }
 
 bool VarLocBasedLDV::isLocationSpill(const MachineInstr &MI,
-                                      MachineFunction *MF, Register &Reg) {
+                                     MachineFunction *MF, Register &Reg) {
   if (!isSpillInstruction(MI, MF))
     return false;
 
@@ -1756,9 +1752,9 @@ VarLocBasedLDV::isRestoreInstruction(const MachineInstr &MI,
 /// It will be inserted into the BB when we're done iterating over the
 /// instructions.
 void VarLocBasedLDV::transferSpillOrRestoreInst(MachineInstr &MI,
-                                                 OpenRangesSet &OpenRanges,
-                                                 VarLocMap &VarLocIDs,
-                                                 TransferMap &Transfers) {
+                                                OpenRangesSet &OpenRanges,
+                                                VarLocMap &VarLocIDs,
+                                                TransferMap &Transfers) {
   MachineFunction *MF = MI.getMF();
   TransferKind TKind;
   Register Reg;
@@ -1851,9 +1847,9 @@ void VarLocBasedLDV::transferSpillOrRestoreInst(MachineInstr &MI,
 /// value from one register to another register that is callee saved, we
 /// create new DBG_VALUE instruction  described with copy destination register.
 void VarLocBasedLDV::transferRegisterCopy(MachineInstr &MI,
-                                           OpenRangesSet &OpenRanges,
-                                           VarLocMap &VarLocIDs,
-                                           TransferMap &Transfers) {
+                                          OpenRangesSet &OpenRanges,
+                                          VarLocMap &VarLocIDs,
+                                          TransferMap &Transfers) {
   auto DestSrc = TII->isCopyLikeInstr(MI);
   if (!DestSrc)
     return;
@@ -1923,9 +1919,9 @@ void VarLocBasedLDV::transferRegisterCopy(MachineInstr &MI,
 
 /// Terminate all open ranges at the end of the current basic block.
 bool VarLocBasedLDV::transferTerminator(MachineBasicBlock *CurMBB,
-                                         OpenRangesSet &OpenRanges,
-                                         VarLocInMBB &OutLocs,
-                                         const VarLocMap &VarLocIDs) {
+                                        OpenRangesSet &OpenRanges,
+                                        VarLocInMBB &OutLocs,
+                                        const VarLocMap &VarLocIDs) {
   bool Changed = false;
   LLVM_DEBUG({
     VarVec VarLocs;
@@ -1957,8 +1953,8 @@ bool VarLocBasedLDV::transferTerminator(MachineBasicBlock *CurMBB,
 /// \param OverlappingFragments The overlap map being constructed, from one
 ///           Var/Fragment pair to a vector of fragments known to overlap.
 void VarLocBasedLDV::accumulateFragmentMap(MachineInstr &MI,
-                                            VarToFragments &SeenFragments,
-                                            OverlapMap &OverlappingFragments) {
+                                           VarToFragments &SeenFragments,
+                                           OverlapMap &OverlappingFragments) {
   DebugVariable MIVar(MI.getDebugVariable(), MI.getDebugExpression(),
                       MI.getDebugLoc()->getInlinedAt());
   FragmentInfo ThisFragment = MIVar.getFragmentOrDefault();
@@ -2107,7 +2103,7 @@ bool VarLocBasedLDV::join(
 }
 
 void VarLocBasedLDV::flushPendingLocs(VarLocInMBB &PendingInLocs,
-                                       VarLocMap &VarLocIDs) {
+                                      VarLocMap &VarLocIDs) {
   // PendingInLocs records all locations propagated into blocks, which have
   // not had DBG_VALUE insts created. Go through and create those insts now.
   for (auto &Iter : PendingInLocs) {
@@ -2187,9 +2183,9 @@ static void collectRegDefs(const MachineInstr &MI, DefinedRegsSet &Regs,
 /// could be used as backup values. If we loose the track of some unmodified
 /// parameters, the backup values will be used as a primary locations.
 void VarLocBasedLDV::recordEntryValue(const MachineInstr &MI,
-                                       const DefinedRegsSet &DefinedRegs,
-                                       OpenRangesSet &OpenRanges,
-                                       VarLocMap &VarLocIDs) {
+                                      const DefinedRegsSet &DefinedRegs,
+                                      OpenRangesSet &OpenRanges,
+                                      VarLocMap &VarLocIDs) {
   if (TPC) {
     auto &TM = TPC->getTM<TargetMachine>();
     if (!TM.Options.ShouldEmitDebugEntryValues())
@@ -2246,11 +2242,11 @@ bool VarLocBasedLDV::ExtendRanges(MachineFunction &MF,
   VarLocMap VarLocIDs;         // Map VarLoc<>unique ID for use in bitvectors.
   OverlapMap OverlapFragments; // Map of overlapping variable fragments.
   OpenRangesSet OpenRanges(Alloc, OverlapFragments);
-                              // Ranges that are open until end of bb.
-  VarLocInMBB OutLocs;        // Ranges that exist beyond bb.
-  VarLocInMBB InLocs;         // Ranges that are incoming after joining.
-  TransferMap Transfers;      // DBG_VALUEs associated with transfers (such as
-                              // spills, copies and restores).
+  // Ranges that are open until end of bb.
+  VarLocInMBB OutLocs;   // Ranges that exist beyond bb.
+  VarLocInMBB InLocs;    // Ranges that are incoming after joining.
+  TransferMap Transfers; // DBG_VALUEs associated with transfers (such as
+                         // spills, copies and restores).
   // Map responsible MI to attached Transfer emitted from Backup Entry Value.
   InstToEntryLocMap EntryValTransfers;
   // Map a Register to the last MI which clobbered it.
@@ -2340,8 +2336,8 @@ bool VarLocBasedLDV::ExtendRanges(MachineFunction &MF,
     while (!Worklist.empty()) {
       MachineBasicBlock *MBB = OrderToBB[Worklist.top()];
       Worklist.pop();
-      MBBJoined = join(*MBB, OutLocs, InLocs, VarLocIDs, Visited,
-                       ArtificialBlocks);
+      MBBJoined =
+          join(*MBB, OutLocs, InLocs, VarLocIDs, Visited, ArtificialBlocks);
       MBBJoined |= Visited.insert(MBB).second;
       if (MBBJoined) {
         MBBJoined = false;
@@ -2410,8 +2406,4 @@ bool VarLocBasedLDV::ExtendRanges(MachineFunction &MF,
   return Changed;
 }
 
-LDVImpl *
-llvm::makeVarLocBasedLiveDebugValues()
-{
-  return new VarLocBasedLDV();
-}
+LDVImpl *llvm::makeVarLocBasedLiveDebugValues() { return new VarLocBasedLDV(); }

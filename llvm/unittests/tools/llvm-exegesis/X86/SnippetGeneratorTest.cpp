@@ -39,8 +39,9 @@ MATCHER(IsReg, "") { return arg.isReg(); }
 template <typename SnippetGeneratorT>
 class X86SnippetGeneratorTest : public X86TestBase {
 protected:
-  X86SnippetGeneratorTest() : Generator(State, SnippetGenerator::Options()),
-	                      InstrInfo(State.getInstrInfo()) {}
+  X86SnippetGeneratorTest()
+      : Generator(State, SnippetGenerator::Options()),
+        InstrInfo(State.getInstrInfo()) {}
 
   std::vector<CodeTemplate> checkAndGetCodeTemplates(unsigned Opcode) {
     randomGenerator().seed(0); // Initialize seed.
@@ -55,12 +56,14 @@ protected:
   const MCInstrInfo &InstrInfo;
 };
 
-using X86SerialSnippetGeneratorTest = X86SnippetGeneratorTest<SerialSnippetGenerator>;
+using X86SerialSnippetGeneratorTest =
+    X86SnippetGeneratorTest<SerialSnippetGenerator>;
 
 using X86ParallelSnippetGeneratorTest =
     X86SnippetGeneratorTest<ParallelSnippetGenerator>;
 
-TEST_F(X86SerialSnippetGeneratorTest, ImplicitSelfDependencyThroughImplicitReg) {
+TEST_F(X86SerialSnippetGeneratorTest,
+       ImplicitSelfDependencyThroughImplicitReg) {
   // - ADC16i16
   // - Op0 Explicit Use Immediate
   // - Op1 Implicit Def Reg(AX)
@@ -110,7 +113,8 @@ TEST_F(X86SerialSnippetGeneratorTest, ImplicitSelfDependencyThroughTiedRegs) {
   EXPECT_THAT(IT.getVariableValues()[1], IsInvalid()) << "Operand 2 is not set";
 }
 
-TEST_F(X86SerialSnippetGeneratorTest, ImplicitSelfDependencyThroughExplicitRegs) {
+TEST_F(X86SerialSnippetGeneratorTest,
+       ImplicitSelfDependencyThroughExplicitRegs) {
   // - VXORPSrr
   // - Op0 Explicit Def RegClass(VR128)
   // - Op1 Explicit Use RegClass(VR128)
@@ -472,7 +476,8 @@ private:
   }
 };
 
-using X86FakeSnippetGeneratorTest = X86SnippetGeneratorTest<X86FakeSnippetGenerator>;
+using X86FakeSnippetGeneratorTest =
+    X86SnippetGeneratorTest<X86FakeSnippetGenerator>;
 
 testing::Matcher<const RegisterValue &> IsRegisterValue(unsigned Reg,
                                                         APInt Value) {

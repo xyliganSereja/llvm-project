@@ -1846,9 +1846,7 @@ struct VPWidenSelectRecipe : public VPRecipeWithIRFlags {
              VPSlotTracker &SlotTracker) const override;
 #endif
 
-  VPValue *getCond() const {
-    return getOperand(0);
-  }
+  VPValue *getCond() const { return getOperand(0); }
 
   bool isInvariantCond() const {
     return getCond()->isDefinedOutsideLoopRegions();
@@ -2076,9 +2074,7 @@ public:
   void setStartValue(VPValue *V) { setOperand(0, V); }
 
   /// Returns the incoming value from the loop backedge.
-  virtual VPValue *getBackedgeValue() {
-    return getOperand(1);
-  }
+  virtual VPValue *getBackedgeValue() { return getOperand(1); }
 
   /// Returns the backedge value as a recipe. The backedge value is guaranteed
   /// to be a recipe.
@@ -3535,7 +3531,8 @@ public:
 
 /// VPBasicBlock serves as the leaf of the Hierarchical Control-Flow Graph. It
 /// holds a sequence of zero or more VPRecipe's each representing a sequence of
-/// output IR instructions. All PHI-like recipes must come before any non-PHI recipes.
+/// output IR instructions. All PHI-like recipes must come before any non-PHI
+/// recipes.
 class VPBasicBlock : public VPBlockBase {
   friend class VPlan;
 

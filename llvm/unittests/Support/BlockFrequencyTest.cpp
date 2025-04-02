@@ -125,4 +125,4 @@ TEST(BlockFrequencyTest, SaturatingRightShift) {
   EXPECT_EQ(Freq.getFrequency(), 0x1ULL);
 }
 
-}
+} // namespace

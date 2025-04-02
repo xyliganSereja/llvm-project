@@ -307,7 +307,7 @@ struct LTOLLVMContext : LLVMContext {
   DiagnosticHandlerFunction DiagHandler;
 };
 
-}
-}
+} // namespace lto
+} // namespace llvm
 
 #endif

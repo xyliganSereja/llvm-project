@@ -121,7 +121,7 @@ void SampleProfileSummaryBuilder::addRecord(
 
   for (const auto &I : FS.getBodySamples()) {
     uint64_t Count = I.second.getSamples();
-      addCount(Count);
+    addCount(Count);
   }
   for (const auto &I : FS.getCallsiteSamples())
     for (const auto &CS : I.second)

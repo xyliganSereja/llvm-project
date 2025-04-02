@@ -41,7 +41,7 @@ std::vector<DomUpdate> ToDomUpdates(CFGBuilder &B,
                    B.getOrAddBlock(CFGU.Edge.To)});
   return Res;
 }
-}  // namespace
+} // namespace
 
 TEST(DominatorTreeBatchUpdates, LegalizeDomUpdates) {
   CFGHolder Holder;
@@ -58,7 +58,10 @@ TEST(DominatorTreeBatchUpdates, LegalizeDomUpdates) {
   SmallVector<DomUpdate, 4> Legalized;
   cfg::LegalizeUpdates<BasicBlock *>(Updates, Legalized, false);
   LLVM_DEBUG(dbgs() << "Legalized updates:\t");
-  LLVM_DEBUG(for (auto &U : Legalized) { U.dump(); dbgs() << ", "; });
+  LLVM_DEBUG(for (auto &U : Legalized) {
+    U.dump();
+    dbgs() << ", ";
+  });
   LLVM_DEBUG(dbgs() << "\n");
   EXPECT_EQ(Legalized.size(), 3UL);
   EXPECT_TRUE(llvm::is_contained(Legalized, DomUpdate{Insert, B, C}));
@@ -81,7 +84,10 @@ TEST(DominatorTreeBatchUpdates, LegalizePostDomUpdates) {
   SmallVector<DomUpdate, 4> Legalized;
   cfg::LegalizeUpdates<BasicBlock *>(Updates, Legalized, true);
   LLVM_DEBUG(dbgs() << "Legalized postdom updates:\t");
-  LLVM_DEBUG(for (auto &U : Legalized) { U.dump(); dbgs() << ", "; });
+  LLVM_DEBUG(for (auto &U : Legalized) {
+    U.dump();
+    dbgs() << ", ";
+  });
   LLVM_DEBUG(dbgs() << "\n");
   EXPECT_EQ(Legalized.size(), 3UL);
   EXPECT_TRUE(llvm::is_contained(Legalized, DomUpdate{Insert, C, B}));
@@ -257,17 +263,14 @@ TEST(DominatorTreeBatchUpdates, InsertDeleteExhaustive) {
 // These are some odd flowgraphs, usually generated from csmith cases,
 // which are difficult on post dom trees.
 TEST(DominatorTreeBatchUpdates, InfiniteLoop) {
-  std::vector<CFGBuilder::Arc> Arcs = {
-      {"1", "2"},
-      {"2", "3"},
-      {"3", "6"}, {"3", "5"},
-      {"4", "5"},
-      {"5", "2"},
-      {"6", "3"}, {"6", "4"}};
+  std::vector<CFGBuilder::Arc> Arcs = {{"1", "2"}, {"2", "3"}, {"3", "6"},
+                                       {"3", "5"}, {"4", "5"}, {"5", "2"},
+                                       {"6", "3"}, {"6", "4"}};
 
   // SplitBlock on 3 -> 5
-  std::vector<CFGBuilder::Update> Updates = {
-      {CFGInsert, {"N", "5"}},  {CFGInsert, {"3", "N"}}, {CFGDelete, {"3", "5"}}};
+  std::vector<CFGBuilder::Update> Updates = {{CFGInsert, {"N", "5"}},
+                                             {CFGInsert, {"3", "N"}},
+                                             {CFGDelete, {"3", "5"}}};
 
   CFGHolder Holder;
   CFGBuilder B(Holder.F, Arcs, Updates);
@@ -288,19 +291,15 @@ TEST(DominatorTreeBatchUpdates, InfiniteLoop) {
 
 TEST(DominatorTreeBatchUpdates, DeadBlocks) {
   std::vector<CFGBuilder::Arc> Arcs = {
-      {"1", "2"},
-      {"2", "3"},
-      {"3", "4"}, {"3", "7"},
-      {"4", "4"},
-      {"5", "6"}, {"5", "7"},
-      {"6", "7"},
-      {"7", "2"}, {"7", "8"}};
+      {"1", "2"}, {"2", "3"}, {"3", "4"}, {"3", "7"}, {"4", "4"},
+      {"5", "6"}, {"5", "7"}, {"6", "7"}, {"7", "2"}, {"7", "8"}};
 
   // Remove dead 5 and 7,
   // plus SplitBlock on 7 -> 8
   std::vector<CFGBuilder::Update> Updates = {
-      {CFGDelete, {"6", "7"}},  {CFGDelete, {"5", "7"}}, {CFGDelete, {"5", "6"}},
-      {CFGInsert, {"N", "8"}},  {CFGInsert, {"7", "N"}}, {CFGDelete, {"7", "8"}}};
+      {CFGDelete, {"6", "7"}}, {CFGDelete, {"5", "7"}},
+      {CFGDelete, {"5", "6"}}, {CFGInsert, {"N", "8"}},
+      {CFGInsert, {"7", "N"}}, {CFGDelete, {"7", "8"}}};
 
   CFGHolder Holder;
   CFGBuilder B(Holder.F, Arcs, Updates);
@@ -320,17 +319,14 @@ TEST(DominatorTreeBatchUpdates, DeadBlocks) {
 }
 
 TEST(DominatorTreeBatchUpdates, InfiniteLoop2) {
-  std::vector<CFGBuilder::Arc> Arcs = {
-      {"1", "2"},
-      {"2", "6"}, {"2", "3"},
-      {"3", "4"},
-      {"4", "5"}, {"4", "6"},
-      {"5", "4"},
-      {"6", "2"}};
+  std::vector<CFGBuilder::Arc> Arcs = {{"1", "2"}, {"2", "6"}, {"2", "3"},
+                                       {"3", "4"}, {"4", "5"}, {"4", "6"},
+                                       {"5", "4"}, {"6", "2"}};
 
   // SplitBlock on 4 -> 6
-  std::vector<CFGBuilder::Update> Updates = {
-      {CFGInsert, {"N", "6"}},  {CFGInsert, {"4", "N"}}, {CFGDelete, {"4", "6"}}};
+  std::vector<CFGBuilder::Update> Updates = {{CFGInsert, {"N", "6"}},
+                                             {CFGInsert, {"4", "N"}},
+                                             {CFGDelete, {"4", "6"}}};
 
   CFGHolder Holder;
   CFGBuilder B(Holder.F, Arcs, Updates);

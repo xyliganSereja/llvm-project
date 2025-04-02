@@ -459,7 +459,8 @@ public:
   bool isAnyReg() const {
     return Kind == KindTy::Register &&
            (RISCVMCRegisterClasses[RISCV::GPRRegClassID].contains(Reg.RegNum) ||
-            RISCVMCRegisterClasses[RISCV::FPR64RegClassID].contains(Reg.RegNum) ||
+            RISCVMCRegisterClasses[RISCV::FPR64RegClassID].contains(
+                Reg.RegNum) ||
             RISCVMCRegisterClasses[RISCV::VRRegClassID].contains(Reg.RegNum));
   }
   bool isAnyRegC() const {
@@ -1681,7 +1682,8 @@ bool RISCVAsmParser::matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
   }
   case Match_InvalidRTZArg: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return Error(ErrorLoc, "operand must be 'rtz' floating-point rounding mode");
+    return Error(ErrorLoc,
+                 "operand must be 'rtz' floating-point rounding mode");
   }
   case Match_InvalidVTypeI: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
@@ -2090,8 +2092,8 @@ ParseStatus RISCVAsmParser::parseFPImm(OperandVector &Operands) {
   if (IsNegative)
     RealVal.changeSign();
 
-  Operands.push_back(RISCVOperand::createFPImm(
-      RealVal.bitcastToAPInt().getZExtValue(), S));
+  Operands.push_back(
+      RISCVOperand::createFPImm(RealVal.bitcastToAPInt().getZExtValue(), S));
 
   Lex(); // Eat the token.
 
@@ -2383,10 +2385,8 @@ ParseStatus RISCVAsmParser::parseVTypeI(OperandVector &Operands) {
 }
 
 bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
-  return Error(
-      ErrorLoc,
-      "operand must be "
-      "e[8|16|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]");
+  return Error(ErrorLoc, "operand must be "
+                         "e[8|16|32|64],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]");
 }
 
 ParseStatus RISCVAsmParser::parseMaskReg(OperandVector &Operands) {
@@ -3050,16 +3050,18 @@ bool RISCVAsmParser::parseDirectiveOption() {
         FeatureBitset OldFeatureBits = STI->getFeatureBits();
 
         setFeatureBits(Ext->Value, Ext->Key);
-        auto ParseResult = RISCVFeatures::parseFeatureBits(isRV64(), STI->getFeatureBits());
+        auto ParseResult =
+            RISCVFeatures::parseFeatureBits(isRV64(), STI->getFeatureBits());
         if (!ParseResult) {
           copySTI().setFeatureBits(OldFeatureBits);
           setAvailableFeatures(ComputeAvailableFeatures(OldFeatureBits));
 
           std::string Buffer;
           raw_string_ostream OutputErrMsg(Buffer);
-          handleAllErrors(ParseResult.takeError(), [&](llvm::StringError &ErrMsg) {
-            OutputErrMsg << ErrMsg.getMessage();
-          });
+          handleAllErrors(ParseResult.takeError(),
+                          [&](llvm::StringError &ErrMsg) {
+                            OutputErrMsg << ErrMsg.getMessage();
+                          });
 
           return Error(Loc, OutputErrMsg.str());
         }
@@ -3736,7 +3738,8 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
       return Error(Loc, "the destination vector register group cannot overlap"
                         " the source vector register group");
   }
-  if ((MCID.TSFlags & RISCVII::VS1Constraint) && Inst.getOperand(Offset + 2).isReg()) {
+  if ((MCID.TSFlags & RISCVII::VS1Constraint) &&
+      Inst.getOperand(Offset + 2).isReg()) {
     MCRegister CheckReg = Inst.getOperand(Offset + 2).getReg();
     if (DestReg == CheckReg)
       return Error(Loc, "the destination vector register group cannot overlap"

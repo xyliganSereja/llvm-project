@@ -45,7 +45,6 @@ class Section;
 /// and their implemetations should include any necessary synchronization.
 class JITLinkMemoryManager {
 public:
-
   /// Represents a finalized allocation.
   ///
   /// Finalized allocations must be passed to the

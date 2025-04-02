@@ -380,7 +380,7 @@ dxil::BitcodeWriter::BitcodeWriter(SmallVectorImpl<char> &Buffer)
   Stream->Emit(0xD, 4);
 }
 
-dxil::BitcodeWriter::~BitcodeWriter() { }
+dxil::BitcodeWriter::~BitcodeWriter() {}
 
 /// Write the specified module to the specified output stream.
 void dxil::WriteDXILToFile(const Module &M, raw_ostream &Out) {
@@ -1725,7 +1725,7 @@ void DXILBitcodeWriter::writeMetadataRecords(ArrayRef<const Metadata *> MDs,
   if (MDs.empty())
     return;
 
-    // Initialize MDNode abbreviations.
+  // Initialize MDNode abbreviations.
 #define HANDLE_MDNODE_LEAF(CLASS) unsigned CLASS##Abbrev = 0;
 #include "llvm/IR/Metadata.def"
 

@@ -202,8 +202,8 @@ private:
 };
 
 namespace this_thread {
-  inline thread::id get_id() { return std::this_thread::get_id(); }
-}
+inline thread::id get_id() { return std::this_thread::get_id(); }
+} // namespace this_thread
 
 #endif // LLVM_ON_UNIX || _WIN32
 

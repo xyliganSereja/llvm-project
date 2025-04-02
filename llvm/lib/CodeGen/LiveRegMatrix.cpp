@@ -32,8 +32,8 @@ using namespace llvm;
 
 #define DEBUG_TYPE "regalloc"
 
-STATISTIC(NumAssigned   , "Number of registers assigned");
-STATISTIC(NumUnassigned , "Number of registers unassigned");
+STATISTIC(NumAssigned, "Number of registers assigned");
+STATISTIC(NumUnassigned, "Number of registers unassigned");
 
 char LiveRegMatrixWrapperLegacy::ID = 0;
 INITIALIZE_PASS_BEGIN(LiveRegMatrixWrapperLegacy, "liveregmatrix",
@@ -175,11 +175,11 @@ bool LiveRegMatrix::checkRegUnitInterference(const LiveInterval &VirtReg,
     return false;
   CoalescerPair CP(VirtReg.reg(), PhysReg, *TRI);
 
-  bool Result = foreachUnit(TRI, VirtReg, PhysReg, [&](unsigned Unit,
-                                                       const LiveRange &Range) {
-    const LiveRange &UnitRange = LIS->getRegUnit(Unit);
-    return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
-  });
+  bool Result = foreachUnit(
+      TRI, VirtReg, PhysReg, [&](unsigned Unit, const LiveRange &Range) {
+        const LiveRange &UnitRange = LIS->getRegUnit(Unit);
+        return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
+      });
   return Result;
 }
 

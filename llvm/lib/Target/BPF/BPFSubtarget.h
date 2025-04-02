@@ -114,6 +114,6 @@ public:
   const LegalizerInfo *getLegalizerInfo() const override;
   const RegisterBankInfo *getRegBankInfo() const override;
 };
-} // End llvm namespace
+} // namespace llvm
 
 #endif

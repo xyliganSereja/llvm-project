@@ -161,6 +161,6 @@ public:
 // global values that do not have their addresses taken.
 //
 ModulePass *createGlobalsAAWrapperPass();
-}
+} // namespace llvm
 
 #endif

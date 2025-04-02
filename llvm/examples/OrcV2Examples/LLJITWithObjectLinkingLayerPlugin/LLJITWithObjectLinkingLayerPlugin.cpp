@@ -238,8 +238,7 @@ int main(int argc, char *argv[]) {
   auto *Entry = EntryAddr.toPtr<int()>();
 
   int Result = Entry();
-  outs() << "---Result---\n"
-         << EntryPointName << "() = " << Result << "\n";
+  outs() << "---Result---\n" << EntryPointName << "() = " << Result << "\n";
 
   return 0;
 }

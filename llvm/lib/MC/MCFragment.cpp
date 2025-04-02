@@ -30,51 +30,51 @@ MCFragment::MCFragment(FragmentType Kind, bool HasInstructions)
 
 void MCFragment::destroy() {
   switch (Kind) {
-    case FT_Align:
-      cast<MCAlignFragment>(this)->~MCAlignFragment();
-      return;
-    case FT_Data:
-      cast<MCDataFragment>(this)->~MCDataFragment();
-      return;
-    case FT_Fill:
-      cast<MCFillFragment>(this)->~MCFillFragment();
-      return;
-    case FT_Nops:
-      cast<MCNopsFragment>(this)->~MCNopsFragment();
-      return;
-    case FT_Relaxable:
-      cast<MCRelaxableFragment>(this)->~MCRelaxableFragment();
-      return;
-    case FT_Org:
-      cast<MCOrgFragment>(this)->~MCOrgFragment();
-      return;
-    case FT_Dwarf:
-      cast<MCDwarfLineAddrFragment>(this)->~MCDwarfLineAddrFragment();
-      return;
-    case FT_DwarfFrame:
-      cast<MCDwarfCallFrameFragment>(this)->~MCDwarfCallFrameFragment();
-      return;
-    case FT_LEB:
-      cast<MCLEBFragment>(this)->~MCLEBFragment();
-      return;
-    case FT_BoundaryAlign:
-      cast<MCBoundaryAlignFragment>(this)->~MCBoundaryAlignFragment();
-      return;
-    case FT_SymbolId:
-      cast<MCSymbolIdFragment>(this)->~MCSymbolIdFragment();
-      return;
-    case FT_CVInlineLines:
-      cast<MCCVInlineLineTableFragment>(this)->~MCCVInlineLineTableFragment();
-      return;
-    case FT_CVDefRange:
-      cast<MCCVDefRangeFragment>(this)->~MCCVDefRangeFragment();
-      return;
-    case FT_PseudoProbe:
-      cast<MCPseudoProbeAddrFragment>(this)->~MCPseudoProbeAddrFragment();
-      return;
-    case FT_Dummy:
-      cast<MCDummyFragment>(this)->~MCDummyFragment();
-      return;
+  case FT_Align:
+    cast<MCAlignFragment>(this)->~MCAlignFragment();
+    return;
+  case FT_Data:
+    cast<MCDataFragment>(this)->~MCDataFragment();
+    return;
+  case FT_Fill:
+    cast<MCFillFragment>(this)->~MCFillFragment();
+    return;
+  case FT_Nops:
+    cast<MCNopsFragment>(this)->~MCNopsFragment();
+    return;
+  case FT_Relaxable:
+    cast<MCRelaxableFragment>(this)->~MCRelaxableFragment();
+    return;
+  case FT_Org:
+    cast<MCOrgFragment>(this)->~MCOrgFragment();
+    return;
+  case FT_Dwarf:
+    cast<MCDwarfLineAddrFragment>(this)->~MCDwarfLineAddrFragment();
+    return;
+  case FT_DwarfFrame:
+    cast<MCDwarfCallFrameFragment>(this)->~MCDwarfCallFrameFragment();
+    return;
+  case FT_LEB:
+    cast<MCLEBFragment>(this)->~MCLEBFragment();
+    return;
+  case FT_BoundaryAlign:
+    cast<MCBoundaryAlignFragment>(this)->~MCBoundaryAlignFragment();
+    return;
+  case FT_SymbolId:
+    cast<MCSymbolIdFragment>(this)->~MCSymbolIdFragment();
+    return;
+  case FT_CVInlineLines:
+    cast<MCCVInlineLineTableFragment>(this)->~MCCVInlineLineTableFragment();
+    return;
+  case FT_CVDefRange:
+    cast<MCCVDefRangeFragment>(this)->~MCCVDefRangeFragment();
+    return;
+  case FT_PseudoProbe:
+    cast<MCPseudoProbeAddrFragment>(this)->~MCPseudoProbeAddrFragment();
+    return;
+  case FT_Dummy:
+    cast<MCDummyFragment>(this)->~MCDummyFragment();
+    return;
   }
 }
 
@@ -88,8 +88,7 @@ namespace llvm {
 
 raw_ostream &operator<<(raw_ostream &OS, const MCFixup &AF) {
   OS << "<MCFixup" << " Offset:" << AF.getOffset()
-     << " Value:" << *AF.getValue()
-     << " Kind:" << AF.getKind() << ">";
+     << " Value:" << *AF.getValue() << " Kind:" << AF.getKind() << ">";
   return OS;
 }
 
@@ -101,25 +100,51 @@ LLVM_DUMP_METHOD void MCFragment::dump() const {
 
   OS << "<";
   switch (getKind()) {
-  case MCFragment::FT_Align: OS << "MCAlignFragment"; break;
-  case MCFragment::FT_Data:  OS << "MCDataFragment"; break;
-  case MCFragment::FT_Fill:  OS << "MCFillFragment"; break;
+  case MCFragment::FT_Align:
+    OS << "MCAlignFragment";
+    break;
+  case MCFragment::FT_Data:
+    OS << "MCDataFragment";
+    break;
+  case MCFragment::FT_Fill:
+    OS << "MCFillFragment";
+    break;
   case MCFragment::FT_Nops:
     OS << "MCFNopsFragment";
     break;
-  case MCFragment::FT_Relaxable:  OS << "MCRelaxableFragment"; break;
-  case MCFragment::FT_Org:   OS << "MCOrgFragment"; break;
-  case MCFragment::FT_Dwarf: OS << "MCDwarfFragment"; break;
-  case MCFragment::FT_DwarfFrame: OS << "MCDwarfCallFrameFragment"; break;
-  case MCFragment::FT_LEB:   OS << "MCLEBFragment"; break;
-  case MCFragment::FT_BoundaryAlign: OS<<"MCBoundaryAlignFragment"; break;
-  case MCFragment::FT_SymbolId:    OS << "MCSymbolIdFragment"; break;
-  case MCFragment::FT_CVInlineLines: OS << "MCCVInlineLineTableFragment"; break;
-  case MCFragment::FT_CVDefRange: OS << "MCCVDefRangeTableFragment"; break;
+  case MCFragment::FT_Relaxable:
+    OS << "MCRelaxableFragment";
+    break;
+  case MCFragment::FT_Org:
+    OS << "MCOrgFragment";
+    break;
+  case MCFragment::FT_Dwarf:
+    OS << "MCDwarfFragment";
+    break;
+  case MCFragment::FT_DwarfFrame:
+    OS << "MCDwarfCallFrameFragment";
+    break;
+  case MCFragment::FT_LEB:
+    OS << "MCLEBFragment";
+    break;
+  case MCFragment::FT_BoundaryAlign:
+    OS << "MCBoundaryAlignFragment";
+    break;
+  case MCFragment::FT_SymbolId:
+    OS << "MCSymbolIdFragment";
+    break;
+  case MCFragment::FT_CVInlineLines:
+    OS << "MCCVInlineLineTableFragment";
+    break;
+  case MCFragment::FT_CVDefRange:
+    OS << "MCCVDefRangeTableFragment";
+    break;
   case MCFragment::FT_PseudoProbe:
     OS << "MCPseudoProbe";
     break;
-  case MCFragment::FT_Dummy: OS << "MCDummyFragment"; break;
+  case MCFragment::FT_Dummy:
+    OS << "MCDummyFragment";
+    break;
   }
 
   OS << "<MCFragment " << (const void *)this << " LayoutOrder:" << LayoutOrder
@@ -139,13 +164,14 @@ LLVM_DUMP_METHOD void MCFragment::dump() const {
        << " MaxBytesToEmit:" << AF->getMaxBytesToEmit() << ">";
     break;
   }
-  case MCFragment::FT_Data:  {
+  case MCFragment::FT_Data: {
     const auto *DF = cast<MCDataFragment>(this);
     OS << "\n       ";
     OS << " Contents:[";
     const SmallVectorImpl<char> &Contents = DF->getContents();
     for (unsigned i = 0, e = Contents.size(); i != e; ++i) {
-      if (i) OS << ",";
+      if (i)
+        OS << ",";
       OS << hexdigit((Contents[i] >> 4) & 0xF) << hexdigit(Contents[i] & 0xF);
     }
     OS << "] (" << Contents.size() << " bytes)";
@@ -158,7 +184,7 @@ LLVM_DUMP_METHOD void MCFragment::dump() const {
     }
     break;
   }
-  case MCFragment::FT_Fill:  {
+  case MCFragment::FT_Fill: {
     const auto *FF = cast<MCFillFragment>(this);
     OS << " Value:" << static_cast<unsigned>(FF->getValue())
        << " ValueSize:" << static_cast<unsigned>(FF->getValueSize())
@@ -171,7 +197,7 @@ LLVM_DUMP_METHOD void MCFragment::dump() const {
        << " ControlledNopLength:" << NF->getControlledNopLength();
     break;
   }
-  case MCFragment::FT_Relaxable:  {
+  case MCFragment::FT_Relaxable: {
     const auto *F = cast<MCRelaxableFragment>(this);
     OS << "\n       ";
     OS << " Inst:";
@@ -179,21 +205,21 @@ LLVM_DUMP_METHOD void MCFragment::dump() const {
     OS << " (" << F->getContents().size() << " bytes)";
     break;
   }
-  case MCFragment::FT_Org:  {
+  case MCFragment::FT_Org: {
     const auto *OF = cast<MCOrgFragment>(this);
     OS << "\n       ";
     OS << " Offset:" << OF->getOffset()
        << " Value:" << static_cast<unsigned>(OF->getValue());
     break;
   }
-  case MCFragment::FT_Dwarf:  {
+  case MCFragment::FT_Dwarf: {
     const auto *OF = cast<MCDwarfLineAddrFragment>(this);
     OS << "\n       ";
     OS << " AddrDelta:" << OF->getAddrDelta()
        << " LineDelta:" << OF->getLineDelta();
     break;
   }
-  case MCFragment::FT_DwarfFrame:  {
+  case MCFragment::FT_DwarfFrame: {
     const auto *CF = cast<MCDwarfCallFrameFragment>(this);
     OS << "\n       ";
     OS << " AddrDelta:" << CF->getAddrDelta();

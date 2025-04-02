@@ -28,7 +28,7 @@ namespace {
 class SystemZDisassembler : public MCDisassembler {
 public:
   SystemZDisassembler(const MCSubtargetInfo &STI, MCContext &Ctx)
-    : MCDisassembler(STI, Ctx) {}
+      : MCDisassembler(STI, Ctx) {}
   ~SystemZDisassembler() override = default;
 
   DecodeStatus getInstruction(MCInst &Instr, uint64_t &Size,
@@ -177,7 +177,7 @@ static DecodeStatus DecodeCR64BitRegisterClass(MCInst &Inst, uint64_t RegNo,
   return decodeRegisterClass(Inst, RegNo, SystemZMC::CR64Regs, 16);
 }
 
-template<unsigned N>
+template <unsigned N>
 static DecodeStatus decodeUImmOperand(MCInst &Inst, uint64_t Imm) {
   if (!isUInt<N>(Imm))
     return MCDisassembler::Fail;
@@ -185,7 +185,7 @@ static DecodeStatus decodeUImmOperand(MCInst &Inst, uint64_t Imm) {
   return MCDisassembler::Success;
 }
 
-template<unsigned N>
+template <unsigned N>
 static DecodeStatus decodeSImmOperand(MCInst &Inst, uint64_t Imm) {
   if (!isUInt<N>(Imm))
     return MCDisassembler::Fail;
@@ -282,8 +282,8 @@ static DecodeStatus decodePCDBLOperand(MCInst &Inst, uint64_t Imm,
   assert(isUInt<N>(Imm) && "Invalid PC-relative offset");
   uint64_t Value = SignExtend64<N>(Imm) * 2 + Address;
 
-  if (!tryAddingSymbolicOperand(Value, isBranch, Address, 2, N / 8,
-                                Inst, Decoder))
+  if (!tryAddingSymbolicOperand(Value, isBranch, Address, 2, N / 8, Inst,
+                                Decoder))
     Inst.addOperand(MCOperand::createImm(Value));
 
   return MCDisassembler::Success;

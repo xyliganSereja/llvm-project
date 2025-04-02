@@ -113,4 +113,4 @@ using ParamTypes =
 INSTANTIATE_TYPED_TEST_SUITE_P(EquivalenceClassesTest, ParameterizedTest,
                                ParamTypes, );
 
-} // llvm
+} // namespace llvm

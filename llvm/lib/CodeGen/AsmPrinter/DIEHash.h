@@ -107,6 +107,6 @@ private:
   DwarfCompileUnit *CU;
   DenseMap<const DIE *, unsigned> Numbering;
 };
-}
+} // namespace llvm
 
 #endif

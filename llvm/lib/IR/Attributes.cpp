@@ -127,7 +127,8 @@ Attribute Attribute::get(LLVMContext &Context, StringRef Kind, StringRef Val) {
   LLVMContextImpl *pImpl = Context.pImpl;
   FoldingSetNodeID ID;
   ID.AddString(Kind);
-  if (!Val.empty()) ID.AddString(Val);
+  if (!Val.empty())
+    ID.AddString(Val);
 
   void *InsertPoint;
   AttributeImpl *PA = pImpl->AttrsSet.FindNodeOrInsertPos(ID, InsertPoint);
@@ -242,7 +243,7 @@ Attribute Attribute::getWithStackAlignment(LLVMContext &Context, Align A) {
 }
 
 Attribute Attribute::getWithDereferenceableBytes(LLVMContext &Context,
-                                                uint64_t Bytes) {
+                                                 uint64_t Bytes) {
   assert(Bytes && "Bytes must be non-zero.");
   return get(Context, Dereferenceable, Bytes);
 }
@@ -362,42 +363,48 @@ bool Attribute::isConstantRangeListAttribute() const {
 }
 
 Attribute::AttrKind Attribute::getKindAsEnum() const {
-  if (!pImpl) return None;
+  if (!pImpl)
+    return None;
   assert(hasKindAsEnum() &&
          "Invalid attribute type to get the kind as an enum!");
   return pImpl->getKindAsEnum();
 }
 
 uint64_t Attribute::getValueAsInt() const {
-  if (!pImpl) return 0;
+  if (!pImpl)
+    return 0;
   assert(isIntAttribute() &&
          "Expected the attribute to be an integer attribute!");
   return pImpl->getValueAsInt();
 }
 
 bool Attribute::getValueAsBool() const {
-  if (!pImpl) return false;
+  if (!pImpl)
+    return false;
   assert(isStringAttribute() &&
          "Expected the attribute to be a string attribute!");
   return pImpl->getValueAsBool();
 }
 
 StringRef Attribute::getKindAsString() const {
-  if (!pImpl) return {};
+  if (!pImpl)
+    return {};
   assert(isStringAttribute() &&
          "Invalid attribute type to get the kind as a string!");
   return pImpl->getKindAsString();
 }
 
 StringRef Attribute::getValueAsString() const {
-  if (!pImpl) return {};
+  if (!pImpl)
+    return {};
   assert(isStringAttribute() &&
          "Invalid attribute type to get the value as a string!");
   return pImpl->getValueAsString();
 }
 
 Type *Attribute::getValueAsType() const {
-  if (!pImpl) return {};
+  if (!pImpl)
+    return {};
   assert(isTypeAttribute() &&
          "Invalid attribute type to get the value as a type!");
   return pImpl->getValueAsType();
@@ -420,7 +427,8 @@ bool Attribute::hasAttribute(AttrKind Kind) const {
 }
 
 bool Attribute::hasAttribute(StringRef Kind) const {
-  if (!isStringAttribute()) return false;
+  if (!isStringAttribute())
+    return false;
   return pImpl && pImpl->hasAttribute(Kind);
 }
 
@@ -526,7 +534,8 @@ static const char *getModRefStr(ModRefInfo MR) {
 }
 
 std::string Attribute::getAsString(bool InAttrGrp) const {
-  if (!pImpl) return {};
+  if (!pImpl)
+    return {};
 
   if (isEnumAttribute())
     return getNameFromAttrKind(getKindAsEnum()).str();
@@ -736,15 +745,16 @@ int Attribute::cmpKind(Attribute A) const {
 }
 
 bool Attribute::operator<(Attribute A) const {
-  if (!pImpl && !A.pImpl) return false;
-  if (!pImpl) return true;
-  if (!A.pImpl) return false;
+  if (!pImpl && !A.pImpl)
+    return false;
+  if (!pImpl)
+    return true;
+  if (!A.pImpl)
+    return false;
   return *pImpl < *A.pImpl;
 }
 
-void Attribute::Profile(FoldingSetNodeID &ID) const {
-  ID.AddPointer(pImpl);
-}
+void Attribute::Profile(FoldingSetNodeID &ID) const { ID.AddPointer(pImpl); }
 
 enum AttributeProperty {
   FnAttr = (1 << 0),
@@ -812,12 +822,14 @@ bool Attribute::intersectWithCustom(AttrKind Kind) {
 //===----------------------------------------------------------------------===//
 
 bool AttributeImpl::hasAttribute(Attribute::AttrKind A) const {
-  if (isStringAttribute()) return false;
+  if (isStringAttribute())
+    return false;
   return getKindAsEnum() == A;
 }
 
 bool AttributeImpl::hasAttribute(StringRef Kind) const {
-  if (!isStringAttribute()) return false;
+  if (!isStringAttribute())
+    return false;
   return getKindAsString() == Kind;
 }
 
@@ -833,7 +845,8 @@ uint64_t AttributeImpl::getValueAsInt() const {
 }
 
 bool AttributeImpl::getValueAsBool() const {
-  assert(getValueAsString().empty() || getValueAsString() == "false" || getValueAsString() == "true");
+  assert(getValueAsString().empty() || getValueAsString() == "false" ||
+         getValueAsString() == "true");
   return getValueAsString() == "true";
 }
 
@@ -917,7 +930,8 @@ AttributeSet AttributeSet::get(LLVMContext &C, ArrayRef<Attribute> Attrs) {
 
 AttributeSet AttributeSet::addAttribute(LLVMContext &C,
                                         Attribute::AttrKind Kind) const {
-  if (hasAttribute(Kind)) return *this;
+  if (hasAttribute(Kind))
+    return *this;
   AttrBuilder B(C);
   B.addAttribute(Kind);
   return addAttributes(C, AttributeSet::get(C, B));
@@ -944,16 +958,18 @@ AttributeSet AttributeSet::addAttributes(LLVMContext &C,
 }
 
 AttributeSet AttributeSet::removeAttribute(LLVMContext &C,
-                                             Attribute::AttrKind Kind) const {
-  if (!hasAttribute(Kind)) return *this;
+                                           Attribute::AttrKind Kind) const {
+  if (!hasAttribute(Kind))
+    return *this;
   AttrBuilder B(C, *this);
   B.removeAttribute(Kind);
   return get(C, B);
 }
 
 AttributeSet AttributeSet::removeAttribute(LLVMContext &C,
-                                             StringRef Kind) const {
-  if (!hasAttribute(Kind)) return *this;
+                                           StringRef Kind) const {
+  if (!hasAttribute(Kind))
+    return *this;
   AttrBuilder B(C, *this);
   B.removeAttribute(Kind);
   return get(C, B);
@@ -1218,8 +1234,8 @@ AttributeSet::iterator AttributeSet::end() const {
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 LLVM_DUMP_METHOD void AttributeSet::dump() const {
   dbgs() << "AS =\n";
-    dbgs() << "  { ";
-    dbgs() << getAsString(true) << " }\n";
+  dbgs() << "  { ";
+  dbgs() << getAsString(true) << " }\n";
 }
 #endif
 
@@ -1234,7 +1250,7 @@ AttributeSetNode::AttributeSetNode(ArrayRef<Attribute> Attrs)
 
   for (const auto &I : *this) {
     if (I.isStringAttribute())
-      StringAttrs.insert({ I.getKindAsString(), I });
+      StringAttrs.insert({I.getKindAsString(), I});
     else
       AvailableAttrs.addAttribute(I.getKindAsEnum());
   }
@@ -1262,7 +1278,7 @@ AttributeSetNode *AttributeSetNode::getSorted(LLVMContext &C,
 
   void *InsertPoint;
   AttributeSetNode *PA =
-    pImpl->AttrsSetNodes.FindNodeOrInsertPos(ID, InsertPoint);
+      pImpl->AttrsSetNodes.FindNodeOrInsertPos(ID, InsertPoint);
 
   // If we didn't find any existing attributes of the same shape then create a
   // new one and insert it.
@@ -1407,9 +1423,7 @@ std::string AttributeSetNode::getAsString(bool InAttrGrp) const {
 
 /// Map from AttributeList index to the internal array index. Adding one happens
 /// to work, because -1 wraps around to 0.
-static unsigned attrIdxToArrayIdx(unsigned Index) {
-  return Index + 1;
-}
+static unsigned attrIdxToArrayIdx(unsigned Index) { return Index + 1; }
 
 AttributeListImpl::AttributeListImpl(ArrayRef<AttributeSet> Sets)
     : NumAttrSets(Sets.size()) {
@@ -1441,7 +1455,7 @@ void AttributeListImpl::Profile(FoldingSetNodeID &ID,
 }
 
 bool AttributeListImpl::hasAttrSomewhere(Attribute::AttrKind Kind,
-                                        unsigned *Index) const {
+                                         unsigned *Index) const {
   if (!AvailableSomewhereAttrs.hasAttribute(Kind))
     return false;
 
@@ -1456,7 +1470,6 @@ bool AttributeListImpl::hasAttrSomewhere(Attribute::AttrKind Kind,
 
   return true;
 }
-
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 LLVM_DUMP_METHOD void AttributeListImpl::dump() const {
@@ -1514,7 +1527,8 @@ AttributeList::get(LLVMContext &C,
   // list.
   SmallVector<std::pair<unsigned, AttributeSet>, 8> AttrPairVec;
   for (ArrayRef<std::pair<unsigned, Attribute>>::iterator I = Attrs.begin(),
-         E = Attrs.end(); I != E; ) {
+                                                          E = Attrs.end();
+       I != E;) {
     unsigned Index = I->first;
     SmallVector<Attribute, 4> AttrVec;
     while (I != E && I->first == Index) {
@@ -1910,7 +1924,7 @@ MaybeAlign AttributeList::getParamStackAlignment(unsigned ArgNo) const {
 }
 
 Type *AttributeList::getParamByValType(unsigned Index) const {
-  return getAttributes(Index+FirstArgIndex).getByValType();
+  return getAttributes(Index + FirstArgIndex).getByValType();
 }
 
 Type *AttributeList::getParamStructRetType(unsigned Index) const {
@@ -2170,7 +2184,8 @@ AttrBuilder &AttrBuilder::addStackAlignmentAttr(MaybeAlign Align) {
 }
 
 AttrBuilder &AttrBuilder::addDereferenceableAttr(uint64_t Bytes) {
-  if (Bytes == 0) return *this;
+  if (Bytes == 0)
+    return *this;
 
   return addRawIntAttr(Attribute::Dereferenceable, Bytes);
 }
@@ -2395,7 +2410,7 @@ AttributeMask AttributeFuncs::typeIncompatible(Type *Ty, AttributeSet AS,
           .addAttribute(Attribute::AllocatedPointer);
   }
 
-    // Attributes that only apply to pointers or vectors of pointers.
+  // Attributes that only apply to pointers or vectors of pointers.
   if (!Ty->isPtrOrPtrVectorTy()) {
     if (ASK & ASK_SAFE_TO_DROP)
       Incompatible.addAttribute(Attribute::Alignment);
@@ -2465,7 +2480,7 @@ static bool checkStrictFP(const Function &Caller, const Function &Callee) {
          Caller.getAttributes().hasFnAttr(Attribute::StrictFP);
 }
 
-template<typename AttrClass>
+template <typename AttrClass>
 static bool isEqual(const Function &Caller, const Function &Callee) {
   return Caller.getFnAttribute(AttrClass::getKind()) ==
          Callee.getFnAttribute(AttrClass::getKind());
@@ -2481,7 +2496,7 @@ static bool isEqual(const Function &Caller, const Function &Callee,
 ///
 /// This function sets the caller's attribute to false if the callee's attribute
 /// is false.
-template<typename AttrClass>
+template <typename AttrClass>
 static void setAND(Function &Caller, const Function &Callee) {
   if (AttrClass::isSet(Caller, AttrClass::getKind()) &&
       !AttrClass::isSet(Callee, AttrClass::getKind()))
@@ -2493,7 +2508,7 @@ static void setAND(Function &Caller, const Function &Callee) {
 ///
 /// This function sets the caller's attribute to true if the callee's attribute
 /// is true.
-template<typename AttrClass>
+template <typename AttrClass>
 static void setOR(Function &Caller, const Function &Callee) {
   if (!AttrClass::isSet(Caller, AttrClass::getKind()) &&
       AttrClass::isSet(Callee, AttrClass::getKind()))
@@ -2542,8 +2557,8 @@ static void adjustCallerStackProbes(Function &Caller, const Function &Callee) {
 /// If the inlined function defines the size of guard region
 /// on the stack, then ensure that the calling function defines a guard region
 /// that is no larger.
-static void
-adjustCallerStackProbeSize(Function &Caller, const Function &Callee) {
+static void adjustCallerStackProbeSize(Function &Caller,
+                                       const Function &Callee) {
   Attribute CalleeAttr = Callee.getFnAttribute("stack-probe-size");
   if (CalleeAttr.isValid()) {
     Attribute CallerAttr = Caller.getFnAttribute("stack-probe-size");
@@ -2570,8 +2585,8 @@ adjustCallerStackProbeSize(Function &Caller, const Function &Callee) {
 /// to merge the attribute this way. Heuristics that would use
 /// min-legal-vector-width to determine inline compatibility would need to be
 /// handled as part of inline cost analysis.
-static void
-adjustMinLegalVectorWidth(Function &Caller, const Function &Callee) {
+static void adjustMinLegalVectorWidth(Function &Caller,
+                                      const Function &Callee) {
   Attribute CallerAttr = Caller.getFnAttribute("min-legal-vector-width");
   if (CallerAttr.isValid()) {
     Attribute CalleeAttr = Callee.getFnAttribute("min-legal-vector-width");
@@ -2591,21 +2606,19 @@ adjustMinLegalVectorWidth(Function &Caller, const Function &Callee) {
 
 /// If the inlined function has null_pointer_is_valid attribute,
 /// set this attribute in the caller post inlining.
-static void
-adjustNullPointerValidAttr(Function &Caller, const Function &Callee) {
+static void adjustNullPointerValidAttr(Function &Caller,
+                                       const Function &Callee) {
   if (Callee.nullPointerIsDefined() && !Caller.nullPointerIsDefined()) {
     Caller.addFnAttr(Attribute::NullPointerIsValid);
   }
 }
 
 struct EnumAttr {
-  static bool isSet(const Function &Fn,
-                    Attribute::AttrKind Kind) {
+  static bool isSet(const Function &Fn, Attribute::AttrKind Kind) {
     return Fn.hasFnAttribute(Kind);
   }
 
-  static void set(Function &Fn,
-                  Attribute::AttrKind Kind, bool Val) {
+  static void set(Function &Fn, Attribute::AttrKind Kind, bool Val) {
     if (Val)
       Fn.addFnAttr(Kind);
     else
@@ -2614,14 +2627,12 @@ struct EnumAttr {
 };
 
 struct StrBoolAttr {
-  static bool isSet(const Function &Fn,
-                    StringRef Kind) {
+  static bool isSet(const Function &Fn, StringRef Kind) {
     auto A = Fn.getFnAttribute(Kind);
     return A.getValueAsString() == "true";
   }
 
-  static void set(Function &Fn,
-                  StringRef Kind, bool Val) {
+  static void set(Function &Fn, StringRef Kind, bool Val) {
     Fn.addFnAttr(Kind, Val ? "true" : "false");
   }
 };
@@ -2658,7 +2669,7 @@ void AttributeFuncs::mergeAttributesForInlining(Function &Caller,
 }
 
 void AttributeFuncs::mergeAttributesForOutlining(Function &Base,
-                                                const Function &ToMerge) {
+                                                 const Function &ToMerge) {
 
   // We merge functions so that they meet the most general case.
   // For example, if the NoNansFPMathAttr is set in one function, but not in

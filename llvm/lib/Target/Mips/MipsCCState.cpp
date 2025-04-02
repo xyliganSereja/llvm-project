@@ -84,11 +84,10 @@ MipsCCState::getSpecialCallingConvForCallee(const SDNode *Callee,
 }
 
 void MipsCCState::PreAnalyzeCallResultForF128(
-    const SmallVectorImpl<ISD::InputArg> &Ins,
-    const Type *RetTy, const char *Call) {
+    const SmallVectorImpl<ISD::InputArg> &Ins, const Type *RetTy,
+    const char *Call) {
   for (unsigned i = 0; i < Ins.size(); ++i) {
-    OriginalArgWasF128.push_back(
-        originalTypeIsF128(RetTy, Call));
+    OriginalArgWasF128.push_back(originalTypeIsF128(RetTy, Call));
     OriginalArgWasFloat.push_back(RetTy->isFloatingPointTy());
   }
 }
@@ -98,10 +97,8 @@ void MipsCCState::PreAnalyzeCallResultForF128(
 void MipsCCState::PreAnalyzeCallReturnForF128(
     const SmallVectorImpl<ISD::OutputArg> &Outs, const Type *RetTy) {
   for (unsigned i = 0; i < Outs.size(); ++i) {
-    OriginalArgWasF128.push_back(
-        originalTypeIsF128(RetTy, nullptr));
-    OriginalArgWasFloat.push_back(
-        RetTy->isFloatingPointTy());
+    OriginalArgWasF128.push_back(originalTypeIsF128(RetTy, nullptr));
+    OriginalArgWasFloat.push_back(RetTy->isFloatingPointTy());
   }
 }
 
@@ -141,8 +138,7 @@ void MipsCCState::PreAnalyzeCallOperand(const Type *ArgTy, bool IsFixed,
 /// arguments and record this.
 void MipsCCState::PreAnalyzeCallOperands(
     const SmallVectorImpl<ISD::OutputArg> &Outs,
-    std::vector<TargetLowering::ArgListEntry> &FuncArgs,
-    const char *Func) {
+    std::vector<TargetLowering::ArgListEntry> &FuncArgs, const char *Func) {
   for (unsigned i = 0; i < Outs.size(); ++i) {
     TargetLowering::ArgListEntry FuncArg = FuncArgs[Outs[i].OrigArgIndex];
 

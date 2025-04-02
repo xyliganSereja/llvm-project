@@ -35,40 +35,40 @@ PreservedAnalyses BitcodeWriterPass::run(Module &M, ModuleAnalysisManager &AM) {
 }
 
 namespace {
-  class WriteBitcodePass : public ModulePass {
-    raw_ostream &OS; // raw_ostream to print on
-    bool ShouldPreserveUseListOrder;
+class WriteBitcodePass : public ModulePass {
+  raw_ostream &OS; // raw_ostream to print on
+  bool ShouldPreserveUseListOrder;
 
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    WriteBitcodePass() : ModulePass(ID), OS(dbgs()) {
-      initializeWriteBitcodePassPass(*PassRegistry::getPassRegistry());
-    }
+public:
+  static char ID; // Pass identification, replacement for typeid
+  WriteBitcodePass() : ModulePass(ID), OS(dbgs()) {
+    initializeWriteBitcodePassPass(*PassRegistry::getPassRegistry());
+  }
 
-    explicit WriteBitcodePass(raw_ostream &o, bool ShouldPreserveUseListOrder)
-        : ModulePass(ID), OS(o),
-          ShouldPreserveUseListOrder(ShouldPreserveUseListOrder) {
-      initializeWriteBitcodePassPass(*PassRegistry::getPassRegistry());
-    }
+  explicit WriteBitcodePass(raw_ostream &o, bool ShouldPreserveUseListOrder)
+      : ModulePass(ID), OS(o),
+        ShouldPreserveUseListOrder(ShouldPreserveUseListOrder) {
+    initializeWriteBitcodePassPass(*PassRegistry::getPassRegistry());
+  }
 
-    StringRef getPassName() const override { return "Bitcode Writer"; }
+  StringRef getPassName() const override { return "Bitcode Writer"; }
 
-    bool runOnModule(Module &M) override {
-      ScopedDbgInfoFormatSetter FormatSetter(
-          M, M.IsNewDbgInfoFormat && WriteNewDbgInfoFormatToBitcode);
-      if (M.IsNewDbgInfoFormat)
-        M.removeDebugIntrinsicDeclarations();
+  bool runOnModule(Module &M) override {
+    ScopedDbgInfoFormatSetter FormatSetter(
+        M, M.IsNewDbgInfoFormat && WriteNewDbgInfoFormatToBitcode);
+    if (M.IsNewDbgInfoFormat)
+      M.removeDebugIntrinsicDeclarations();
 
-      WriteBitcodeToFile(M, OS, ShouldPreserveUseListOrder, /*Index=*/nullptr,
-                         /*EmitModuleHash=*/false);
+    WriteBitcodeToFile(M, OS, ShouldPreserveUseListOrder, /*Index=*/nullptr,
+                       /*EmitModuleHash=*/false);
 
-      return false;
-    }
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-    }
-  };
-}
+    return false;
+  }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+  }
+};
+} // namespace
 
 char WriteBitcodePass::ID = 0;
 INITIALIZE_PASS_BEGIN(WriteBitcodePass, "write-bitcode", "Write Bitcode", false,

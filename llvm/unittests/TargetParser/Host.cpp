@@ -329,7 +329,8 @@ CPU variant     : 0x1
 CPU part        : 0xd0d
 CPU revision    : 0
 )";
-  EXPECT_EQ(sys::detail::getHostCPUNameForARM(Snapdragon865ProcCPUInfo), "cortex-a77");
+  EXPECT_EQ(sys::detail::getHostCPUNameForARM(Snapdragon865ProcCPUInfo),
+            "cortex-a77");
 }
 
 TEST(getLinuxHostCPUName, s390x) {
@@ -407,9 +408,10 @@ uarch           : sifive,u74-mc
       "sifive-u74");
 }
 
-static bool runAndGetCommandOutput(
-    const char *ExePath, ArrayRef<llvm::StringRef> argv,
-    std::unique_ptr<char[]> &Buffer, off_t &Size) {
+static bool runAndGetCommandOutput(const char *ExePath,
+                                   ArrayRef<llvm::StringRef> argv,
+                                   std::unique_ptr<char[]> &Buffer,
+                                   off_t &Size) {
   bool Success = false;
   [ExePath, argv, &Buffer, &Size, &Success] {
     using namespace llvm::sys;
@@ -489,9 +491,8 @@ static void getAIXSystemVersion(VersionTuple &SystemVersion) {
   ASSERT_EQ(runAndGetCommandOutput(ExePath, argv, Buffer, Size), true);
   StringRef SystemVersionStr = StringRef(Buffer.get(), Size).rtrim();
 
-  SystemVersion =
-      llvm::Triple((Twine("powerpc-ibm-aix") + SystemVersionStr))
-          .getOSVersion();
+  SystemVersion = llvm::Triple((Twine("powerpc-ibm-aix") + SystemVersionStr))
+                      .getOSVersion();
 }
 
 TEST(HostTest, AIXHostVersionDetect) {

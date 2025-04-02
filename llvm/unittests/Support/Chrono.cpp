@@ -31,7 +31,7 @@ TEST(Chrono, TimeTConversion) {
 
 TEST(Chrono, TimePointFormat) {
   using namespace std::chrono;
-  struct tm TM {};
+  struct tm TM{};
   TM.tm_year = 106;
   TM.tm_mon = 0;
   TM.tm_mday = 2;

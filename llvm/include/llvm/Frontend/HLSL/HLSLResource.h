@@ -23,8 +23,8 @@ class MDNode;
 namespace hlsl {
 
 // For now we use DXIL ABI enum values directly. This may change in the future.
-using dxil::ResourceClass;
 using dxil::ElementType;
+using dxil::ResourceClass;
 using dxil::ResourceKind;
 
 class FrontendResource {

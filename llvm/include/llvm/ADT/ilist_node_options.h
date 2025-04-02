@@ -138,7 +138,9 @@ struct extract_parent<ilist_parent<ParentTy>, Options...> {
 };
 template <class Option1, class... Options>
 struct extract_parent<Option1, Options...> : extract_parent<Options...> {};
-template <> struct extract_parent<> { typedef void type; };
+template <> struct extract_parent<> {
+  typedef void type;
+};
 template <class ParentTy>
 struct is_valid_option<ilist_parent<ParentTy>> : std::true_type {};
 

@@ -583,10 +583,17 @@ bool RISCVDAGToDAGISel::tryShrinkShlLogicImm(SDNode *Node) {
   // Ok, we can reorder to get a smaller immediate.
   unsigned BinOpc;
   switch (Opcode) {
-  default: llvm_unreachable("Unexpected opcode");
-  case ISD::AND: BinOpc = RISCV::ANDI; break;
-  case ISD::OR:  BinOpc = RISCV::ORI;  break;
-  case ISD::XOR: BinOpc = RISCV::XORI; break;
+  default:
+    llvm_unreachable("Unexpected opcode");
+  case ISD::AND:
+    BinOpc = RISCV::ANDI;
+    break;
+  case ISD::OR:
+    BinOpc = RISCV::ORI;
+    break;
+  case ISD::XOR:
+    BinOpc = RISCV::XORI;
+    break;
   }
 
   unsigned ShOpc = SignExt ? RISCV::SLLIW : RISCV::SLLI;
@@ -1007,8 +1014,8 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       ReplaceUses(SDValue(Node, 0), SDValue(Lo, 0));
     }
     if (!SDValue(Node, 1).use_empty()) {
-      SDNode *Hi = CurDAG->getMachineNode(RISCV::FMVH_X_D, DL, VT,
-                                          Node->getOperand(0));
+      SDNode *Hi =
+          CurDAG->getMachineNode(RISCV::FMVH_X_D, DL, VT, Node->getOperand(0));
       ReplaceUses(SDValue(Node, 1), SDValue(Hi, 0));
     }
 
@@ -1520,8 +1527,7 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     // make it more costly to materialize. Otherwise, using a SLLI might allow
     // it to be compressed.
     bool IsANDIOrZExt =
-        isInt<12>(C2) ||
-        (C2 == UINT64_C(0xFFFF) && Subtarget->hasStdExtZbb());
+        isInt<12>(C2) || (C2 == UINT64_C(0xFFFF) && Subtarget->hasStdExtZbb());
     // With XTHeadBb, we can use TH.EXTU.
     IsANDIOrZExt |= C2 == UINT64_C(0xFFFF) && Subtarget->hasVendorXTHeadBb();
     if (IsANDIOrZExt && (isInt<12>(N1C->getSExtValue()) || !N0.hasOneUse()))
@@ -2048,7 +2054,7 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
         // We eagerly lower to implicit_def (instead of undef), as we
         // otherwise fail to select nodes such as: nxv1i1 = undef
         SDNode *Passthru =
-          CurDAG->getMachineNode(TargetOpcode::IMPLICIT_DEF, DL, VT);
+            CurDAG->getMachineNode(TargetOpcode::IMPLICIT_DEF, DL, VT);
         Operands.push_back(SDValue(Passthru, 0));
       }
       addVectorLoadStoreOperands(Node, Log2SEW, DL, CurOp, IsMasked, IsStrided,
@@ -2083,10 +2089,10 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
 
       RISCVII::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
       const RISCV::VLEPseudo *P =
-          RISCV::getVLEPseudo(IsMasked, /*Strided*/ false, /*FF*/ true,
-                              Log2SEW, static_cast<unsigned>(LMUL));
-      MachineSDNode *Load = CurDAG->getMachineNode(
-          P->Pseudo, DL, Node->getVTList(), Operands);
+          RISCV::getVLEPseudo(IsMasked, /*Strided*/ false, /*FF*/ true, Log2SEW,
+                              static_cast<unsigned>(LMUL));
+      MachineSDNode *Load =
+          CurDAG->getMachineNode(P->Pseudo, DL, Node->getVTList(), Operands);
       if (auto *MemOp = dyn_cast<MemSDNode>(Node))
         CurDAG->setNodeMemRefs(Load, {MemOp->getMemOperand()});
 
@@ -2215,8 +2221,8 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
                            "values when XLEN=32");
       }
       const RISCV::VLX_VSXPseudo *P = RISCV::getVSXPseudo(
-          IsMasked, IsOrdered, IndexLog2EEW,
-          static_cast<unsigned>(LMUL), static_cast<unsigned>(IndexLMUL));
+          IsMasked, IsOrdered, IndexLog2EEW, static_cast<unsigned>(LMUL),
+          static_cast<unsigned>(IndexLMUL));
       MachineSDNode *Store =
           CurDAG->getMachineNode(P->Pseudo, DL, Node->getVTList(), Operands);
 
@@ -2444,8 +2450,8 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
 
     RISCVII::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
     const RISCV::VLEPseudo *P = RISCV::getVLEPseudo(
-        /*IsMasked*/ false, IsStrided, /*FF*/ false,
-        Log2SEW, static_cast<unsigned>(LMUL));
+        /*IsMasked*/ false, IsStrided, /*FF*/ false, Log2SEW,
+        static_cast<unsigned>(LMUL));
     MachineSDNode *Load =
         CurDAG->getMachineNode(P->Pseudo, DL, {VT, MVT::Other}, Operands);
     // Update the chain.
@@ -2916,8 +2922,8 @@ bool RISCVDAGToDAGISel::selectShiftMask(SDValue N, unsigned ShiftWidth,
       EVT VT = ShAmt.getValueType();
       SDValue Zero = CurDAG->getRegister(RISCV::X0, VT);
       unsigned NegOpc = VT == MVT::i64 ? RISCV::SUBW : RISCV::SUB;
-      MachineSDNode *Neg = CurDAG->getMachineNode(NegOpc, DL, VT, Zero,
-                                                  ShAmt.getOperand(1));
+      MachineSDNode *Neg =
+          CurDAG->getMachineNode(NegOpc, DL, VT, Zero, ShAmt.getOperand(1));
       ShAmt = SDValue(Neg, 0);
       return true;
     }
@@ -3696,11 +3702,21 @@ bool RISCVDAGToDAGISel::doPeepholeSExtW(SDNode *N) {
     switch (N0.getMachineOpcode()) {
     default:
       llvm_unreachable("Unexpected opcode!");
-    case RISCV::ADD:  Opc = RISCV::ADDW;  break;
-    case RISCV::ADDI: Opc = RISCV::ADDIW; break;
-    case RISCV::SUB:  Opc = RISCV::SUBW;  break;
-    case RISCV::MUL:  Opc = RISCV::MULW;  break;
-    case RISCV::SLLI: Opc = RISCV::SLLIW; break;
+    case RISCV::ADD:
+      Opc = RISCV::ADDW;
+      break;
+    case RISCV::ADDI:
+      Opc = RISCV::ADDIW;
+      break;
+    case RISCV::SUB:
+      Opc = RISCV::SUBW;
+      break;
+    case RISCV::MUL:
+      Opc = RISCV::MULW;
+      break;
+    case RISCV::SLLI:
+      Opc = RISCV::SLLIW;
+      break;
     }
 
     SDValue N00 = N0.getOperand(0);
@@ -3712,8 +3728,7 @@ bool RISCVDAGToDAGISel::doPeepholeSExtW(SDNode *N) {
       break;
 
     SDNode *Result =
-        CurDAG->getMachineNode(Opc, SDLoc(N), N->getValueType(0),
-                               N00, N01);
+        CurDAG->getMachineNode(Opc, SDLoc(N), N->getValueType(0), N00, N01);
     ReplaceUses(N, Result);
     return true;
   }
@@ -3832,7 +3847,7 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(MachineSDNode *N) {
   const bool MaskedHasPassthru = RISCVII::isFirstDefTiedToFirstUse(MaskedMCID);
 
   assert(RISCVII::hasVecPolicyOp(MaskedMCID.TSFlags) ==
-         RISCVII::hasVecPolicyOp(MCID.TSFlags) &&
+             RISCVII::hasVecPolicyOp(MCID.TSFlags) &&
          "Masked and unmasked pseudos are inconsistent");
   assert(RISCVII::hasVecPolicyOp(MCID.TSFlags) == HasPassthru &&
          "Unexpected pseudo structure");
@@ -4032,8 +4047,7 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
                         ? RISCVII::TAIL_AGNOSTIC
                         : /*TUMU*/ 0;
   SDValue PolicyOp =
-    CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT());
-
+      CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT());
 
   SmallVector<SDValue, 8> Ops;
   Ops.push_back(False);
@@ -4120,7 +4134,7 @@ bool RISCVDAGToDAGISel::doPeepholeNoRegPassThru() {
     }
 
     MachineSDNode *Result =
-      CurDAG->getMachineNode(Opc, SDLoc(N), N->getVTList(), Ops);
+        CurDAG->getMachineNode(Opc, SDLoc(N), N->getVTList(), Ops);
     Result->setFlags(N->getFlags());
     CurDAG->setNodeMemRefs(Result, cast<MachineSDNode>(N)->memoperands());
     ReplaceUses(N, Result);
@@ -4128,7 +4142,6 @@ bool RISCVDAGToDAGISel::doPeepholeNoRegPassThru() {
   }
   return MadeChange;
 }
-
 
 // This pass converts a legalized DAG into a RISCV-specific DAG, ready
 // for instruction scheduling.

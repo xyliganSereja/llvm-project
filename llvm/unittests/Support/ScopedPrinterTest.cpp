@@ -1156,13 +1156,21 @@ TEST_F(ScopedPrinterTest, PrintScope) {
   auto PrintFunc = [](ScopedPrinter &W) {
     {
       DictScope O(W, "Object");
-      { DictScope OO(W, "ObjectInObject"); }
-      { ListScope LO(W, "ListInObject"); }
+      {
+        DictScope OO(W, "ObjectInObject");
+      }
+      {
+        ListScope LO(W, "ListInObject");
+      }
     }
     {
       ListScope L(W, "List");
-      { DictScope OL(W, "ObjectInList"); }
-      { ListScope LL(W, "ListInList"); }
+      {
+        DictScope OL(W, "ObjectInList");
+      }
+      {
+        ListScope LL(W, "ListInList");
+      }
     }
   };
 

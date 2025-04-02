@@ -126,7 +126,8 @@ LLVMContextImpl::~LLVMContextImpl() {
 
   // Destroy attribute node lists.
   for (FoldingSetIterator<AttributeSetNode> I = AttrsSetNodes.begin(),
-         E = AttrsSetNodes.end(); I != E; ) {
+                                            E = AttrsSetNodes.end();
+       I != E;) {
     FoldingSetIterator<AttributeSetNode> Elem = I++;
     delete &*Elem;
   }
@@ -215,7 +216,8 @@ StringMapEntry<uint32_t> *LLVMContextImpl::getOrInsertBundleTag(StringRef Tag) {
   return &*(BundleTagCache.insert(std::make_pair(Tag, NewIdx)).first);
 }
 
-void LLVMContextImpl::getOperandBundleTags(SmallVectorImpl<StringRef> &Tags) const {
+void LLVMContextImpl::getOperandBundleTags(
+    SmallVectorImpl<StringRef> &Tags) const {
   Tags.resize(BundleTagCache.size());
   for (const auto &T : BundleTagCache)
     Tags[T.second] = T.first();
@@ -259,6 +261,4 @@ OptPassGate &LLVMContextImpl::getOptPassGate() const {
   return *OPG;
 }
 
-void LLVMContextImpl::setOptPassGate(OptPassGate& OPG) {
-  this->OPG = &OPG;
-}
+void LLVMContextImpl::setOptPassGate(OptPassGate &OPG) { this->OPG = &OPG; }

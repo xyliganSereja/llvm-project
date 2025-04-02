@@ -44,6 +44,6 @@ public:
 /// functions marked as "always_inline".
 Pass *createAlwaysInlinerLegacyPass(bool InsertLifetime = true);
 
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_IPO_ALWAYSINLINER_H

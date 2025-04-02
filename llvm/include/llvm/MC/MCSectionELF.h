@@ -106,9 +106,7 @@ public:
     return std::make_pair(StartOffset, EndOffset);
   }
 
-  static bool classof(const MCSection *S) {
-    return S->getVariant() == SV_ELF;
-  }
+  static bool classof(const MCSection *S) { return S->getVariant() == SV_ELF; }
 };
 
 } // end namespace llvm

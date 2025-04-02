@@ -116,8 +116,8 @@ private:
   bool isGlobalLoadUsedInBB(const Instruction &) const;
 };
 
-static std::pair<const Value *, const Type *> getMemoryInstrPtrAndType(
-    const Instruction *Inst) {
+static std::pair<const Value *, const Type *>
+getMemoryInstrPtrAndType(const Instruction *Inst) {
   if (const auto *LI = dyn_cast<LoadInst>(Inst))
     return {LI->getPointerOperand(), LI->getType()};
   if (const auto *SI = dyn_cast<StoreInst>(Inst))
@@ -327,7 +327,8 @@ bool AMDGPUPerfHint::isMemBound(const AMDGPUPerfHintAnalysis::FuncInfo &FI) {
 
 bool AMDGPUPerfHint::needLimitWave(const AMDGPUPerfHintAnalysis::FuncInfo &FI) {
   return ((FI.MemInstCost + FI.IAMInstCost * IAWeight +
-           FI.LSMInstCost * LSWeight) * 100 / FI.InstCost) > LimitWaveThresh;
+           FI.LSMInstCost * LSWeight) *
+          100 / FI.InstCost) > LimitWaveThresh;
 }
 
 bool AMDGPUPerfHint::isGlobalAddr(const Value *V) const {
@@ -381,8 +382,8 @@ bool AMDGPUPerfHint::MemAccessInfo::isLargeStride(
                                             : Reference.Offset - Offset;
   bool Result = Diff > LargeStrideThresh;
   LLVM_DEBUG(dbgs() << "[isLargeStride compare]\n"
-               << print() << "<=>\n"
-               << Reference.print() << "Result:" << Result << '\n');
+                    << print() << "<=>\n"
+                    << Reference.print() << "Result:" << Result << '\n');
   return Result;
 }
 

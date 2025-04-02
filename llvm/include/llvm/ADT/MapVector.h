@@ -76,14 +76,12 @@ public:
   reverse_iterator rend() { return Vector.rend(); }
   const_reverse_iterator rend() const { return Vector.rend(); }
 
-  bool empty() const {
-    return Vector.empty();
-  }
+  bool empty() const { return Vector.empty(); }
 
-  std::pair<KeyT, ValueT>       &front()       { return Vector.front(); }
+  std::pair<KeyT, ValueT> &front() { return Vector.front(); }
   const std::pair<KeyT, ValueT> &front() const { return Vector.front(); }
-  std::pair<KeyT, ValueT>       &back()        { return Vector.back(); }
-  const std::pair<KeyT, ValueT> &back()  const { return Vector.back(); }
+  std::pair<KeyT, ValueT> &back() { return Vector.back(); }
+  const std::pair<KeyT, ValueT> &back() const { return Vector.back(); }
 
   void clear() {
     Map.clear();
@@ -96,7 +94,8 @@ public:
   }
 
   ValueT &operator[](const KeyT &Key) {
-    std::pair<KeyT, typename MapType::mapped_type> Pair = std::make_pair(Key, 0);
+    std::pair<KeyT, typename MapType::mapped_type> Pair =
+        std::make_pair(Key, 0);
     std::pair<typename MapType::iterator, bool> Result = Map.insert(Pair);
     auto &I = Result.first->second;
     if (Result.second) {
@@ -111,7 +110,7 @@ public:
     static_assert(std::is_copy_constructible_v<ValueT>,
                   "Cannot call lookup() if ValueT is not copyable.");
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end()? ValueT() : Vector[Pos->second].second;
+    return Pos == Map.end() ? ValueT() : Vector[Pos->second].second;
   }
 
   template <typename... Ts>
@@ -166,14 +165,12 @@ public:
 
   iterator find(const KeyT &Key) {
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end()? Vector.end() :
-                            (Vector.begin() + Pos->second);
+    return Pos == Map.end() ? Vector.end() : (Vector.begin() + Pos->second);
   }
 
   const_iterator find(const KeyT &Key) const {
     typename MapType::const_iterator Pos = Map.find(Key);
-    return Pos == Map.end()? Vector.end() :
-                            (Vector.begin() + Pos->second);
+    return Pos == Map.end() ? Vector.end() : (Vector.begin() + Pos->second);
   }
 
   /// Remove the last element from the vector.
@@ -251,8 +248,7 @@ void MapVector<KeyT, ValueT, MapType, VectorType>::remove_if(Function Pred) {
 template <typename KeyT, typename ValueT, unsigned N>
 struct SmallMapVector
     : MapVector<KeyT, ValueT, SmallDenseMap<KeyT, unsigned, N>,
-                SmallVector<std::pair<KeyT, ValueT>, N>> {
-};
+                SmallVector<std::pair<KeyT, ValueT>, N>> {};
 
 } // end namespace llvm
 

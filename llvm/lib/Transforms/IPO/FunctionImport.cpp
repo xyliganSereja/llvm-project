@@ -572,7 +572,7 @@ class WorkloadImportsManager : public ModuleImportsManager {
                                   << " ImportFailureReason: "
                                   << getFailureName(Candidate.first) << "\n");
                 return Candidate.first ==
-                        FunctionImporter::ImportFailureReason::None;
+                       FunctionImporter::ImportFailureReason::None;
               }),
           [](const auto &Candidate) { return Candidate.second; });
       if (PotentialCandidates.empty()) {
@@ -907,7 +907,7 @@ static void computeImportForFunction(
       if (PreviouslyVisited && NewThreshold <= ProcessedThreshold) {
         LLVM_DEBUG(
             dbgs() << "ignored! Target was already rejected with Threshold "
-            << ProcessedThreshold << "\n");
+                   << ProcessedThreshold << "\n");
         if (PrintImportFailures) {
           assert(FailureInfo &&
                  "Expected FailureInfo for previously rejected candidate");
@@ -1592,10 +1592,9 @@ bool llvm::convertToDeclaration(GlobalValue &GV) {
   } else {
     GlobalValue *NewGV;
     if (GV.getValueType()->isFunctionTy())
-      NewGV =
-          Function::Create(cast<FunctionType>(GV.getValueType()),
-                           GlobalValue::ExternalLinkage, GV.getAddressSpace(),
-                           "", GV.getParent());
+      NewGV = Function::Create(cast<FunctionType>(GV.getValueType()),
+                               GlobalValue::ExternalLinkage,
+                               GV.getAddressSpace(), "", GV.getParent());
     else
       NewGV =
           new GlobalVariable(*GV.getParent(), GV.getValueType(),

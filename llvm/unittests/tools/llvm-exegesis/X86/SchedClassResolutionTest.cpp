@@ -76,7 +76,8 @@ TEST_F(X86SchedClassResolutionTest, ComputeIdealizedProcResPressure_2P05) {
               UnorderedElementsAre(Pair(P0Idx, 1.0), Pair(P5Idx, 1.0)));
 }
 
-TEST_F(X86SchedClassResolutionTest, ComputeIdealizedProcResPressure_2P05_2P0156) {
+TEST_F(X86SchedClassResolutionTest,
+       ComputeIdealizedProcResPressure_2P05_2P0156) {
   const auto Pressure = computeIdealizedProcResPressure(
       STI.getSchedModel(), {{P05Idx, 2, 0}, {P0156Idx, 2, 0}});
   EXPECT_THAT(Pressure,

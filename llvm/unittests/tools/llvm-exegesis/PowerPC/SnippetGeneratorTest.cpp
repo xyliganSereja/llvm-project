@@ -44,12 +44,14 @@ protected:
   SnippetGeneratorT Generator;
 };
 
-using PPCSerialSnippetGeneratorTest = PPCSnippetGeneratorTest<SerialSnippetGenerator>;
+using PPCSerialSnippetGeneratorTest =
+    PPCSnippetGeneratorTest<SerialSnippetGenerator>;
 
 using PPCParallelSnippetGeneratorTest =
     PPCSnippetGeneratorTest<ParallelSnippetGenerator>;
 
-TEST_F(PPCSerialSnippetGeneratorTest, ImplicitSelfDependencyThroughExplicitRegs) {
+TEST_F(PPCSerialSnippetGeneratorTest,
+       ImplicitSelfDependencyThroughExplicitRegs) {
   // - ADD8
   // - Op0 Explicit Def RegClass(G8RC)
   // - Op1 Explicit Use RegClass(G8RC)

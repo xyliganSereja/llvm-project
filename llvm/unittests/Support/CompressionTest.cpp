@@ -111,4 +111,4 @@ TEST(CompressionTest, Zstd) {
   testZstdCompression(BinaryDataStr, zstd::DefaultCompression);
 }
 #endif
-}
+} // namespace

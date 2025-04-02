@@ -71,19 +71,11 @@ public:
       : PrecomputedOptTable(OptionStrTable, OptionPrefixesTable, InfoTable,
                             OptionPrefixesUnion, IgnoreCase) {}
 };
-}
+} // namespace
 
-const char *Args[] = {
-  "-A",
-  "-Bhi",
-  "--C=desu",
-  "-C", "bye",
-  "-D,adena",
-  "-E", "apple", "bloom",
-  "-Fblarg",
-  "-F", "42",
-  "-Gchuu", "2"
-  };
+const char *Args[] = {"-A",       "-Bhi", "--C=desu", "-C",    "bye",
+                      "-D,adena", "-E",   "apple",    "bloom", "-Fblarg",
+                      "-F",       "42",   "-Gchuu",   "2"};
 
 // Test fixture
 template <typename T> class OptTableTest : public ::testing::Test {};
@@ -164,7 +156,7 @@ TYPED_TEST(OptTableTest, ParseWithFlagExclusions) {
   EXPECT_FALSE(AL.hasArg(OPT_C));
   EXPECT_TRUE(AL.hasArg(OPT_SLASH_C));
 
-  const char *NewArgs[] = { "/C", "foo", "--C=bar" };
+  const char *NewArgs[] = {"/C", "foo", "--C=bar"};
   AL = T.ParseArgs(NewArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_SLASH_C));
   EXPECT_TRUE(AL.hasArg(OPT_C));
@@ -213,7 +205,7 @@ TYPED_TEST(OptTableTest, ParseAliasInGroup) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-I" };
+  const char *MyArgs[] = {"-I"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_H));
 }
@@ -222,7 +214,7 @@ TYPED_TEST(OptTableTest, AliasArgs) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-J", "-Joo" };
+  const char *MyArgs[] = {"-J", "-Joo"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_B));
   EXPECT_EQ("foo", AL.getAllArgValues(OPT_B)[0]);
@@ -233,7 +225,7 @@ TYPED_TEST(OptTableTest, IgnoreCase) {
   TypeParam T(true);
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-a", "-joo" };
+  const char *MyArgs[] = {"-a", "-joo"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_B));
@@ -270,7 +262,7 @@ TYPED_TEST(OptTableTest, DoNotIgnoreCase) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-a", "-joo" };
+  const char *MyArgs[] = {"-a", "-joo"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_FALSE(AL.hasArg(OPT_A));
   EXPECT_FALSE(AL.hasArg(OPT_B));
@@ -280,7 +272,7 @@ TYPED_TEST(OptTableTest, SlurpEmpty) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurp" };
+  const char *MyArgs[] = {"-A", "-slurp"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_Slurp));
@@ -291,7 +283,7 @@ TYPED_TEST(OptTableTest, Slurp) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurp", "-B", "--", "foo" };
+  const char *MyArgs[] = {"-A", "-slurp", "-B", "--", "foo"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_EQ(AL.size(), 2U);
   EXPECT_TRUE(AL.hasArg(OPT_A));
@@ -307,7 +299,7 @@ TYPED_TEST(OptTableTest, SlurpJoinedEmpty) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurpjoined" };
+  const char *MyArgs[] = {"-A", "-slurpjoined"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_SlurpJoined));
@@ -318,7 +310,7 @@ TYPED_TEST(OptTableTest, SlurpJoinedOneJoined) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurpjoinedfoo" };
+  const char *MyArgs[] = {"-A", "-slurpjoinedfoo"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_SlurpJoined));
@@ -330,7 +322,7 @@ TYPED_TEST(OptTableTest, SlurpJoinedAndSeparate) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurpjoinedfoo", "bar", "baz" };
+  const char *MyArgs[] = {"-A", "-slurpjoinedfoo", "bar", "baz"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_SlurpJoined));
@@ -344,7 +336,7 @@ TYPED_TEST(OptTableTest, SlurpJoinedButSeparate) {
   TypeParam T;
   unsigned MAI, MAC;
 
-  const char *MyArgs[] = { "-A", "-slurpjoined", "foo", "bar", "baz" };
+  const char *MyArgs[] = {"-A", "-slurpjoined", "foo", "bar", "baz"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_TRUE(AL.hasArg(OPT_A));
   EXPECT_TRUE(AL.hasArg(OPT_SlurpJoined));
@@ -359,7 +351,7 @@ TYPED_TEST(OptTableTest, FlagAliasToJoined) {
   unsigned MAI, MAC;
 
   // Check that a flag alias provides an empty argument to a joined option.
-  const char *MyArgs[] = { "-K" };
+  const char *MyArgs[] = {"-K"};
   InputArgList AL = T.ParseArgs(MyArgs, MAI, MAC);
   EXPECT_EQ(AL.size(), 1U);
   EXPECT_TRUE(AL.hasArg(OPT_B));

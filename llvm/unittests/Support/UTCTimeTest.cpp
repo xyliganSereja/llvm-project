@@ -7,10 +7,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Support/Chrono.h"
-#include "gtest/gtest.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FormatProviders.h"
 #include "llvm/Support/FormatVariadic.h"
+#include "gtest/gtest.h"
 
 namespace llvm {
 namespace sys {
@@ -34,7 +34,6 @@ TEST(UTCTime, convertutc) {
 
   // Compare the formatted strings.
   EXPECT_EQ(customResultString, StringRef(gmtimeResultString, 19));
-
 }
 } // namespace
 } // namespace sys

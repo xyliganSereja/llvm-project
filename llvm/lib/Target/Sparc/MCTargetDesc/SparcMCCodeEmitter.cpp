@@ -44,8 +44,7 @@ class SparcMCCodeEmitter : public MCCodeEmitter {
   MCContext &Ctx;
 
 public:
-  SparcMCCodeEmitter(const MCInstrInfo &, MCContext &ctx)
-      : Ctx(ctx) {}
+  SparcMCCodeEmitter(const MCInstrInfo &, MCContext &ctx) : Ctx(ctx) {}
   SparcMCCodeEmitter(const SparcMCCodeEmitter &) = delete;
   SparcMCCodeEmitter &operator=(const SparcMCCodeEmitter &) = delete;
   ~SparcMCCodeEmitter() override = default;
@@ -66,11 +65,11 @@ public:
                              SmallVectorImpl<MCFixup> &Fixups,
                              const MCSubtargetInfo &STI) const;
   unsigned getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
-                             SmallVectorImpl<MCFixup> &Fixups,
-                             const MCSubtargetInfo &STI) const;
+                                SmallVectorImpl<MCFixup> &Fixups,
+                                const MCSubtargetInfo &STI) const;
   unsigned getBranchTargetOpValue(const MCInst &MI, unsigned OpNo,
-                             SmallVectorImpl<MCFixup> &Fixups,
-                             const MCSubtargetInfo &STI) const;
+                                  SmallVectorImpl<MCFixup> &Fixups,
+                                  const MCSubtargetInfo &STI) const;
   unsigned getSImm13OpValue(const MCInst &MI, unsigned OpNo,
                             SmallVectorImpl<MCFixup> &Fixups,
                             const MCSubtargetInfo &STI) const;
@@ -97,13 +96,18 @@ void SparcMCCodeEmitter::encodeInstruction(const MCInst &MI,
   // Some instructions have phantom operands that only contribute a fixup entry.
   unsigned SymOpNo = 0;
   switch (MI.getOpcode()) {
-  default: break;
-  case SP::TLS_CALL:   SymOpNo = 1; break;
+  default:
+    break;
+  case SP::TLS_CALL:
+    SymOpNo = 1;
+    break;
   case SP::GDOP_LDrr:
   case SP::GDOP_LDXrr:
   case SP::TLS_ADDrr:
   case SP::TLS_LDrr:
-  case SP::TLS_LDXrr:  SymOpNo = 3; break;
+  case SP::TLS_LDXrr:
+    SymOpNo = 3;
+    break;
   }
   if (SymOpNo != 0) {
     const MCOperand &MO = MI.getOperand(SymOpNo);
@@ -112,13 +116,13 @@ void SparcMCCodeEmitter::encodeInstruction(const MCInst &MI,
     (void)op; // suppress warning.
   }
 
-  ++MCNumEmitted;  // Keep track of the # of mi's emitted.
+  ++MCNumEmitted; // Keep track of the # of mi's emitted.
 }
 
-unsigned SparcMCCodeEmitter::
-getMachineOpValue(const MCInst &MI, const MCOperand &MO,
-                  SmallVectorImpl<MCFixup> &Fixups,
-                  const MCSubtargetInfo &STI) const {
+unsigned
+SparcMCCodeEmitter::getMachineOpValue(const MCInst &MI, const MCOperand &MO,
+                                      SmallVectorImpl<MCFixup> &Fixups,
+                                      const MCSubtargetInfo &STI) const {
   if (MO.isReg())
     return Ctx.getRegisterInfo()->getEncodingValue(MO.getReg());
 
@@ -172,10 +176,10 @@ SparcMCCodeEmitter::getSImm13OpValue(const MCInst &MI, unsigned OpNo,
   return 0;
 }
 
-unsigned SparcMCCodeEmitter::
-getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
-                     SmallVectorImpl<MCFixup> &Fixups,
-                     const MCSubtargetInfo &STI) const {
+unsigned
+SparcMCCodeEmitter::getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
+                                         SmallVectorImpl<MCFixup> &Fixups,
+                                         const MCSubtargetInfo &STI) const {
   const MCOperand &MO = MI.getOperand(OpNo);
   const MCExpr *Expr = MO.getExpr();
   const SparcMCExpr *SExpr = dyn_cast<SparcMCExpr>(Expr);
@@ -199,36 +203,34 @@ getCallTargetOpValue(const MCInst &MI, unsigned OpNo,
   return 0;
 }
 
-unsigned SparcMCCodeEmitter::
-getBranchTargetOpValue(const MCInst &MI, unsigned OpNo,
-                  SmallVectorImpl<MCFixup> &Fixups,
-                  const MCSubtargetInfo &STI) const {
+unsigned
+SparcMCCodeEmitter::getBranchTargetOpValue(const MCInst &MI, unsigned OpNo,
+                                           SmallVectorImpl<MCFixup> &Fixups,
+                                           const MCSubtargetInfo &STI) const {
   const MCOperand &MO = MI.getOperand(OpNo);
   if (MO.isReg() || MO.isImm())
     return getMachineOpValue(MI, MO, Fixups, STI);
 
-  Fixups.push_back(MCFixup::create(0, MO.getExpr(),
-                                   (MCFixupKind)Sparc::fixup_sparc_br22));
+  Fixups.push_back(
+      MCFixup::create(0, MO.getExpr(), (MCFixupKind)Sparc::fixup_sparc_br22));
   return 0;
 }
 
-unsigned SparcMCCodeEmitter::
-getBranchPredTargetOpValue(const MCInst &MI, unsigned OpNo,
-                           SmallVectorImpl<MCFixup> &Fixups,
-                           const MCSubtargetInfo &STI) const {
+unsigned SparcMCCodeEmitter::getBranchPredTargetOpValue(
+    const MCInst &MI, unsigned OpNo, SmallVectorImpl<MCFixup> &Fixups,
+    const MCSubtargetInfo &STI) const {
   const MCOperand &MO = MI.getOperand(OpNo);
   if (MO.isReg() || MO.isImm())
     return getMachineOpValue(MI, MO, Fixups, STI);
 
-  Fixups.push_back(MCFixup::create(0, MO.getExpr(),
-                                   (MCFixupKind)Sparc::fixup_sparc_br19));
+  Fixups.push_back(
+      MCFixup::create(0, MO.getExpr(), (MCFixupKind)Sparc::fixup_sparc_br19));
   return 0;
 }
 
-unsigned SparcMCCodeEmitter::
-getBranchOnRegTargetOpValue(const MCInst &MI, unsigned OpNo,
-                           SmallVectorImpl<MCFixup> &Fixups,
-                           const MCSubtargetInfo &STI) const {
+unsigned SparcMCCodeEmitter::getBranchOnRegTargetOpValue(
+    const MCInst &MI, unsigned OpNo, SmallVectorImpl<MCFixup> &Fixups,
+    const MCSubtargetInfo &STI) const {
   const MCOperand &MO = MI.getOperand(OpNo);
   if (MO.isReg() || MO.isImm())
     return getMachineOpValue(MI, MO, Fixups, STI);

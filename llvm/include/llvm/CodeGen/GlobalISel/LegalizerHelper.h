@@ -173,14 +173,14 @@ public:
   void bitcastDst(MachineInstr &MI, LLT CastTy, unsigned OpIdx);
 
 private:
-  LegalizeResult
-  widenScalarMergeValues(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
-  LegalizeResult
-  widenScalarUnmergeValues(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
-  LegalizeResult
-  widenScalarExtract(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
-  LegalizeResult
-  widenScalarInsert(MachineInstr &MI, unsigned TypeIdx, LLT WideTy);
+  LegalizeResult widenScalarMergeValues(MachineInstr &MI, unsigned TypeIdx,
+                                        LLT WideTy);
+  LegalizeResult widenScalarUnmergeValues(MachineInstr &MI, unsigned TypeIdx,
+                                          LLT WideTy);
+  LegalizeResult widenScalarExtract(MachineInstr &MI, unsigned TypeIdx,
+                                    LLT WideTy);
+  LegalizeResult widenScalarInsert(MachineInstr &MI, unsigned TypeIdx,
+                                   LLT WideTy);
   LegalizeResult widenScalarAddSubOverflow(MachineInstr &MI, unsigned TypeIdx,
                                            LLT WideTy);
   LegalizeResult widenScalarAddSubShlSat(MachineInstr &MI, unsigned TypeIdx,
@@ -197,9 +197,9 @@ private:
   ///
   /// If \p ResultTy does not evenly break into \p PartTy sized pieces, the
   /// remainder must be specified with \p LeftoverRegs of type \p LeftoverTy.
-  void insertParts(Register DstReg, LLT ResultTy,
-                   LLT PartTy, ArrayRef<Register> PartRegs,
-                   LLT LeftoverTy = LLT(), ArrayRef<Register> LeftoverRegs = {});
+  void insertParts(Register DstReg, LLT ResultTy, LLT PartTy,
+                   ArrayRef<Register> PartRegs, LLT LeftoverTy = LLT(),
+                   ArrayRef<Register> LeftoverRegs = {});
 
   /// Merge \p PartRegs with different types into \p DstReg.
   void mergeMixedSubvectors(Register DstReg, ArrayRef<Register> PartRegs);
@@ -210,8 +210,8 @@ private:
   /// Parts. The elements of \p Parts will be the greatest common divisor type
   /// of \p DstTy, \p NarrowTy and the type of \p SrcReg. This will compute and
   /// return the GCD type.
-  LLT extractGCDType(SmallVectorImpl<Register> &Parts, LLT DstTy,
-                     LLT NarrowTy, Register SrcReg);
+  LLT extractGCDType(SmallVectorImpl<Register> &Parts, LLT DstTy, LLT NarrowTy,
+                     Register SrcReg);
 
   /// Unmerge \p SrcReg into \p GCDTy typed registers. This will append all of
   /// the unpacked registers to \p Parts. This version is if the common unmerge
@@ -366,7 +366,8 @@ public:
                                     LLT NarrowTy);
   LegalizeResult narrowScalarMul(MachineInstr &MI, LLT Ty);
   LegalizeResult narrowScalarFPTOI(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
-  LegalizeResult narrowScalarExtract(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
+  LegalizeResult narrowScalarExtract(MachineInstr &MI, unsigned TypeIdx,
+                                     LLT Ty);
   LegalizeResult narrowScalarInsert(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
 
   LegalizeResult narrowScalarBasic(MachineInstr &MI, unsigned TypeIdx, LLT Ty);
@@ -480,7 +481,6 @@ createLibcall(MachineIRBuilder &MIRBuilder, RTLIB::Libcall Libcall,
 LegalizerHelper::LegalizeResult
 createMemLibcall(MachineIRBuilder &MIRBuilder, MachineRegisterInfo &MRI,
                  MachineInstr &MI, LostDebugLocObserver &LocObserver);
-
 
 } // End namespace llvm.
 

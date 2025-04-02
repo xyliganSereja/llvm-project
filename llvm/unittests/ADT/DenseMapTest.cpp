@@ -60,9 +60,7 @@ public:
     EXPECT_TRUE(Constructed.insert(this).second);
   }
   CtorTester &operator=(const CtorTester &) = default;
-  ~CtorTester() {
-    EXPECT_EQ(1u, Constructed.erase(this));
-  }
+  ~CtorTester() { EXPECT_EQ(1u, Constructed.erase(this)); }
   operator uint32_t() const { return Value; }
 
   int getValue() const { return Value; }
@@ -89,8 +87,7 @@ CtorTester getTestValue(int i, CtorTester *) { return CtorTester(42 + i); }
 // function overloads selected by component types of the type parameter. This
 // allows all of the map implementations to be tested with shared
 // implementations of helper routines.
-template <typename T>
-class DenseMapTest : public ::testing::Test {
+template <typename T> class DenseMapTest : public ::testing::Test {
 protected:
   T Map;
 
@@ -553,14 +550,14 @@ TEST(DenseMapCustomTest, StringRefTest) {
 struct TestDenseMapInfo {
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
-  static unsigned getHashValue(const unsigned& Val) { return Val * 37U; }
-  static unsigned getHashValue(const char* Val) {
+  static unsigned getHashValue(const unsigned &Val) { return Val * 37U; }
+  static unsigned getHashValue(const char *Val) {
     return (unsigned)(Val[0] - 'a') * 37U;
   }
-  static bool isEqual(const unsigned& LHS, const unsigned& RHS) {
+  static bool isEqual(const unsigned &LHS, const unsigned &RHS) {
     return LHS == RHS;
   }
-  static bool isEqual(const char* LHS, const unsigned& RHS) {
+  static bool isEqual(const char *LHS, const unsigned &RHS) {
     return (unsigned)(LHS[0] - 'a') == RHS;
   }
 };
@@ -601,8 +598,8 @@ TEST(DenseMapCustomTest, SmallDenseMapInitializerList) {
 struct ContiguousDenseMapInfo {
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
-  static unsigned getHashValue(const unsigned& Val) { return Val; }
-  static bool isEqual(const unsigned& LHS, const unsigned& RHS) {
+  static unsigned getHashValue(const unsigned &Val) { return Val; }
+  static bool isEqual(const unsigned &LHS, const unsigned &RHS) {
     return LHS == RHS;
   }
 };
@@ -738,9 +735,7 @@ template <> struct DenseMapInfo<AlwaysEqType> {
   static inline T getEmptyKey() { return {}; }
   static inline T getTombstoneKey() { return {}; }
   static unsigned getHashValue(const T &Val) { return 0; }
-  static bool isEqual(const T &LHS, const T &RHS) {
-    return false;
-  }
+  static bool isEqual(const T &LHS, const T &RHS) { return false; }
 };
 } // namespace llvm
 

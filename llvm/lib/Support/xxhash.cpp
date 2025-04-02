@@ -146,7 +146,7 @@ uint64_t llvm::xxHash64(StringRef Data) {
   }
 
   if (reinterpret_cast<uintptr_t>(P) + 4 <= reinterpret_cast<uintptr_t>(BEnd)) {
-    H64 ^= (uint64_t)(endian::read32le(P)) * PRIME64_1;
+    H64 ^= (uint64_t)(endian::read32le(P))*PRIME64_1;
     H64 = rotl64(H64, 23) * PRIME64_2 + PRIME64_3;
     P += 4;
   }

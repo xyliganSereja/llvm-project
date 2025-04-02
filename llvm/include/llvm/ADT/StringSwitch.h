@@ -40,8 +40,7 @@ namespace llvm {
 ///   .Cases("violet", "purple", Violet)
 ///   .Default(UnknownColor);
 /// \endcode
-template<typename T, typename R = T>
-class StringSwitch {
+template <typename T, typename R = T> class StringSwitch {
   /// The string we are matching.
   const StringRef Str;
 
@@ -50,8 +49,7 @@ class StringSwitch {
   std::optional<T> Result;
 
 public:
-  explicit StringSwitch(StringRef S)
-  : Str(S), Result() { }
+  explicit StringSwitch(StringRef S) : Str(S), Result() {}
 
   // StringSwitch is not copyable.
   StringSwitch(const StringSwitch &) = delete;
@@ -61,7 +59,7 @@ public:
   void operator=(StringSwitch &&other) = delete;
 
   StringSwitch(StringSwitch &&other)
-    : Str(other.Str), Result(std::move(other.Result)) { }
+      : Str(other.Str), Result(std::move(other.Result)) {}
 
   ~StringSwitch() = default;
 
@@ -73,14 +71,14 @@ public:
     return *this;
   }
 
-  StringSwitch& EndsWith(StringLiteral S, T Value) {
+  StringSwitch &EndsWith(StringLiteral S, T Value) {
     if (!Result && Str.ends_with(S)) {
       Result = std::move(Value);
     }
     return *this;
   }
 
-  StringSwitch& StartsWith(StringLiteral S, T Value) {
+  StringSwitch &StartsWith(StringLiteral S, T Value) {
     if (!Result && Str.starts_with(S)) {
       Result = std::move(Value);
     }

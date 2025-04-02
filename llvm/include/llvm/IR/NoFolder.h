@@ -125,8 +125,9 @@ public:
     return CastInst::CreatePointerCast(C, DestTy);
   }
 
-  Instruction *CreatePointerBitCastOrAddrSpaceCast(
-      Constant *C, Type *DestTy) const override {
+  Instruction *
+  CreatePointerBitCastOrAddrSpaceCast(Constant *C,
+                                      Type *DestTy) const override {
     return CastInst::CreatePointerBitCastOrAddrSpaceCast(C, DestTy);
   }
 };

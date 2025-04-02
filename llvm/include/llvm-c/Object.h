@@ -74,8 +74,7 @@ typedef enum {
  * @see llvm::object::createBinary
  */
 LLVMBinaryRef LLVMCreateBinary(LLVMMemoryBufferRef MemBuf,
-                               LLVMContextRef Context,
-                               char **ErrorMessage);
+                               LLVMContextRef Context, char **ErrorMessage);
 
 /**
  * Dispose of a binary file.
@@ -177,7 +176,7 @@ uint64_t LLVMGetSectionSize(LLVMSectionIteratorRef SI);
 const char *LLVMGetSectionContents(LLVMSectionIteratorRef SI);
 uint64_t LLVMGetSectionAddress(LLVMSectionIteratorRef SI);
 LLVMBool LLVMGetSectionContainsSymbol(LLVMSectionIteratorRef SI,
-                                 LLVMSymbolIteratorRef Sym);
+                                      LLVMSymbolIteratorRef Sym);
 
 // Section Relocation iterators
 LLVMRelocationIteratorRef LLVMGetRelocations(LLVMSectionIteratorRef Section);
@@ -185,7 +184,6 @@ void LLVMDisposeRelocationIterator(LLVMRelocationIteratorRef RI);
 LLVMBool LLVMIsRelocationIteratorAtEnd(LLVMSectionIteratorRef Section,
                                        LLVMRelocationIteratorRef RI);
 void LLVMMoveToNextRelocation(LLVMRelocationIteratorRef RI);
-
 
 // SymbolRef accessors
 const char *LLVMGetSymbolName(LLVMSymbolIteratorRef SI);

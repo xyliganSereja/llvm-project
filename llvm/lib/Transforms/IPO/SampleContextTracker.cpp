@@ -231,7 +231,7 @@ SampleContextTracker::getCalleeContextSamplesFor(const CallBase &Inst,
     return nullptr;
 
   CalleeName = FunctionSamples::getCanonicalFnName(CalleeName);
-  
+
   FunctionId FName = getRepInFormat(CalleeName);
 
   // For indirect call, CalleeName will be empty, in which case the context
@@ -410,7 +410,7 @@ ContextTrieNode &SampleContextTracker::promoteMergeContextSamplesTree(
   // the context profile in the base (context-less) profile.
   FunctionSamples *FromSamples = NodeToPromo.getFunctionSamples();
   assert(FromSamples && "Shouldn't promote a context without profile");
-  (void)FromSamples;  // Unused in release build.
+  (void)FromSamples; // Unused in release build.
 
   LLVM_DEBUG(dbgs() << "  Found context tree root to promote: "
                     << getContextString(&NodeToPromo) << "\n");
@@ -486,9 +486,8 @@ ContextTrieNode *SampleContextTracker::getContextFor(const DILocation *DIL) {
     StringRef Name = PrevDIL->getScope()->getSubprogram()->getLinkageName();
     if (Name.empty())
       Name = PrevDIL->getScope()->getSubprogram()->getName();
-    S.push_back(
-        std::make_pair(FunctionSamples::getCallSiteIdentifier(DIL),
-                       getRepInFormat(Name)));
+    S.push_back(std::make_pair(FunctionSamples::getCallSiteIdentifier(DIL),
+                               getRepInFormat(Name)));
     PrevDIL = DIL;
   }
 
@@ -497,8 +496,7 @@ ContextTrieNode *SampleContextTracker::getContextFor(const DILocation *DIL) {
   StringRef RootName = PrevDIL->getScope()->getSubprogram()->getLinkageName();
   if (RootName.empty())
     RootName = PrevDIL->getScope()->getSubprogram()->getName();
-  S.push_back(std::make_pair(LineLocation(0, 0),
-                             getRepInFormat(RootName)));
+  S.push_back(std::make_pair(LineLocation(0, 0), getRepInFormat(RootName)));
 
   ContextTrieNode *ContextNode = &RootContext;
   int I = S.size();
@@ -526,8 +524,7 @@ SampleContextTracker::getOrCreateContextPath(const SampleContext &Context,
       ContextNode =
           ContextNode->getOrCreateChildContext(CallSiteLoc, Callsite.Func);
     } else {
-      ContextNode =
-          ContextNode->getChildContext(CallSiteLoc, Callsite.Func);
+      ContextNode = ContextNode->getChildContext(CallSiteLoc, Callsite.Func);
     }
     CallSiteLoc = Callsite.Location;
   }

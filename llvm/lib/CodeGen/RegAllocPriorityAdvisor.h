@@ -73,7 +73,7 @@ public:
   enum class AdvisorMode : int { Default, Release, Development, Dummy };
 
   RegAllocPriorityAdvisorAnalysis(AdvisorMode Mode)
-      : ImmutablePass(ID), Mode(Mode){};
+      : ImmutablePass(ID), Mode(Mode) {};
   static char ID;
 
   /// Get an advisor for the given context (i.e. machine function, etc)
@@ -81,7 +81,7 @@ public:
   getAdvisor(const MachineFunction &MF, const RAGreedy &RA) = 0;
   AdvisorMode getAdvisorMode() const { return Mode; }
   virtual void logRewardIfNeeded(const MachineFunction &MF,
-                                 llvm::function_ref<float()> GetReward){};
+                                 llvm::function_ref<float()> GetReward) {};
 
 protected:
   // This analysis preserves everything, and subclasses may have additional

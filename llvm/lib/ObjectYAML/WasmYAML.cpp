@@ -596,7 +596,7 @@ void ScalarEnumerationTraits<WasmYAML::SymbolKind>::enumeration(
 
 void ScalarEnumerationTraits<WasmYAML::ValueType>::enumeration(
     IO &IO, WasmYAML::ValueType &Type) {
-#define CONCAT(X) (uint32_t) wasm::ValType::X
+#define CONCAT(X) (uint32_t)wasm::ValType::X
 #define ECase(X) IO.enumCase(Type, #X, CONCAT(X));
   ECase(I32);
   ECase(I64);
@@ -636,7 +636,7 @@ void ScalarEnumerationTraits<WasmYAML::Opcode>::enumeration(
 
 void ScalarEnumerationTraits<WasmYAML::TableType>::enumeration(
     IO &IO, WasmYAML::TableType &Type) {
-#define CONCAT(X) (uint32_t) wasm::ValType::X
+#define CONCAT(X) (uint32_t)wasm::ValType::X
 #define ECase(X) IO.enumCase(Type, #X, CONCAT(X));
   ECase(FUNCREF);
   ECase(EXTERNREF);

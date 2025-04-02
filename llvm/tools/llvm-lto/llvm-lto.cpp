@@ -45,8 +45,8 @@
 #include "llvm/Support/SourceMgr.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/ToolOutputFile.h"
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/WithColor.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetOptions.h"
 #include <algorithm>
 #include <cassert>
@@ -304,38 +304,38 @@ static void handleDiagnostics(lto_codegen_diagnostic_severity_t Severity,
 static std::string CurrentActivity;
 
 namespace {
-  struct LLVMLTODiagnosticHandler : public DiagnosticHandler {
-    bool handleDiagnostics(const DiagnosticInfo &DI) override {
-      raw_ostream &OS = errs();
-      OS << "llvm-lto: ";
-      switch (DI.getSeverity()) {
-      case DS_Error:
-        OS << "error";
-        break;
-      case DS_Warning:
-        OS << "warning";
-        break;
-      case DS_Remark:
-        OS << "remark";
-        break;
-      case DS_Note:
-        OS << "note";
-        break;
-      }
-      if (!CurrentActivity.empty())
-        OS << ' ' << CurrentActivity;
-      OS << ": ";
-
-      DiagnosticPrinterRawOStream DP(OS);
-      DI.print(DP);
-      OS << '\n';
-
-      if (DI.getSeverity() == DS_Error)
-        exit(1);
-      return true;
+struct LLVMLTODiagnosticHandler : public DiagnosticHandler {
+  bool handleDiagnostics(const DiagnosticInfo &DI) override {
+    raw_ostream &OS = errs();
+    OS << "llvm-lto: ";
+    switch (DI.getSeverity()) {
+    case DS_Error:
+      OS << "error";
+      break;
+    case DS_Warning:
+      OS << "warning";
+      break;
+    case DS_Remark:
+      OS << "remark";
+      break;
+    case DS_Note:
+      OS << "note";
+      break;
     }
-  };
+    if (!CurrentActivity.empty())
+      OS << ' ' << CurrentActivity;
+    OS << ": ";
+
+    DiagnosticPrinterRawOStream DP(OS);
+    DI.print(DP);
+    OS << '\n';
+
+    if (DI.getSeverity() == DS_Error)
+      exit(1);
+    return true;
   }
+};
+} // namespace
 
 static void error(const Twine &Msg) {
   errs() << "llvm-lto: " << Msg << '\n';
@@ -493,9 +493,9 @@ static void testLTOModule(const TargetOptions &Options) {
 }
 
 static std::unique_ptr<MemoryBuffer> loadFile(StringRef Filename) {
-    ExitOnError ExitOnErr("llvm-lto: error loading file '" + Filename.str() +
-        "': ");
-    return ExitOnErr(errorOrToExpected(MemoryBuffer::getFileOrSTDIN(Filename)));
+  ExitOnError ExitOnErr("llvm-lto: error loading file '" + Filename.str() +
+                        "': ");
+  return ExitOnErr(errorOrToExpected(MemoryBuffer::getFileOrSTDIN(Filename)));
 }
 
 static void listDependentLibraries() {
@@ -791,8 +791,7 @@ private:
       if (OutputName.empty()) {
         OutputName = Filename + ".imports";
       }
-      OutputName =
-          getThinLTOOutputFile(OutputName, OldPrefix, NewPrefix);
+      OutputName = getThinLTOOutputFile(OutputName, OldPrefix, NewPrefix);
       ThinGenerator.emitImports(*TheModule, OutputName, *Index, *Input);
     }
   }
@@ -1210,7 +1209,7 @@ int main(int argc, char **argv) {
     const char *OutputName = nullptr;
     if (!CodeGen.compile_to_file(&OutputName))
       error("error compiling the code");
-      // Diagnostic messages should have been printed by the handler.
+    // Diagnostic messages should have been printed by the handler.
 
     outs() << "Wrote native object file '" << OutputName << "'\n";
   }

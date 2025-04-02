@@ -64,9 +64,9 @@ TEST(CodeExtractor, ExitStub) {
                                                 Err, Ctx));
 
   Function *Func = M->getFunction("foo");
-  SmallVector<BasicBlock *, 3> Candidates{ getBlockByName(Func, "header"),
-                                           getBlockByName(Func, "body1"),
-                                           getBlockByName(Func, "body2") };
+  SmallVector<BasicBlock *, 3> Candidates{getBlockByName(Func, "header"),
+                                          getBlockByName(Func, "body1"),
+                                          getBlockByName(Func, "body2")};
 
   CodeExtractor CE(Candidates);
   EXPECT_TRUE(CE.isEligible());
@@ -172,9 +172,9 @@ TEST(CodeExtractor, ExitBlockOrderingPhis) {
   )invalid",
                                                 Err, Ctx));
   Function *Func = M->getFunction("foo");
-  SmallVector<BasicBlock *, 3> Candidates{ getBlockByName(Func, "test0"),
-                                           getBlockByName(Func, "test1"),
-                                           getBlockByName(Func, "test") };
+  SmallVector<BasicBlock *, 3> Candidates{getBlockByName(Func, "test0"),
+                                          getBlockByName(Func, "test1"),
+                                          getBlockByName(Func, "test")};
 
   CodeExtractor CE(Candidates);
   EXPECT_TRUE(CE.isEligible());
@@ -229,9 +229,9 @@ TEST(CodeExtractor, ExitBlockOrdering) {
   )invalid",
                                                 Err, Ctx));
   Function *Func = M->getFunction("foo");
-  SmallVector<BasicBlock *, 3> Candidates{ getBlockByName(Func, "test0"),
-                                           getBlockByName(Func, "test1"),
-                                           getBlockByName(Func, "test") };
+  SmallVector<BasicBlock *, 3> Candidates{getBlockByName(Func, "test0"),
+                                          getBlockByName(Func, "test1"),
+                                          getBlockByName(Func, "test")};
 
   CodeExtractor CE(Candidates);
   EXPECT_TRUE(CE.isEligible());
@@ -284,13 +284,12 @@ TEST(CodeExtractor, ExitPHIOnePredFromRegion) {
       %1 = phi i32 [ 3, %extracted2 ], [ 4, %pred ]
       ret i32 %1
     }
-  )invalid", Err, Ctx));
+  )invalid",
+                                                Err, Ctx));
 
   Function *Func = M->getFunction("foo");
   SmallVector<BasicBlock *, 2> ExtractedBlocks{
-    getBlockByName(Func, "extracted1"),
-    getBlockByName(Func, "extracted2")
-  };
+      getBlockByName(Func, "extracted1"), getBlockByName(Func, "extracted2")};
 
   CodeExtractor CE(ExtractedBlocks);
   EXPECT_TRUE(CE.isEligible());
@@ -303,9 +302,9 @@ TEST(CodeExtractor, ExitPHIOnePredFromRegion) {
   // Ensure that PHIs in exits are not splitted (since that they have only one
   // incoming value from extracted region).
   EXPECT_TRUE(Exit1 &&
-          cast<PHINode>(Exit1->front()).getNumIncomingValues() == 2);
+              cast<PHINode>(Exit1->front()).getNumIncomingValues() == 2);
   EXPECT_TRUE(Exit2 &&
-          cast<PHINode>(Exit2->front()).getNumIncomingValues() == 2);
+              cast<PHINode>(Exit2->front()).getNumIncomingValues() == 2);
   EXPECT_FALSE(verifyFunction(*Outlined));
   EXPECT_FALSE(verifyFunction(*Func));
 }
@@ -350,9 +349,10 @@ TEST(CodeExtractor, StoreOutputInvokeResultAfterEHPad) {
         %ex.2 = phi i8* [ %ex.1, %lpad2 ], [ null, %lpad ]
         unreachable
     }
-  )invalid", Err, Ctx));
+  )invalid",
+                                                Err, Ctx));
 
-	if (!M) {
+  if (!M) {
     Err.print("unit", errs());
     exit(1);
   }
@@ -361,11 +361,8 @@ TEST(CodeExtractor, StoreOutputInvokeResultAfterEHPad) {
   EXPECT_FALSE(verifyFunction(*Func, &errs()));
 
   SmallVector<BasicBlock *, 2> ExtractedBlocks{
-    getBlockByName(Func, "catch"),
-    getBlockByName(Func, "invoke.cont2"),
-    getBlockByName(Func, "invoke.cont3"),
-    getBlockByName(Func, "lpad2")
-  };
+      getBlockByName(Func, "catch"), getBlockByName(Func, "invoke.cont2"),
+      getBlockByName(Func, "invoke.cont3"), getBlockByName(Func, "lpad2")};
 
   CodeExtractor CE(ExtractedBlocks);
   EXPECT_TRUE(CE.isEligible());
@@ -399,8 +396,8 @@ TEST(CodeExtractor, StoreOutputInvokeResultInExitStub) {
                                                 Err, Ctx));
 
   Function *Func = M->getFunction("foo");
-  SmallVector<BasicBlock *, 1> Blocks{ getBlockByName(Func, "entry"),
-                                       getBlockByName(Func, "lpad") };
+  SmallVector<BasicBlock *, 1> Blocks{getBlockByName(Func, "entry"),
+                                      getBlockByName(Func, "lpad")};
 
   CodeExtractor CE(Blocks);
   EXPECT_TRUE(CE.isEligible());
@@ -452,7 +449,7 @@ TEST(CodeExtractor, ExtractAndInvalidateAssumptionCache) {
 
   assert(M && "Could not parse module?");
   Function *Func = M->getFunction("test");
-  SmallVector<BasicBlock *, 1> Blocks{ getBlockByName(Func, "if.else") };
+  SmallVector<BasicBlock *, 1> Blocks{getBlockByName(Func, "if.else")};
   AssumptionCache AC(*Func);
   CodeExtractor CE(Blocks, nullptr, false, nullptr, nullptr, &AC);
   EXPECT_TRUE(CE.isEligible());

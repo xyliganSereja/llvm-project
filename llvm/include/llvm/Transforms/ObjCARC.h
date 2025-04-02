@@ -46,6 +46,6 @@ struct PAEvalPass : public PassInfoMixin<PAEvalPass> {
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

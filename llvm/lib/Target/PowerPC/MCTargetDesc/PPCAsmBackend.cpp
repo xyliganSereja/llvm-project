@@ -84,6 +84,7 @@ namespace {
 class PPCAsmBackend : public MCAsmBackend {
 protected:
   Triple TT;
+
 public:
   PPCAsmBackend(const Target &T, const Triple &TT)
       : MCAsmBackend(TT.isLittleEndian() ? llvm::endianness::little
@@ -96,31 +97,29 @@ public:
 
   const MCFixupKindInfo &getFixupKindInfo(MCFixupKind Kind) const override {
     const static MCFixupKindInfo InfosBE[PPC::NumTargetFixupKinds] = {
-      // name                    offset  bits  flags
-      { "fixup_ppc_br24",        6,      24,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_br24_notoc",  6,      24,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_brcond14",    16,     14,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_br24abs",     6,      24,   0 },
-      { "fixup_ppc_brcond14abs", 16,     14,   0 },
-      { "fixup_ppc_half16",       0,     16,   0 },
-      { "fixup_ppc_half16ds",     0,     14,   0 },
-      { "fixup_ppc_pcrel34",     0,      34,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_imm34",       0,      34,   0 },
-      { "fixup_ppc_nofixup",      0,      0,   0 }
-    };
+        // name                    offset  bits  flags
+        {"fixup_ppc_br24", 6, 24, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_br24_notoc", 6, 24, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_brcond14", 16, 14, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_br24abs", 6, 24, 0},
+        {"fixup_ppc_brcond14abs", 16, 14, 0},
+        {"fixup_ppc_half16", 0, 16, 0},
+        {"fixup_ppc_half16ds", 0, 14, 0},
+        {"fixup_ppc_pcrel34", 0, 34, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_imm34", 0, 34, 0},
+        {"fixup_ppc_nofixup", 0, 0, 0}};
     const static MCFixupKindInfo InfosLE[PPC::NumTargetFixupKinds] = {
-      // name                    offset  bits  flags
-      { "fixup_ppc_br24",        2,      24,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_br24_notoc",  2,      24,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_brcond14",    2,      14,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_br24abs",     2,      24,   0 },
-      { "fixup_ppc_brcond14abs", 2,      14,   0 },
-      { "fixup_ppc_half16",      0,      16,   0 },
-      { "fixup_ppc_half16ds",    2,      14,   0 },
-      { "fixup_ppc_pcrel34",     0,      34,   MCFixupKindInfo::FKF_IsPCRel },
-      { "fixup_ppc_imm34",       0,      34,   0 },
-      { "fixup_ppc_nofixup",     0,       0,   0 }
-    };
+        // name                    offset  bits  flags
+        {"fixup_ppc_br24", 2, 24, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_br24_notoc", 2, 24, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_brcond14", 2, 14, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_br24abs", 2, 24, 0},
+        {"fixup_ppc_brcond14abs", 2, 14, 0},
+        {"fixup_ppc_half16", 0, 16, 0},
+        {"fixup_ppc_half16ds", 2, 14, 0},
+        {"fixup_ppc_pcrel34", 0, 34, MCFixupKindInfo::FKF_IsPCRel},
+        {"fixup_ppc_imm34", 0, 34, 0},
+        {"fixup_ppc_nofixup", 0, 0, 0}};
 
     // Fixup kinds from .reloc directive are like R_PPC_NONE/R_PPC64_NONE. They
     // do not require any extra processing.
@@ -145,7 +144,8 @@ public:
     if (Kind >= FirstLiteralRelocationKind)
       return;
     Value = adjustFixupValue(Kind, Value);
-    if (!Value) return;           // Doesn't change encoding.
+    if (!Value)
+      return; // Doesn't change encoding.
 
     unsigned Offset = Fixup.getOffset();
     unsigned NumBytes = getFixupKindNumBytes(Kind);
@@ -184,7 +184,7 @@ public:
         } else if (const auto *S = dyn_cast<MCSymbolXCOFF>(&A->getSymbol())) {
           return !Target.isAbsolute() && S->isExternal() &&
                  S->getStorageClass() == XCOFF::C_WEAKEXT;
-       }
+        }
       }
       return false;
     }
@@ -208,7 +208,6 @@ public:
   }
 };
 } // end anonymous namespace
-
 
 // FIXME: This should be in a separate file.
 namespace {

@@ -57,7 +57,7 @@ private:
   /// HasSectionLabel - map of which sections have already had a non-local
   /// label emitted to them. Used so we don't emit extraneous linker local
   /// labels in the middle of the section.
-  DenseMap<const MCSection*, bool> HasSectionLabel;
+  DenseMap<const MCSection *, bool> HasSectionLabel;
 
   void emitInstToData(const MCInst &Inst, const MCSubtargetInfo &STI) override;
 
@@ -215,10 +215,14 @@ void MCMachOStreamer::emitAssemblerFlag(MCAssemblerFlag Flag) {
   getAssembler().getBackend().handleAssemblerFlag(Flag);
   // Do any generic stuff we need to do.
   switch (Flag) {
-  case MCAF_SyntaxUnified: return; // no-op here.
-  case MCAF_Code16: return; // Change parsing mode; no-op here.
-  case MCAF_Code32: return; // Change parsing mode; no-op here.
-  case MCAF_Code64: return; // Change parsing mode; no-op here.
+  case MCAF_SyntaxUnified:
+    return; // no-op here.
+  case MCAF_Code16:
+    return; // Change parsing mode; no-op here.
+  case MCAF_Code32:
+    return; // Change parsing mode; no-op here.
+  case MCAF_Code64:
+    return; // Change parsing mode; no-op here.
   case MCAF_SubsectionsViaSymbols:
     getWriter().setSubsectionsViaSymbols(true);
     return;

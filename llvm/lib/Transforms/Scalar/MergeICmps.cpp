@@ -50,8 +50,8 @@
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/Instruction.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instruction.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
 #include "llvm/Transforms/Scalar.h"
@@ -126,7 +126,7 @@ public:
 
 private:
   unsigned Order = 1;
-  DenseMap<const Value*, int> BaseToIndex;
+  DenseMap<const Value *, int> BaseToIndex;
 };
 
 // If this value is a load from a constant offset w.r.t. a base address, and
@@ -189,7 +189,8 @@ struct BCECmp {
 
   BCECmp(BCEAtom L, BCEAtom R, int SizeBits, const ICmpInst *CmpI)
       : Lhs(std::move(L)), Rhs(std::move(R)), SizeBits(SizeBits), CmpI(CmpI) {
-    if (Rhs < Lhs) std::swap(Rhs, Lhs);
+    if (Rhs < Lhs)
+      std::swap(Rhs, Lhs);
   }
 };
 
@@ -199,7 +200,7 @@ struct BCECmp {
 // split into the atom comparison part and the "other work" part
 // (see canSplit()).
 class BCECmpBlock {
- public:
+public:
   typedef SmallDenseSet<const Instruction *, 8> InstructionSet;
 
   BCECmpBlock(BCECmp Cmp, BasicBlock *BB, InstructionSet BlockInsts)
@@ -703,7 +704,7 @@ bool BCECmpChain::simplify(const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   // predecessors of EntryBlock_ to NextCmpBlock instead. This makes all cmp
   // blocks in the old chain unreachable.
   while (!pred_empty(EntryBlock_)) {
-    BasicBlock* const Pred = *pred_begin(EntryBlock_);
+    BasicBlock *const Pred = *pred_begin(EntryBlock_);
     LLVM_DEBUG(dbgs() << "Updating jump into old chain from " << Pred->getName()
                       << "\n");
     Pred->getTerminator()->replaceUsesOfWith(EntryBlock_, NextCmpBlock);
@@ -738,9 +739,8 @@ bool BCECmpChain::simplify(const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   return true;
 }
 
-std::vector<BasicBlock *> getOrderedBlocks(PHINode &Phi,
-                                           BasicBlock *const LastBlock,
-                                           int NumBlocks) {
+std::vector<BasicBlock *>
+getOrderedBlocks(PHINode &Phi, BasicBlock *const LastBlock, int NumBlocks) {
   // Walk up from the last block to find other blocks.
   std::vector<BasicBlock *> Blocks(NumBlocks);
   assert(LastBlock && "invalid last block");
@@ -798,7 +798,8 @@ bool processPhi(PHINode &Phi, const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   // last block and reconstruct the order.
   BasicBlock *LastBlock = nullptr;
   for (unsigned I = 0; I < Phi.getNumIncomingValues(); ++I) {
-    if (isa<ConstantInt>(Phi.getIncomingValue(I))) continue;
+    if (isa<ConstantInt>(Phi.getIncomingValue(I)))
+      continue;
     if (LastBlock) {
       // There are several non-constant values.
       LLVM_DEBUG(dbgs() << "skip: several non-constant values\n");
@@ -831,7 +832,8 @@ bool processPhi(PHINode &Phi, const TargetLibraryInfo &TLI, AliasAnalysis &AA,
 
   const auto Blocks =
       getOrderedBlocks(Phi, LastBlock, Phi.getNumIncomingValues());
-  if (Blocks.empty()) return false;
+  if (Blocks.empty())
+    return false;
   BCECmpChain CmpChain(Blocks, Phi, AA);
 
   if (!CmpChain.atLeastOneMerged()) {
@@ -879,7 +881,8 @@ public:
   }
 
   bool runOnFunction(Function &F) override {
-    if (skipFunction(F)) return false;
+    if (skipFunction(F))
+      return false;
     const auto &TLI = getAnalysis<TargetLibraryInfoWrapperPass>().getTLI(F);
     const auto &TTI = getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
     // MergeICmps does not need the DominatorTree, but we update it if it's
@@ -889,7 +892,7 @@ public:
     return runImpl(F, TLI, TTI, AA, DTWP ? &DTWP->getDomTree() : nullptr);
   }
 
- private:
+private:
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<TargetLibraryInfoWrapperPass>();
     AU.addRequired<TargetTransformInfoWrapperPass>();

@@ -49,7 +49,7 @@ void getSimilarities(
     std::vector<std::vector<IRSimilarityCandidate>> &SimilarityCandidates) {
   // In order to keep the size of the tests from becoming too large, we do not
   // recognize similarity for branches unless explicitly needed.
-  IRSimilarityIdentifier Identifier(/*EnableBranchMatching = */false);
+  IRSimilarityIdentifier Identifier(/*EnableBranchMatching = */ false);
   SimilarityCandidates = Identifier.findSimilarity(M);
 }
 
@@ -1839,13 +1839,13 @@ TEST(IRSimilarityCandidate, PredicateIsomorphism) {
   std::vector<IRInstructionData *>::iterator Start, End;
   Start = InstrList.begin();
   End = InstrList.begin();
-  
+
   std::advance(End, 1);
   IRSimilarityCandidate Cand1(0, 2, *Start, *End);
 
   Start = InstrList.begin();
   End = InstrList.begin();
-  
+
   std::advance(Start, 3);
   std::advance(End, 4);
   IRSimilarityCandidate Cand2(3, 2, *Start, *End);

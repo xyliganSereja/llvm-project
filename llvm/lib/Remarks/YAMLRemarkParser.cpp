@@ -157,9 +157,8 @@ Expected<std::unique_ptr<YAMLRemarkParser>> remarks::createYAMLParserFromMeta(
   }
 
   std::unique_ptr<YAMLRemarkParser> Result =
-      StrTab
-          ? std::make_unique<YAMLStrTabRemarkParser>(Buf, std::move(*StrTab))
-          : std::make_unique<YAMLRemarkParser>(Buf);
+      StrTab ? std::make_unique<YAMLStrTabRemarkParser>(Buf, std::move(*StrTab))
+             : std::make_unique<YAMLRemarkParser>(Buf);
   if (SeparateBuf)
     Result->SeparateBuf = std::move(SeparateBuf);
   return std::move(Result);

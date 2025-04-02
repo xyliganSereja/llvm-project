@@ -130,14 +130,14 @@ private:
 
 protected:
   explicit AArch64MCExpr(const MCExpr *Expr, VariantKind Kind)
-    : Expr(Expr), Kind(Kind) {}
+      : Expr(Expr), Kind(Kind) {}
 
 public:
   /// @name Construction
   /// @{
 
   static const AArch64MCExpr *create(const MCExpr *Expr, VariantKind Kind,
-                                   MCContext &Ctx);
+                                     MCContext &Ctx);
 
   /// @}
   /// @name Accessors

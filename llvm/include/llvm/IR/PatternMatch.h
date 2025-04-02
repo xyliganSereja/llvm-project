@@ -866,8 +866,7 @@ m_ImmConstant() {
 }
 
 /// Match an immediate Constant, capturing the value if we match.
-inline match_combine_and<bind_ty<Constant>,
-                         match_unless<constantexpr_match>>
+inline match_combine_and<bind_ty<Constant>, match_unless<constantexpr_match>>
 m_ImmConstant(Constant *&C) {
   return m_CombineAnd(m_Constant(C), m_Unless(m_ConstantExpr()));
 }
@@ -1430,8 +1429,7 @@ m_NUWAddLike(const LHS &L, const RHS &R) {
   return m_CombineOr(m_NUWAdd(L, R), m_DisjointOr(L, R));
 }
 
-template <typename LHS, typename RHS>
-struct XorLike_match {
+template <typename LHS, typename RHS> struct XorLike_match {
   LHS L;
   RHS R;
 
@@ -1441,7 +1439,7 @@ struct XorLike_match {
     if (auto *Op = dyn_cast<BinaryOperator>(V)) {
       if (Op->getOpcode() == Instruction::Sub && Op->hasNoUnsignedWrap() &&
           PatternMatch::match(Op->getOperand(0), m_LowBitMask()))
-		  ; // Pass
+        ; // Pass
       else if (Op->getOpcode() != Instruction::Xor)
         return false;
       return (L.match(Op->getOperand(0)) && R.match(Op->getOperand(1))) ||
@@ -3007,9 +3005,7 @@ struct VScaleVal_match {
   }
 };
 
-inline VScaleVal_match m_VScale() {
-  return VScaleVal_match();
-}
+inline VScaleVal_match m_VScale() { return VScaleVal_match(); }
 
 template <typename Opnd0, typename Opnd1>
 inline typename m_Intrinsic_Ty<Opnd0, Opnd1>::Ty

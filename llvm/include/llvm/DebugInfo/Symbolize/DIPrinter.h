@@ -122,7 +122,6 @@ private:
 public:
   GNUPrinter(raw_ostream &OS, ErrorHandler EH, PrinterConfig &Config)
       : PlainPrinterBase(OS, EH, Config) {}
-
 };
 
 class JSONPrinter : public DIPrinter {

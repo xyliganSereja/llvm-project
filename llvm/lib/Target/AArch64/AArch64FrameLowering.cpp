@@ -929,25 +929,25 @@ static MCRegister getRegisterOrZero(MCRegister Reg, bool HasSVE) {
   case AArch64::W##n:                                                          \
   case AArch64::X##n:                                                          \
     return AArch64::X##n
-  CASE(0);
-  CASE(1);
-  CASE(2);
-  CASE(3);
-  CASE(4);
-  CASE(5);
-  CASE(6);
-  CASE(7);
-  CASE(8);
-  CASE(9);
-  CASE(10);
-  CASE(11);
-  CASE(12);
-  CASE(13);
-  CASE(14);
-  CASE(15);
-  CASE(16);
-  CASE(17);
-  CASE(18);
+    CASE(0);
+    CASE(1);
+    CASE(2);
+    CASE(3);
+    CASE(4);
+    CASE(5);
+    CASE(6);
+    CASE(7);
+    CASE(8);
+    CASE(9);
+    CASE(10);
+    CASE(11);
+    CASE(12);
+    CASE(13);
+    CASE(14);
+    CASE(15);
+    CASE(16);
+    CASE(17);
+    CASE(18);
 #undef CASE
 
     // FPRs
@@ -958,38 +958,38 @@ static MCRegister getRegisterOrZero(MCRegister Reg, bool HasSVE) {
   case AArch64::D##n:                                                          \
   case AArch64::Q##n:                                                          \
     return HasSVE ? AArch64::Z##n : AArch64::Q##n
-  CASE(0);
-  CASE(1);
-  CASE(2);
-  CASE(3);
-  CASE(4);
-  CASE(5);
-  CASE(6);
-  CASE(7);
-  CASE(8);
-  CASE(9);
-  CASE(10);
-  CASE(11);
-  CASE(12);
-  CASE(13);
-  CASE(14);
-  CASE(15);
-  CASE(16);
-  CASE(17);
-  CASE(18);
-  CASE(19);
-  CASE(20);
-  CASE(21);
-  CASE(22);
-  CASE(23);
-  CASE(24);
-  CASE(25);
-  CASE(26);
-  CASE(27);
-  CASE(28);
-  CASE(29);
-  CASE(30);
-  CASE(31);
+    CASE(0);
+    CASE(1);
+    CASE(2);
+    CASE(3);
+    CASE(4);
+    CASE(5);
+    CASE(6);
+    CASE(7);
+    CASE(8);
+    CASE(9);
+    CASE(10);
+    CASE(11);
+    CASE(12);
+    CASE(13);
+    CASE(14);
+    CASE(15);
+    CASE(16);
+    CASE(17);
+    CASE(18);
+    CASE(19);
+    CASE(20);
+    CASE(21);
+    CASE(22);
+    CASE(23);
+    CASE(24);
+    CASE(25);
+    CASE(26);
+    CASE(27);
+    CASE(28);
+    CASE(29);
+    CASE(30);
+    CASE(31);
 #undef CASE
   }
 }
@@ -1290,7 +1290,7 @@ static MachineBasicBlock::iterator InsertSEH(MachineBasicBlock::iterator MBBI,
     Imm = -Imm;
     [[fallthrough]];
   case AArch64::STRXpre: {
-    unsigned Reg =  RegInfo->getSEHRegNum(MBBI->getOperand(1).getReg());
+    unsigned Reg = RegInfo->getSEHRegNum(MBBI->getOperand(1).getReg());
     MIB = BuildMI(MF, DL, TII.get(AArch64::SEH_SaveReg_X))
               .addImm(Reg)
               .addImm(Imm)
@@ -1299,8 +1299,8 @@ static MachineBasicBlock::iterator InsertSEH(MachineBasicBlock::iterator MBBI,
   }
   case AArch64::STPDi:
   case AArch64::LDPDi: {
-    unsigned Reg0 =  RegInfo->getSEHRegNum(MBBI->getOperand(0).getReg());
-    unsigned Reg1 =  RegInfo->getSEHRegNum(MBBI->getOperand(1).getReg());
+    unsigned Reg0 = RegInfo->getSEHRegNum(MBBI->getOperand(0).getReg());
+    unsigned Reg1 = RegInfo->getSEHRegNum(MBBI->getOperand(1).getReg());
     MIB = BuildMI(MF, DL, TII.get(AArch64::SEH_SaveFRegP))
               .addImm(Reg0)
               .addImm(Reg1)
@@ -2087,9 +2087,12 @@ void AArch64FrameLowering::emitPrologue(MachineFunction &MF,
       BuildMI(MBB, MBBI, DL, TII->get(AArch64::BL))
           .addExternalSymbol(ChkStk)
           .addReg(AArch64::X15, RegState::Implicit)
-          .addReg(AArch64::X16, RegState::Implicit | RegState::Define | RegState::Dead)
-          .addReg(AArch64::X17, RegState::Implicit | RegState::Define | RegState::Dead)
-          .addReg(AArch64::NZCV, RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::X16,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::X17,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::NZCV,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
           .setMIFlags(MachineInstr::FrameSetup);
       if (NeedsWinCFI) {
         HasWinCFI = true;
@@ -2112,9 +2115,12 @@ void AArch64FrameLowering::emitPrologue(MachineFunction &MF,
       BuildMI(MBB, MBBI, DL, TII->get(getBLRCallOpcode(MF)))
           .addReg(AArch64::X16, RegState::Kill)
           .addReg(AArch64::X15, RegState::Implicit | RegState::Define)
-          .addReg(AArch64::X16, RegState::Implicit | RegState::Define | RegState::Dead)
-          .addReg(AArch64::X17, RegState::Implicit | RegState::Define | RegState::Dead)
-          .addReg(AArch64::NZCV, RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::X16,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::X17,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
+          .addReg(AArch64::NZCV,
+                  RegState::Implicit | RegState::Define | RegState::Dead)
           .setMIFlags(MachineInstr::FrameSetup);
       if (NeedsWinCFI) {
         HasWinCFI = true;
@@ -2325,8 +2331,8 @@ void AArch64FrameLowering::emitEpilogue(MachineFunction &MF,
     }
   });
 
-  int64_t NumBytes = IsFunclet ? getWinEHFuncletFrameSize(MF)
-                               : MFI.getStackSize();
+  int64_t NumBytes =
+      IsFunclet ? getWinEHFuncletFrameSize(MF) : MFI.getStackSize();
 
   // All calls are tail calls in GHC calling conv, and functions have no
   // prologue/epilogue.
@@ -2789,7 +2795,7 @@ StackOffset AArch64FrameLowering::resolveFrameOffsetReference(
         // Funclets access the locals contained in the parent's stack frame
         // via the frame pointer, so we have to use the FP in the parent
         // function.
-        (void) Subtarget;
+        (void)Subtarget;
         assert(Subtarget.isCallingConvWin64(MF.getFunction().getCallingConv(),
                                             MF.getFunction().isVarArg()) &&
                "Funclets should only be present on Win64");
@@ -2808,8 +2814,8 @@ StackOffset AArch64FrameLowering::resolveFrameOffsetReference(
       "non-argument/CSR objects cannot be accessed through the frame pointer");
 
   if (isSVE) {
-    StackOffset FPOffset =
-        StackOffset::get(-AFI->getCalleeSaveBaseToFrameRecordOffset(), ObjectOffset);
+    StackOffset FPOffset = StackOffset::get(
+        -AFI->getCalleeSaveBaseToFrameRecordOffset(), ObjectOffset);
     StackOffset SPOffset =
         SVEStackSize +
         StackOffset::get(MFI.getStackSize() - AFI->getCalleeSavedStackSize(),
@@ -3353,7 +3359,7 @@ bool AArch64FrameLowering::spillCalleeSavedRegisters(
 
     if (RPI.isPaired() && RPI.isScalable()) {
       [[maybe_unused]] const AArch64Subtarget &Subtarget =
-                              MF.getSubtarget<AArch64Subtarget>();
+          MF.getSubtarget<AArch64Subtarget>();
       AArch64FunctionInfo *AFI = MF.getInfo<AArch64FunctionInfo>();
       unsigned PnReg = AFI->getPredicateRegForFillSpill();
       assert((PnReg != 0 && enableMultiVectorSpillFill(Subtarget, MF)) &&
@@ -3523,7 +3529,7 @@ bool AArch64FrameLowering::restoreCalleeSavedRegisters(
     AArch64FunctionInfo *AFI = MF.getInfo<AArch64FunctionInfo>();
     if (RPI.isPaired() && RPI.isScalable()) {
       [[maybe_unused]] const AArch64Subtarget &Subtarget =
-                              MF.getSubtarget<AArch64Subtarget>();
+          MF.getSubtarget<AArch64Subtarget>();
       unsigned PnReg = AFI->getPredicateRegForFillSpill();
       assert((PnReg != 0 && enableMultiVectorSpillFill(Subtarget, MF)) &&
              "Expects SVE2.1 or SME2 target and a predicate register");
@@ -4056,8 +4062,8 @@ bool AArch64FrameLowering::enableStackSlotScavenging(
 }
 
 /// returns true if there are any SVE callee saves.
-static bool getSVECalleeSaveSlotRange(const MachineFrameInfo &MFI,
-                                      int &Min, int &Max) {
+static bool getSVECalleeSaveSlotRange(const MachineFrameInfo &MFI, int &Min,
+                                      int &Max) {
   Min = std::numeric_limits<int>::max();
   Max = std::numeric_limits<int>::min();
 
@@ -4163,7 +4169,8 @@ static int64_t determineSVEStackObjectOffsets(MachineFrameInfo &MFI,
 int64_t AArch64FrameLowering::estimateSVEStackObjectOffsets(
     MachineFrameInfo &MFI) const {
   int MinCSFrameIndex, MaxCSFrameIndex;
-  return determineSVEStackObjectOffsets(MFI, MinCSFrameIndex, MaxCSFrameIndex, false);
+  return determineSVEStackObjectOffsets(MFI, MinCSFrameIndex, MaxCSFrameIndex,
+                                        false);
 }
 
 int64_t AArch64FrameLowering::assignSVEStackObjectOffsets(
@@ -4607,10 +4614,9 @@ void TagStoreEdit::emitUnrolled(MachineBasicBlock::iterator InsertI) {
   MachineInstr *LastI = nullptr;
   while (Size) {
     int64_t InstrSize = (Size > 16) ? 32 : 16;
-    unsigned Opcode =
-        InstrSize == 16
-            ? (ZeroData ? AArch64::STZGi : AArch64::STGi)
-            : (ZeroData ? AArch64::STZ2Gi : AArch64::ST2Gi);
+    unsigned Opcode = InstrSize == 16
+                          ? (ZeroData ? AArch64::STZGi : AArch64::STGi)
+                          : (ZeroData ? AArch64::STZ2Gi : AArch64::ST2Gi);
     assert(BaseRegOffsetBytes % 16 == 0);
     MachineInstr *I = BuildMI(*MBB, InsertI, DL, TII->get(Opcode))
                           .addReg(AArch64::SP)

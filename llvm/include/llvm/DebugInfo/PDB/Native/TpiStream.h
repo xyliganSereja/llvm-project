@@ -23,7 +23,7 @@ namespace codeview {
 class TypeIndex;
 struct TypeIndexOffset;
 class LazyRandomTypeCollection;
-}
+} // namespace codeview
 namespace msf {
 class MappedBlockStream;
 }
@@ -92,7 +92,7 @@ private:
 
   const TpiStreamHeader *Header;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

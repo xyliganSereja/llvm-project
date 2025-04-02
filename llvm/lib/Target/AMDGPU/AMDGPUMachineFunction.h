@@ -28,7 +28,7 @@ class AMDGPUMachineFunction : public MachineFunctionInfo {
 
 protected:
   uint64_t ExplicitKernArgSize = 0; // Cache for this.
-  Align MaxKernArgAlign;        // Cache for this.
+  Align MaxKernArgAlign;            // Cache for this.
 
   /// Number of bytes in the LDS that are being used.
   uint32_t LDSSize = 0;
@@ -72,23 +72,15 @@ protected:
 public:
   AMDGPUMachineFunction(const Function &F, const AMDGPUSubtarget &ST);
 
-  uint64_t getExplicitKernArgSize() const {
-    return ExplicitKernArgSize;
-  }
+  uint64_t getExplicitKernArgSize() const { return ExplicitKernArgSize; }
 
   Align getMaxKernArgAlign() const { return MaxKernArgAlign; }
 
-  uint32_t getLDSSize() const {
-    return LDSSize;
-  }
+  uint32_t getLDSSize() const { return LDSSize; }
 
-  uint32_t getGDSSize() const {
-    return GDSSize;
-  }
+  uint32_t getGDSSize() const { return GDSSize; }
 
-  bool isEntryFunction() const {
-    return IsEntryFunction;
-  }
+  bool isEntryFunction() const { return IsEntryFunction; }
 
   bool isModuleEntryFunction() const { return IsModuleEntryFunction; }
 
@@ -99,17 +91,11 @@ public:
     return isEntryFunction() || isChainFunction();
   }
 
-  bool hasNoSignedZerosFPMath() const {
-    return NoSignedZerosFPMath;
-  }
+  bool hasNoSignedZerosFPMath() const { return NoSignedZerosFPMath; }
 
-  bool isMemoryBound() const {
-    return MemoryBound;
-  }
+  bool isMemoryBound() const { return MemoryBound; }
 
-  bool needsWaveLimiter() const {
-    return WaveLimiter;
-  }
+  bool needsWaveLimiter() const { return WaveLimiter; }
 
   bool hasInitWholeWave() const { return HasInitWholeWave; }
   void setInitWholeWave() { HasInitWholeWave = true; }
@@ -133,5 +119,5 @@ public:
   bool isDynamicLDSUsed() const;
 };
 
-}
+} // namespace llvm
 #endif

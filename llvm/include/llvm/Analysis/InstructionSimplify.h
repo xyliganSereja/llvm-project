@@ -86,7 +86,6 @@ Value *simplifyURemInst(Value *LHS, Value *RHS, const SimplifyQuery &Q);
 /// Given operand for an FNeg, fold the result or return null.
 Value *simplifyFNegInst(Value *Op, FastMathFlags FMF, const SimplifyQuery &Q);
 
-
 /// Given operands for an FAdd, fold the result or return null.
 Value *
 simplifyFAddInst(Value *LHS, Value *RHS, FastMathFlags FMF,
@@ -248,9 +247,8 @@ Value *simplifyInstruction(Instruction *I, const SimplifyQuery &Q);
 
 /// Like \p simplifyInstruction but the operands of \p I are replaced with
 /// \p NewOps. Returns a simplified value, or null if none was found.
-Value *
-simplifyInstructionWithOperands(Instruction *I, ArrayRef<Value *> NewOps,
-                                const SimplifyQuery &Q);
+Value *simplifyInstructionWithOperands(Instruction *I, ArrayRef<Value *> NewOps,
+                                       const SimplifyQuery &Q);
 
 /// See if V simplifies when its operand Op is replaced with RepOp. If not,
 /// return null.

@@ -90,7 +90,7 @@ private:
 
   RISCVProcFamilyEnum RISCVProcFamily = Others;
 
-#define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
+#define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER)                    \
   bool ATTRIBUTE = DEFAULT;
 #include "RISCVGenSubtargetInfo.inc"
 
@@ -131,9 +131,7 @@ public:
     return &FrameLowering;
   }
   const RISCVInstrInfo *getInstrInfo() const override { return &InstrInfo; }
-  const RISCVRegisterInfo *getRegisterInfo() const override {
-    return &RegInfo;
-  }
+  const RISCVRegisterInfo *getRegisterInfo() const override { return &RegInfo; }
   const RISCVTargetLowering *getTargetLowering() const override {
     return &TLInfo;
   }
@@ -155,7 +153,7 @@ public:
   /// initializeProperties().
   RISCVProcFamilyEnum getProcFamily() const { return RISCVProcFamily; }
 
-#define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \
+#define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER)                    \
   bool GETTER() const { return ATTRIBUTE; }
 #include "RISCVGenSubtargetInfo.inc"
 
@@ -182,12 +180,8 @@ public:
   }
 
   bool is64Bit() const { return IsRV64; }
-  MVT getXLenVT() const {
-    return is64Bit() ? MVT::i64 : MVT::i32;
-  }
-  unsigned getXLen() const {
-    return is64Bit() ? 64 : 32;
-  }
+  MVT getXLenVT() const { return is64Bit() ? MVT::i64 : MVT::i32; }
+  unsigned getXLen() const { return is64Bit() ? 64 : 32; }
   bool useLoadStorePairs() const;
   bool useCCMovInsn() const;
   unsigned getFLen() const {
@@ -299,9 +293,9 @@ protected:
   mutable std::unique_ptr<RISCVRegisterBankInfo> RegBankInfo;
 
   // Return the known range for the bit length of RVV data registers as set
-  // at the command line. A value of 0 means nothing is known about that particular
-  // limit beyond what's implied by the architecture.
-  // NOTE: Please use getRealMinVLen and getRealMaxVLen instead!
+  // at the command line. A value of 0 means nothing is known about that
+  // particular limit beyond what's implied by the architecture. NOTE: Please
+  // use getRealMinVLen and getRealMaxVLen instead!
   unsigned getMaxRVVVectorSizeInBits() const;
   unsigned getMinRVVVectorSizeInBits() const;
 
@@ -388,6 +382,6 @@ public:
   void overridePostRASchedPolicy(MachineSchedPolicy &Policy,
                                  unsigned NumRegionInstrs) const override;
 };
-} // End llvm namespace
+} // namespace llvm
 
 #endif

@@ -122,8 +122,8 @@ bool runImpl(Module &M) {
 
   // Dig the constructor functions out of GV's initializer.
   ConstantArray *Init = cast<ConstantArray>(GV->getInitializer());
-  for (User::op_iterator OI = Init->op_begin(), OE = Init->op_end();
-       OI != OE; ++OI) {
+  for (User::op_iterator OI = Init->op_begin(), OE = Init->op_end(); OI != OE;
+       ++OI) {
     Value *Op = *OI;
     // llvm.global_ctors is an array of three-field structs where the second
     // members are constructor functions.

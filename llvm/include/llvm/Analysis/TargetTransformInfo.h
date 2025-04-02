@@ -155,9 +155,7 @@ public:
   const SmallVectorImpl<const Value *> &getArgs() const { return Arguments; }
   const SmallVectorImpl<Type *> &getArgTypes() const { return ParamTys; }
 
-  bool isTypeBasedOnly() const {
-    return Arguments.empty();
-  }
+  bool isTypeBasedOnly() const { return Arguments.empty(); }
 
   bool skipScalarizationCost() const { return ScalarizationCost.isValid(); }
 };
@@ -689,18 +687,19 @@ public:
   /// \returns std::nullopt to not do anything target specific or a value that
   /// will be returned from the InstCombiner. It is possible to return null and
   /// stop further processing of the intrinsic by returning nullptr.
-  std::optional<Instruction *> instCombineIntrinsic(InstCombiner & IC,
-                                                    IntrinsicInst & II) const;
+  std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
+                                                    IntrinsicInst &II) const;
   /// Can be used to implement target-specific instruction combining.
   /// \see instCombineIntrinsic
-  std::optional<Value *> simplifyDemandedUseBitsIntrinsic(
-      InstCombiner & IC, IntrinsicInst & II, APInt DemandedMask,
-      KnownBits & Known, bool &KnownBitsComputed) const;
+  std::optional<Value *>
+  simplifyDemandedUseBitsIntrinsic(InstCombiner &IC, IntrinsicInst &II,
+                                   APInt DemandedMask, KnownBits &Known,
+                                   bool &KnownBitsComputed) const;
   /// Can be used to implement target-specific instruction combining.
   /// \see instCombineIntrinsic
   std::optional<Value *> simplifyDemandedVectorEltsIntrinsic(
-      InstCombiner & IC, IntrinsicInst & II, APInt DemandedElts,
-      APInt & UndefElts, APInt & UndefElts2, APInt & UndefElts3,
+      InstCombiner &IC, IntrinsicInst &II, APInt DemandedElts, APInt &UndefElts,
+      APInt &UndefElts2, APInt &UndefElts3,
       std::function<void(Instruction *, unsigned, APInt, APInt &)>
           SimplifyAndSetOp) const;
   /// @}
@@ -777,11 +776,7 @@ public:
                   DominatorTree *DT, AssumptionCache *AC,
                   TargetLibraryInfo *LibInfo) const;
 
-  enum AddressingModeKind {
-    AMK_PreIndexed,
-    AMK_PostIndexed,
-    AMK_None
-  };
+  enum AddressingModeKind { AMK_PreIndexed, AMK_PostIndexed, AMK_None };
 
   /// Return the preferred addressing mode LSR should make efforts to generate.
   AddressingModeKind getPreferredAddressingMode(const Loop *L,
@@ -1109,9 +1104,9 @@ public:
     SK_PermuteSingleSrc, ///< Shuffle elements of single source vector with any
                          ///< shuffle mask.
     SK_Splice            ///< Concatenates elements from the first input vector
-                         ///< with elements of the second input vector. Returning
-                         ///< a vector of the same type as the input vectors.
-                         ///< Index indicates start offset in first input vector.
+              ///< with elements of the second input vector. Returning
+              ///< a vector of the same type as the input vectors.
+              ///< Index indicates start offset in first input vector.
   };
 
   /// Additional information about an operand's possible values.
@@ -1137,21 +1132,16 @@ public:
     OperandValueProperties Properties = OP_None;
 
     bool isConstant() const {
-      return Kind == OK_UniformConstantValue || Kind == OK_NonUniformConstantValue;
+      return Kind == OK_UniformConstantValue ||
+             Kind == OK_NonUniformConstantValue;
     }
     bool isUniform() const {
       return Kind == OK_UniformConstantValue || Kind == OK_UniformValue;
     }
-    bool isPowerOf2() const {
-      return Properties == OP_PowerOf2;
-    }
-    bool isNegatedPowerOf2() const {
-      return Properties == OP_NegatedPowerOf2;
-    }
+    bool isPowerOf2() const { return Properties == OP_PowerOf2; }
+    bool isNegatedPowerOf2() const { return Properties == OP_NegatedPowerOf2; }
 
-    OperandValueInfo getNoProps() const {
-      return {Kind, OP_None};
-    }
+    OperandValueInfo getNoProps() const { return {Kind, OP_None}; }
   };
 
   /// \return the number of registers in the target-provided register class.
@@ -1967,14 +1957,15 @@ public:
   virtual bool preferPredicateOverEpilogue(TailFoldingInfo *TFI) = 0;
   virtual TailFoldingStyle
   getPreferredTailFoldingStyle(bool IVUpdateMayOverflow = true) = 0;
-  virtual std::optional<Instruction *> instCombineIntrinsic(
-      InstCombiner &IC, IntrinsicInst &II) = 0;
-  virtual std::optional<Value *> simplifyDemandedUseBitsIntrinsic(
-      InstCombiner &IC, IntrinsicInst &II, APInt DemandedMask,
-      KnownBits & Known, bool &KnownBitsComputed) = 0;
+  virtual std::optional<Instruction *>
+  instCombineIntrinsic(InstCombiner &IC, IntrinsicInst &II) = 0;
+  virtual std::optional<Value *>
+  simplifyDemandedUseBitsIntrinsic(InstCombiner &IC, IntrinsicInst &II,
+                                   APInt DemandedMask, KnownBits &Known,
+                                   bool &KnownBitsComputed) = 0;
   virtual std::optional<Value *> simplifyDemandedVectorEltsIntrinsic(
-      InstCombiner &IC, IntrinsicInst &II, APInt DemandedElts,
-      APInt &UndefElts, APInt &UndefElts2, APInt &UndefElts3,
+      InstCombiner &IC, IntrinsicInst &II, APInt DemandedElts, APInt &UndefElts,
+      APInt &UndefElts2, APInt &UndefElts3,
       std::function<void(Instruction *, unsigned, APInt, APInt &)>
           SimplifyAndSetOp) = 0;
   virtual bool isLegalAddImmediate(int64_t Imm) = 0;
@@ -1995,7 +1986,7 @@ public:
                           LoopInfo *LI, DominatorTree *DT, AssumptionCache *AC,
                           TargetLibraryInfo *LibInfo) = 0;
   virtual AddressingModeKind
-    getPreferredAddressingMode(const Loop *L, ScalarEvolution *SE) const = 0;
+  getPreferredAddressingMode(const Loop *L, ScalarEvolution *SE) const = 0;
   virtual bool isLegalMaskedStore(Type *DataType, Align Alignment) = 0;
   virtual bool isLegalMaskedLoad(Type *DataType, Align Alignment) = 0;
   virtual bool isLegalNTStore(Type *DataType, Align Alignment) = 0;
@@ -2108,8 +2099,8 @@ public:
       const Instruction &I, bool &AllowPromotionWithoutCommonHeader) = 0;
   virtual unsigned getCacheLineSize() const = 0;
   virtual std::optional<unsigned> getCacheSize(CacheLevel Level) const = 0;
-  virtual std::optional<unsigned> getCacheAssociativity(CacheLevel Level)
-      const = 0;
+  virtual std::optional<unsigned>
+  getCacheAssociativity(CacheLevel Level) const = 0;
   virtual std::optional<unsigned> getMinPageSize() const = 0;
 
   /// \return How much before a load we should place the prefetch
@@ -2530,8 +2521,8 @@ public:
     return Impl.canSaveCmp(L, BI, SE, LI, DT, AC, LibInfo);
   }
   AddressingModeKind
-    getPreferredAddressingMode(const Loop *L,
-                               ScalarEvolution *SE) const override {
+  getPreferredAddressingMode(const Loop *L,
+                             ScalarEvolution *SE) const override {
     return Impl.getPreferredAddressingMode(L, SE);
   }
   bool isLegalMaskedStore(Type *DataType, Align Alignment) override {
@@ -2678,9 +2669,7 @@ public:
                                                bool IsZeroCmp) const override {
     return Impl.enableMemCmpExpansion(OptSize, IsZeroCmp);
   }
-  bool enableSelectOptimize() override {
-    return Impl.enableSelectOptimize();
-  }
+  bool enableSelectOptimize() override { return Impl.enableSelectOptimize(); }
   bool shouldTreatInstructionLikeSelect(const Instruction *I) override {
     return Impl.shouldTreatInstructionLikeSelect(I);
   }
@@ -2704,7 +2693,7 @@ public:
   }
   bool haveFastSqrt(Type *Ty) override { return Impl.haveFastSqrt(Ty); }
 
-  bool isExpensiveToSpeculativelyExecute(const Instruction* I) override {
+  bool isExpensiveToSpeculativelyExecute(const Instruction *I) override {
     return Impl.isExpensiveToSpeculativelyExecute(I);
   }
 
@@ -2853,11 +2842,12 @@ public:
                                             BlockFrequencyInfo *BFI) override {
     return Impl.getEstimatedNumberOfCaseClusters(SI, JTSize, PSI, BFI);
   }
-  InstructionCost getArithmeticInstrCost(
-      unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
-      OperandValueInfo Opd1Info, OperandValueInfo Opd2Info,
-      ArrayRef<const Value *> Args,
-      const Instruction *CxtI = nullptr) override {
+  InstructionCost
+  getArithmeticInstrCost(unsigned Opcode, Type *Ty,
+                         TTI::TargetCostKind CostKind,
+                         OperandValueInfo Opd1Info, OperandValueInfo Opd2Info,
+                         ArrayRef<const Value *> Args,
+                         const Instruction *CxtI = nullptr) override {
     return Impl.getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info, Opd2Info,
                                        Args, CxtI);
   }
@@ -3166,9 +3156,7 @@ public:
     return Impl.isMultiversionedFunction(F);
   }
 
-  unsigned getMaxNumArgs() const override {
-    return Impl.getMaxNumArgs();
-  }
+  unsigned getMaxNumArgs() const override { return Impl.getMaxNumArgs(); }
 
   unsigned getNumBytesToPadGlobalArray(unsigned Size,
                                        Type *ArrayType) const override {

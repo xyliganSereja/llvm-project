@@ -271,4 +271,4 @@ TEST_F(GlobPatternTest, Pathological) {
   EXPECT_FALSE(Pat->match(S));
   EXPECT_TRUE(Pat->match(S + 'b'));
 }
-}
+} // namespace

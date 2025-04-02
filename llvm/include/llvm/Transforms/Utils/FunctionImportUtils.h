@@ -130,6 +130,6 @@ void renameModuleForThinLTO(
     bool ClearDSOLocalOnDeclarations,
     SetVector<GlobalValue *> *GlobalsToImport = nullptr);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

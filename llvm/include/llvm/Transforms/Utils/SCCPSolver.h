@@ -173,8 +173,8 @@ public:
   /// If an argument is Constant then its lattice value is marked with the
   /// corresponding actual argument in \p Args. Otherwise, its lattice value
   /// is inherited (copied) from the corresponding formal argument in \p Args.
-  void setLatticeValueForSpecializationArguments(Function *F,
-                                       const SmallVectorImpl<ArgInfo> &Args);
+  void setLatticeValueForSpecializationArguments(
+      Function *F, const SmallVectorImpl<ArgInfo> &Args);
 
   /// Mark all of the blocks in function \p F non-executable. Clients can used
   /// this method to erase a function from the module (e.g., if it has been

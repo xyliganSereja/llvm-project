@@ -99,7 +99,7 @@ MachineInstrBuilder MachineIRBuilder::buildConstDbgValue(const Constant &C,
       "Expected inlined-at fields to agree");
   auto MIB = buildInstrNoInsert(TargetOpcode::DBG_VALUE);
 
-  auto *NumericConstant = [&] () -> const Constant* {
+  auto *NumericConstant = [&]() -> const Constant * {
     if (const auto *CE = dyn_cast<ConstantExpr>(&C))
       if (CE->getOpcode() == Instruction::IntToPtr)
         return CE->getOperand(0);
@@ -203,7 +203,8 @@ MachineIRBuilder::buildPtrAdd(const DstOp &Res, const SrcOp &Op0,
                               const SrcOp &Op1, std::optional<unsigned> Flags) {
   assert(Res.getLLTTy(*getMRI()).isPointerOrPointerVector() &&
          Res.getLLTTy(*getMRI()) == Op0.getLLTTy(*getMRI()) && "type mismatch");
-  assert(Op1.getLLTTy(*getMRI()).getScalarType().isScalar() && "invalid offset type");
+  assert(Op1.getLLTTy(*getMRI()).getScalarType().isScalar() &&
+         "invalid offset type");
 
   return buildInstr(TargetOpcode::G_PTR_ADD, {Res}, {Op0, Op1}, Flags);
 }
@@ -212,7 +213,7 @@ std::optional<MachineInstrBuilder>
 MachineIRBuilder::materializePtrAdd(Register &Res, Register Op0,
                                     const LLT ValueTy, uint64_t Value) {
   assert(Res == 0 && "Res is a result argument");
-  assert(ValueTy.isScalar()  && "invalid offset type");
+  assert(ValueTy.isScalar() && "invalid offset type");
 
   if (Value == 0) {
     Res = Op0;
@@ -298,8 +299,7 @@ MachineInstrBuilder MachineIRBuilder::buildBrIndirect(Register Tgt) {
   return buildInstr(TargetOpcode::G_BRINDIRECT).addUse(Tgt);
 }
 
-MachineInstrBuilder MachineIRBuilder::buildBrJT(Register TablePtr,
-                                                unsigned JTI,
+MachineInstrBuilder MachineIRBuilder::buildBrJT(Register TablePtr, unsigned JTI,
                                                 Register IndexReg) {
   assert(getMRI()->getType(TablePtr).isPointer() &&
          "Table reg must be a pointer");
@@ -326,8 +326,8 @@ MachineInstrBuilder MachineIRBuilder::buildConstant(const DstOp &Res,
 
   if (Ty.isFixedVector()) {
     auto Const = buildInstr(TargetOpcode::G_CONSTANT)
-    .addDef(getMRI()->createGenericVirtualRegister(EltTy))
-    .addCImm(&Val);
+                     .addDef(getMRI()->createGenericVirtualRegister(EltTy))
+                     .addCImm(&Val);
     return buildSplatBuildVector(Res, Const);
   }
 
@@ -351,8 +351,8 @@ MachineInstrBuilder MachineIRBuilder::buildFConstant(const DstOp &Res,
   LLT Ty = Res.getLLTTy(*getMRI());
   LLT EltTy = Ty.getScalarType();
 
-  assert(APFloat::getSizeInBits(Val.getValueAPF().getSemantics())
-         == EltTy.getSizeInBits() &&
+  assert(APFloat::getSizeInBits(Val.getValueAPF().getSemantics()) ==
+             EltTy.getSizeInBits() &&
          "creating fconstant with the wrong size");
 
   assert(!Ty.isPointer() && "invalid operand type");
@@ -362,8 +362,8 @@ MachineInstrBuilder MachineIRBuilder::buildFConstant(const DstOp &Res,
 
   if (Ty.isFixedVector()) {
     auto Const = buildInstr(TargetOpcode::G_FCONSTANT)
-    .addDef(getMRI()->createGenericVirtualRegister(EltTy))
-    .addFPImm(&Val);
+                     .addDef(getMRI()->createGenericVirtualRegister(EltTy))
+                     .addFPImm(&Val);
 
     return buildSplatBuildVector(Res, Const);
   }
@@ -385,8 +385,8 @@ MachineInstrBuilder MachineIRBuilder::buildFConstant(const DstOp &Res,
                                                      double Val) {
   LLT DstTy = Res.getLLTTy(*getMRI());
   auto &Ctx = getMF().getFunction().getContext();
-  auto *CFP =
-      ConstantFP::get(Ctx, getAPFloatFromSize(Val, DstTy.getScalarSizeInBits()));
+  auto *CFP = ConstantFP::get(
+      Ctx, getAPFloatFromSize(Val, DstTy.getScalarSizeInBits()));
   return buildFConstant(Res, *CFP);
 }
 
@@ -448,9 +448,10 @@ MachineInstrBuilder MachineIRBuilder::buildLoadInstr(unsigned Opcode,
   return MIB;
 }
 
-MachineInstrBuilder MachineIRBuilder::buildLoadFromOffset(
-  const DstOp &Dst, const SrcOp &BasePtr,
-  MachineMemOperand &BaseMMO, int64_t Offset) {
+MachineInstrBuilder
+MachineIRBuilder::buildLoadFromOffset(const DstOp &Dst, const SrcOp &BasePtr,
+                                      MachineMemOperand &BaseMMO,
+                                      int64_t Offset) {
   LLT LoadTy = Dst.getLLTTy(*getMRI());
   MachineMemOperand *OffsetMMO =
       getMF().getMachineMemOperand(&BaseMMO, Offset, LoadTy);
@@ -521,9 +522,9 @@ unsigned MachineIRBuilder::getBoolExtOp(bool IsVec, bool IsFP) const {
 }
 
 MachineInstrBuilder MachineIRBuilder::buildBoolExt(const DstOp &Res,
-                                                   const SrcOp &Op,
-                                                   bool IsFP) {
-  unsigned ExtOp = getBoolExtOp(getMRI()->getType(Op.getReg()).isVector(), IsFP);
+                                                   const SrcOp &Op, bool IsFP) {
+  unsigned ExtOp =
+      getBoolExtOp(getMRI()->getType(Op.getReg()).isVector(), IsFP);
   return buildInstr(ExtOp, Res, Op);
 }
 
@@ -691,9 +692,9 @@ MachineInstrBuilder MachineIRBuilder::buildUnmerge(ArrayRef<LLT> Res,
   return buildInstr(TargetOpcode::G_UNMERGE_VALUES, TmpVec, Op);
 }
 
-MachineInstrBuilder MachineIRBuilder::buildUnmerge(LLT Res,
-                                                   const SrcOp &Op) {
-  unsigned NumReg = Op.getLLTTy(*getMRI()).getSizeInBits() / Res.getSizeInBits();
+MachineInstrBuilder MachineIRBuilder::buildUnmerge(LLT Res, const SrcOp &Op) {
+  unsigned NumReg =
+      Op.getLLTTy(*getMRI()).getSizeInBits() / Res.getSizeInBits();
   SmallVector<DstOp, 8> TmpVec(NumReg, Res);
   return buildInstr(TargetOpcode::G_UNMERGE_VALUES, TmpVec, Op);
 }
@@ -1035,10 +1036,11 @@ MachineIRBuilder::buildAtomicCmpXchg(const DstOp &OldValRes, const SrcOp &Addr,
   return MIB;
 }
 
-MachineInstrBuilder MachineIRBuilder::buildAtomicRMW(
-  unsigned Opcode, const DstOp &OldValRes,
-  const SrcOp &Addr, const SrcOp &Val,
-  MachineMemOperand &MMO) {
+MachineInstrBuilder MachineIRBuilder::buildAtomicRMW(unsigned Opcode,
+                                                     const DstOp &OldValRes,
+                                                     const SrcOp &Addr,
+                                                     const SrcOp &Val,
+                                                     MachineMemOperand &MMO) {
 
 #ifndef NDEBUG
   LLT OldValResTy = OldValRes.getLLTTy(*getMRI());
@@ -1127,16 +1129,15 @@ MachineIRBuilder::buildAtomicRMWUmin(Register OldValRes, Register Addr,
 }
 
 MachineInstrBuilder
-MachineIRBuilder::buildAtomicRMWFAdd(
-  const DstOp &OldValRes, const SrcOp &Addr, const SrcOp &Val,
-  MachineMemOperand &MMO) {
+MachineIRBuilder::buildAtomicRMWFAdd(const DstOp &OldValRes, const SrcOp &Addr,
+                                     const SrcOp &Val, MachineMemOperand &MMO) {
   return buildAtomicRMW(TargetOpcode::G_ATOMICRMW_FADD, OldValRes, Addr, Val,
                         MMO);
 }
 
 MachineInstrBuilder
-MachineIRBuilder::buildAtomicRMWFSub(const DstOp &OldValRes, const SrcOp &Addr, const SrcOp &Val,
-                                     MachineMemOperand &MMO) {
+MachineIRBuilder::buildAtomicRMWFSub(const DstOp &OldValRes, const SrcOp &Addr,
+                                     const SrcOp &Val, MachineMemOperand &MMO) {
   return buildAtomicRMW(TargetOpcode::G_ATOMICRMW_FSUB, OldValRes, Addr, Val,
                         MMO);
 }
@@ -1155,11 +1156,9 @@ MachineIRBuilder::buildAtomicRMWFMin(const DstOp &OldValRes, const SrcOp &Addr,
                         MMO);
 }
 
-MachineInstrBuilder
-MachineIRBuilder::buildFence(unsigned Ordering, unsigned Scope) {
-  return buildInstr(TargetOpcode::G_FENCE)
-    .addImm(Ordering)
-    .addImm(Scope);
+MachineInstrBuilder MachineIRBuilder::buildFence(unsigned Ordering,
+                                                 unsigned Scope) {
+  return buildInstr(TargetOpcode::G_FENCE).addImm(Ordering).addImm(Scope);
 }
 
 MachineInstrBuilder MachineIRBuilder::buildPrefetch(const SrcOp &Addr,
@@ -1299,7 +1298,8 @@ MachineIRBuilder::buildInstr(unsigned Opc, ArrayRef<DstOp> DstOps,
     assert(DstOps.size() == 1 && "Invalid Dst");
     assert(SrcOps.size() == 1 && "Invalid Srcs");
     assert(DstOps[0].getLLTTy(*getMRI()).getSizeInBits() ==
-           SrcOps[0].getLLTTy(*getMRI()).getSizeInBits() && "invalid bitcast");
+               SrcOps[0].getLLTTy(*getMRI()).getSizeInBits() &&
+           "invalid bitcast");
     break;
   }
   case TargetOpcode::COPY:

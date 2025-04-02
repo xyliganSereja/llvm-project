@@ -129,7 +129,7 @@ protected:
   using SectionEntries = StringMap<StringMap<Matcher>>;
 
   struct Section {
-    Section(std::unique_ptr<Matcher> M) : SectionMatcher(std::move(M)){};
+    Section(std::unique_ptr<Matcher> M) : SectionMatcher(std::move(M)) {};
     Section() : Section(std::make_unique<Matcher>()) {}
 
     std::unique_ptr<Matcher> SectionMatcher;
@@ -150,6 +150,6 @@ protected:
                           StringRef Query, StringRef Category) const;
 };
 
-}  // namespace llvm
+} // namespace llvm
 
 #endif // LLVM_SUPPORT_SPECIALCASELIST_H

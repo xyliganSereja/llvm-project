@@ -70,9 +70,13 @@ TEST(ThreadSafeModuleTest, BasicContextLockAPI) {
   auto M = std::make_unique<Module>("M", *TSCtx.getContext());
   ThreadSafeModule TSM(std::move(M), TSCtx);
 
-  { auto L = TSCtx.getLock(); }
+  {
+    auto L = TSCtx.getLock();
+  }
 
-  { auto L = TSM.getContext().getLock(); }
+  {
+    auto L = TSM.getContext().getLock();
+  }
 }
 
 TEST(ThreadSafeModuleTest, ContextLockPreservesContext) {

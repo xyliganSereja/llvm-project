@@ -153,15 +153,15 @@ struct ForwardedRegister {
 
 /// CCAssignFn - This function assigns a location for Val, updating State to
 /// reflect the change.  It returns 'true' if it failed to handle Val.
-typedef bool CCAssignFn(unsigned ValNo, MVT ValVT,
-                        MVT LocVT, CCValAssign::LocInfo LocInfo,
-                        ISD::ArgFlagsTy ArgFlags, CCState &State);
+typedef bool CCAssignFn(unsigned ValNo, MVT ValVT, MVT LocVT,
+                        CCValAssign::LocInfo LocInfo, ISD::ArgFlagsTy ArgFlags,
+                        CCState &State);
 
 /// CCCustomFn - This function assigns a location for Val, possibly updating
 /// all args to reflect changes and indicates if it handled it. It must set
 /// isCustom if it handles the arg and returns true.
-typedef bool CCCustomFn(unsigned &ValNo, MVT &ValVT,
-                        MVT &LocVT, CCValAssign::LocInfo &LocInfo,
+typedef bool CCCustomFn(unsigned &ValNo, MVT &ValVT, MVT &LocVT,
+                        CCValAssign::LocInfo &LocInfo,
                         ISD::ArgFlagsTy &ArgFlags, CCState &State);
 
 /// CCState - This class holds information needed while lowering arguments and
@@ -221,7 +221,7 @@ private:
     // First after last register allocated for current parameter.
     unsigned End;
   };
-  SmallVector<ByValInfo, 4 > ByValRegs;
+  SmallVector<ByValInfo, 4> ByValRegs;
 
   // InRegsParamsProcessed - shows how many instances of ByValRegs was proceed
   // during argument analysis.
@@ -232,9 +232,7 @@ public:
           SmallVectorImpl<CCValAssign> &Locs, LLVMContext &Context,
           bool NegativeOffsets = false);
 
-  void addLoc(const CCValAssign &V) {
-    Locs.push_back(V);
-  }
+  void addLoc(const CCValAssign &V) { Locs.push_back(V); }
 
   LLVMContext &getContext() const { return Context; }
   MachineFunction &getMachineFunction() const { return MF; }
@@ -276,8 +274,7 @@ public:
   /// CheckReturn - Analyze the return values of a function, returning
   /// true if the return can be performed without sret-demotion, and
   /// false otherwise.
-  bool CheckReturn(const SmallVectorImpl<ISD::OutputArg> &Outs,
-                   CCAssignFn Fn);
+  bool CheckReturn(const SmallVectorImpl<ISD::OutputArg> &Outs, CCAssignFn Fn);
 
   /// AnalyzeCallOperands - Analyze the outgoing arguments to a call,
   /// incorporating info about the passed values into this state.
@@ -349,7 +346,7 @@ public:
   MCRegister AllocateReg(ArrayRef<MCPhysReg> Regs) {
     unsigned FirstUnalloc = getFirstUnallocated(Regs);
     if (FirstUnalloc == Regs.size())
-      return MCRegister();    // Didn't find the reg.
+      return MCRegister(); // Didn't find the reg.
 
     // Mark the register and any aliases as allocated.
     MCPhysReg Reg = Regs[FirstUnalloc];
@@ -388,10 +385,11 @@ public:
   }
 
   /// Version of AllocateReg with list of registers to be shadowed.
-  MCRegister AllocateReg(ArrayRef<MCPhysReg> Regs, const MCPhysReg *ShadowRegs) {
+  MCRegister AllocateReg(ArrayRef<MCPhysReg> Regs,
+                         const MCPhysReg *ShadowRegs) {
     unsigned FirstUnalloc = getFirstUnallocated(Regs);
     if (FirstUnalloc == Regs.size())
-      return MCRegister();    // Didn't find the reg.
+      return MCRegister(); // Didn't find the reg.
 
     // Mark the register and any aliases as allocated.
     MCRegister Reg = Regs[FirstUnalloc], ShadowReg = ShadowRegs[FirstUnalloc];
@@ -443,12 +441,12 @@ public:
 
   // Get information about N-th byval parameter that is stored in registers.
   // Here "ByValParamIndex" is N.
-  void getInRegsParamInfo(unsigned InRegsParamRecordIndex,
-                          unsigned& BeginReg, unsigned& EndReg) const {
+  void getInRegsParamInfo(unsigned InRegsParamRecordIndex, unsigned &BeginReg,
+                          unsigned &EndReg) const {
     assert(InRegsParamRecordIndex < ByValRegs.size() &&
            "Wrong ByVal parameter index");
 
-    const ByValInfo& info = ByValRegs[InRegsParamRecordIndex];
+    const ByValInfo &info = ByValRegs[InRegsParamRecordIndex];
     BeginReg = info.Begin;
     EndReg = info.End;
   }
@@ -475,14 +473,10 @@ public:
   }
 
   // Rewind byval registers tracking info.
-  void rewindByValRegsInfo() {
-    InRegsParamsProcessed = 0;
-  }
+  void rewindByValRegsInfo() { InRegsParamsProcessed = 0; }
 
   // Get list of pending assignments
-  SmallVectorImpl<CCValAssign> &getPendingLocs() {
-    return PendingLocs;
-  }
+  SmallVectorImpl<CCValAssign> &getPendingLocs() { return PendingLocs; }
 
   // Get a list of argflags for pending assignments.
   SmallVectorImpl<ISD::ArgFlagsTy> &getPendingArgFlags() {

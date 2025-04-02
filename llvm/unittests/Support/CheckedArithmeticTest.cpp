@@ -77,8 +77,8 @@ TEST(CheckedArithmetic, CheckedMulAddUnsigned) {
   const uint64_t Max = std::numeric_limits<uint64_t>::max();
   EXPECT_EQ(checkedMulAddUnsigned<uint64_t>(Max, 1, 2), std::nullopt);
   EXPECT_EQ(checkedMulAddUnsigned<uint64_t>(1, 1, Max), std::nullopt);
-  EXPECT_EQ(checkedMulAddUnsigned<uint64_t>(10, 2, 3), std::optional<uint64_t>(23));
+  EXPECT_EQ(checkedMulAddUnsigned<uint64_t>(10, 2, 3),
+            std::optional<uint64_t>(23));
 }
-
 
 } // namespace

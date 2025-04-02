@@ -37,7 +37,6 @@ class StringRef;
 
 namespace sys {
 
-
 /// A collection of legacy interfaces for querying information about the
 /// current executing process.
 class Process {
@@ -219,7 +218,7 @@ private:
   [[noreturn]] static void ExitNoCleanup(int RetCode);
 };
 
-}
-}
+} // namespace sys
+} // namespace llvm
 
 #endif

@@ -30,8 +30,7 @@ using namespace llvm;
 
 STATISTIC(NumNSAInstructions,
           "Number of NSA instructions with non-sequential address found");
-STATISTIC(NumNSAConverted,
-          "Number of NSA instructions changed to sequential");
+STATISTIC(NumNSAConverted, "Number of NSA instructions changed to sequential");
 
 namespace {
 
@@ -92,22 +91,20 @@ private:
 
 } // End anonymous namespace.
 
-INITIALIZE_PASS_BEGIN(GCNNSAReassign, DEBUG_TYPE, "GCN NSA Reassign",
-                      false, false)
+INITIALIZE_PASS_BEGIN(GCNNSAReassign, DEBUG_TYPE, "GCN NSA Reassign", false,
+                      false)
 INITIALIZE_PASS_DEPENDENCY(LiveIntervalsWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(VirtRegMapWrapperLegacy)
 INITIALIZE_PASS_DEPENDENCY(LiveRegMatrixWrapperLegacy)
-INITIALIZE_PASS_END(GCNNSAReassign, DEBUG_TYPE, "GCN NSA Reassign",
-                    false, false)
-
+INITIALIZE_PASS_END(GCNNSAReassign, DEBUG_TYPE, "GCN NSA Reassign", false,
+                    false)
 
 char GCNNSAReassign::ID = 0;
 
 char &llvm::GCNNSAReassignID = GCNNSAReassign::ID;
 
-bool
-GCNNSAReassign::tryAssignRegisters(SmallVectorImpl<LiveInterval *> &Intervals,
-                                   unsigned StartReg) const {
+bool GCNNSAReassign::tryAssignRegisters(
+    SmallVectorImpl<LiveInterval *> &Intervals, unsigned StartReg) const {
   unsigned NumRegs = Intervals.size();
 
   for (unsigned N = 0; N < NumRegs; ++N)
@@ -133,14 +130,14 @@ bool GCNNSAReassign::canAssign(unsigned StartReg, unsigned NumRegs) const {
     for (unsigned I = 0; CSRegs[I]; ++I)
       if (TRI->isSubRegisterEq(Reg, CSRegs[I]) &&
           !LRM->isPhysRegUsed(CSRegs[I]))
-      return false;
+        return false;
   }
 
   return true;
 }
 
-bool
-GCNNSAReassign::scavengeRegs(SmallVectorImpl<LiveInterval *> &Intervals) const {
+bool GCNNSAReassign::scavengeRegs(
+    SmallVectorImpl<LiveInterval *> &Intervals) const {
   unsigned NumRegs = Intervals.size();
 
   if (NumRegs > MaxNumVGPRs)
@@ -158,8 +155,8 @@ GCNNSAReassign::scavengeRegs(SmallVectorImpl<LiveInterval *> &Intervals) const {
   return false;
 }
 
-GCNNSAReassign::NSA_Status
-GCNNSAReassign::CheckNSA(const MachineInstr &MI, bool Fast) const {
+GCNNSAReassign::NSA_Status GCNNSAReassign::CheckNSA(const MachineInstr &MI,
+                                                    bool Fast) const {
   const AMDGPU::MIMGInfo *Info = AMDGPU::getMIMGInfo(MI.getOpcode());
   if (!Info)
     return NSA_Status::NOT_NSA;
@@ -173,7 +170,7 @@ GCNNSAReassign::CheckNSA(const MachineInstr &MI, bool Fast) const {
   }
 
   int VAddr0Idx =
-    AMDGPU::getNamedOperandIdx(MI.getOpcode(), AMDGPU::OpName::vaddr0);
+      AMDGPU::getNamedOperandIdx(MI.getOpcode(), AMDGPU::OpName::vaddr0);
 
   unsigned VgprBase = 0;
   bool NSA = false;
@@ -251,7 +248,7 @@ bool GCNNSAReassign::runOnMachineFunction(MachineFunction &MF) {
   MaxNumVGPRs = std::min(ST->getMaxNumVGPRs(MFI->getOccupancy()), MaxNumVGPRs);
   CSRegs = MRI->getCalleeSavedRegs();
 
-  using Candidate = std::pair<const MachineInstr*, bool>;
+  using Candidate = std::pair<const MachineInstr *, bool>;
   SmallVector<Candidate, 32> Candidates;
   for (const MachineBasicBlock &MBB : MF) {
     for (const MachineInstr &MI : MBB) {
@@ -284,7 +281,7 @@ bool GCNNSAReassign::runOnMachineFunction(MachineFunction &MF) {
 
     const AMDGPU::MIMGInfo *Info = AMDGPU::getMIMGInfo(MI->getOpcode());
     int VAddr0Idx =
-      AMDGPU::getNamedOperandIdx(MI->getOpcode(), AMDGPU::OpName::vaddr0);
+        AMDGPU::getNamedOperandIdx(MI->getOpcode(), AMDGPU::OpName::vaddr0);
 
     SmallVector<LiveInterval *, 16> Intervals;
     SmallVector<MCRegister, 16> OrigRegs;
@@ -316,8 +313,7 @@ bool GCNNSAReassign::runOnMachineFunction(MachineFunction &MF) {
 
     LLVM_DEBUG(dbgs() << "Attempting to reassign NSA: " << *MI
                       << "\tOriginal allocation:\t";
-               for (auto *LI
-                    : Intervals) dbgs()
+               for (auto *LI : Intervals) dbgs()
                << " " << llvm::printReg((VRM->getPhys(LI->reg())), TRI);
                dbgs() << '\n');
 

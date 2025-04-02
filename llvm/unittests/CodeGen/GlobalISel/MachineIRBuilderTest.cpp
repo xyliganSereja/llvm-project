@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "GISelMITest.h"
 #include "llvm/CodeGen/GlobalISel/MachineIRBuilder.h"
+#include "GISelMITest.h"
 
 TEST_F(AArch64GISelMITest, TestBuildConstantFConstant) {
   setUp();
@@ -85,8 +85,8 @@ TEST_F(AArch64GISelMITest, DstOpSrcOp) {
 
   // Test SrcOp and DstOp can be constructed directly from MachineOperand by
   // copying the instruction
-  B.buildAdd(MIBAdd->getOperand(0), MIBAdd->getOperand(1), MIBAdd->getOperand(2));
-
+  B.buildAdd(MIBAdd->getOperand(0), MIBAdd->getOperand(1),
+             MIBAdd->getOperand(2));
 
   auto CheckStr = R"(
   ; CHECK: [[COPY0:%[0-9]+]]:_(s64) = COPY $x0
@@ -455,7 +455,7 @@ TEST_F(AArch64GISelMITest, BuildFPEnv) {
   if (!TM)
     GTEST_SKIP();
 
-  LLT S32 = LLT::scalar(32); 
+  LLT S32 = LLT::scalar(32);
   SmallVector<Register, 4> Copies;
   collectCopies(Copies, MF);
 

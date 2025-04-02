@@ -65,13 +65,13 @@ public:
   std::string getVectorFunctionABIVariantString() const;
 };
 
-  enum LibFunc : unsigned {
+enum LibFunc : unsigned {
 #define TLI_DEFINE_ENUM
 #include "llvm/Analysis/TargetLibraryInfo.def"
 
-    NumLibFuncs,
-    NotLibFunc
-  };
+  NumLibFuncs,
+  NotLibFunc
+};
 
 /// Implementation of the target library information.
 ///
@@ -82,23 +82,25 @@ public:
 class TargetLibraryInfoImpl {
   friend class TargetLibraryInfo;
 
-  unsigned char AvailableArray[(NumLibFuncs+3)/4];
+  unsigned char AvailableArray[(NumLibFuncs + 3) / 4];
   DenseMap<unsigned, std::string> CustomNames;
   static StringLiteral const StandardNames[NumLibFuncs];
-  bool ShouldExtI32Param, ShouldExtI32Return, ShouldSignExtI32Param, ShouldSignExtI32Return;
+  bool ShouldExtI32Param, ShouldExtI32Return, ShouldSignExtI32Param,
+      ShouldSignExtI32Return;
   unsigned SizeOfInt;
 
   enum AvailabilityState {
     StandardName = 3, // (memset to all ones)
     CustomName = 1,
-    Unavailable = 0  // (memset to all zeros)
+    Unavailable = 0 // (memset to all zeros)
   };
   void setState(LibFunc F, AvailabilityState State) {
-    AvailableArray[F/4] &= ~(3 << 2*(F&3));
-    AvailableArray[F/4] |= State << 2*(F&3);
+    AvailableArray[F / 4] &= ~(3 << 2 * (F & 3));
+    AvailableArray[F / 4] |= State << 2 * (F & 3);
   }
   AvailabilityState getState(LibFunc F) const {
-    return static_cast<AvailabilityState>((AvailableArray[F/4] >> 2*(F&3)) & 3);
+    return static_cast<AvailabilityState>(
+        (AvailableArray[F / 4] >> 2 * (F & 3)) & 3);
   }
 
   /// Vectorization descriptors - sorted by ScalarFnName.
@@ -161,14 +163,10 @@ public:
   bool getLibFunc(unsigned int Opcode, Type *Ty, LibFunc &F) const;
 
   /// Forces a function to be marked as unavailable.
-  void setUnavailable(LibFunc F) {
-    setState(F, Unavailable);
-  }
+  void setUnavailable(LibFunc F) { setState(F, Unavailable); }
 
   /// Forces a function to be marked as available.
-  void setAvailable(LibFunc F) {
-    setState(F, StandardName);
-  }
+  void setAvailable(LibFunc F) { setState(F, StandardName); }
 
   /// Forces a function to be marked as available and provide an alternate name
   /// that must be used.
@@ -221,28 +219,20 @@ public:
   /// Set to true iff i32 parameters to library functions should have signext
   /// or zeroext attributes if they correspond to C-level int or unsigned int,
   /// respectively.
-  void setShouldExtI32Param(bool Val) {
-    ShouldExtI32Param = Val;
-  }
+  void setShouldExtI32Param(bool Val) { ShouldExtI32Param = Val; }
 
   /// Set to true iff i32 results from library functions should have signext
   /// or zeroext attributes if they correspond to C-level int or unsigned int,
   /// respectively.
-  void setShouldExtI32Return(bool Val) {
-    ShouldExtI32Return = Val;
-  }
+  void setShouldExtI32Return(bool Val) { ShouldExtI32Return = Val; }
 
   /// Set to true iff i32 parameters to library functions should have signext
   /// attribute if they correspond to C-level int or unsigned int.
-  void setShouldSignExtI32Param(bool Val) {
-    ShouldSignExtI32Param = Val;
-  }
+  void setShouldSignExtI32Param(bool Val) { ShouldSignExtI32Param = Val; }
 
   /// Set to true iff i32 results from library functions should have signext
   /// attribute if they correspond to C-level int or unsigned int.
-  void setShouldSignExtI32Return(bool Val) {
-    ShouldSignExtI32Return = Val;
-  }
+  void setShouldSignExtI32Return(bool Val) { ShouldSignExtI32Return = Val; }
 
   /// Returns the size of the wchar_t type in bytes or 0 if the size is unknown.
   /// This queries the 'wchar_size' metadata.
@@ -252,14 +242,10 @@ public:
   unsigned getSizeTSize(const Module &M) const;
 
   /// Get size of a C-level int or unsigned int, in bits.
-  unsigned getIntSize() const {
-    return SizeOfInt;
-  }
+  unsigned getIntSize() const { return SizeOfInt; }
 
   /// Initialize the C-level size of an integer.
-  void setIntSize(unsigned Bits) {
-    SizeOfInt = Bits;
-  }
+  void setIntSize(unsigned Bits) { SizeOfInt = Bits; }
 
   /// Returns the largest vectorization factor used in the list of
   /// vector functions.
@@ -408,7 +394,8 @@ public:
     if (getState(F) == TargetLibraryInfoImpl::Unavailable)
       return false;
     switch (F) {
-    default: break;
+    default:
+      break;
       // clang-format off
     case LibFunc_acos:         case LibFunc_acosf:      case LibFunc_acosl:
     case LibFunc_asin:         case LibFunc_asinf:      case LibFunc_asinl:
@@ -462,7 +449,7 @@ public:
                                       bool &ShouldSignExtI32Param,
                                       bool &ShouldSignExtI32Return,
                                       const Triple &T) {
-    ShouldExtI32Param     = ShouldExtI32Return     = false;
+    ShouldExtI32Param = ShouldExtI32Return = false;
     ShouldSignExtI32Param = ShouldSignExtI32Return = false;
 
     // PowerPC64, Sparc64, SystemZ need signext/zeroext on i32 parameters and
@@ -518,9 +505,9 @@ public:
   /// corresponding to C-level int or unsigned int.  May be zeroext, signext,
   /// or none.
 private:
-  static Attribute::AttrKind getExtAttrForI32Return(bool ShouldExtI32Return_,
-                                                    bool ShouldSignExtI32Return_,
-                                                    bool Signed) {
+  static Attribute::AttrKind
+  getExtAttrForI32Return(bool ShouldExtI32Return_, bool ShouldSignExtI32Return_,
+                         bool Signed) {
     if (ShouldExtI32Return_)
       return Signed ? Attribute::SExt : Attribute::ZExt;
     if (ShouldSignExtI32Return_)
@@ -530,7 +517,7 @@ private:
 
 public:
   static Attribute::AttrKind getExtAttrForI32Return(const Triple &T,
-                                                   bool Signed = true) {
+                                                    bool Signed = true) {
     bool ShouldExtI32Param, ShouldExtI32Return;
     bool ShouldSignExtI32Param, ShouldSignExtI32Return;
     initExtensionsForTriple(ShouldExtI32Param, ShouldExtI32Return,
@@ -560,9 +547,7 @@ public:
   }
 
   /// \copydoc TargetLibraryInfoImpl::getWCharSize()
-  unsigned getWCharSize(const Module &M) const {
-    return Impl->getWCharSize(M);
-  }
+  unsigned getWCharSize(const Module &M) const { return Impl->getWCharSize(M); }
 
   /// \copydoc TargetLibraryInfoImpl::getSizeTSize()
   unsigned getSizeTSize(const Module &M) const { return Impl->getSizeTSize(M); }
@@ -578,9 +563,7 @@ public:
   }
 
   /// \copydoc TargetLibraryInfoImpl::getIntSize()
-  unsigned getIntSize() const {
-    return Impl->getIntSize();
-  }
+  unsigned getIntSize() const { return Impl->getIntSize(); }
 
   /// Handle invalidation from the pass manager.
   ///

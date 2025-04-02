@@ -159,8 +159,8 @@ void llvm::reduceOperandsNaNDeltaPass(TestRunner &Test) {
       return nullptr;
 
     if (VectorType *VT = dyn_cast<VectorType>(Ty)) {
-      return ConstantVector::getSplat(VT->getElementCount(),
-                                      ConstantFP::getQNaN(VT->getElementType()));
+      return ConstantVector::getSplat(
+          VT->getElementCount(), ConstantFP::getQNaN(VT->getElementType()));
     }
 
     return ConstantFP::getQNaN(Ty);

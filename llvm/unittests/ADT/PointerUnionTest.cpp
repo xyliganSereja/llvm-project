@@ -114,7 +114,7 @@ TEST_F(PointerUnionTest, Get) {
   EXPECT_EQ(cast<int *>(n), (int *)nullptr);
 }
 
-template<int I> struct alignas(8) Aligned {};
+template <int I> struct alignas(8) Aligned {};
 
 typedef PointerUnion<Aligned<0> *, Aligned<1> *, Aligned<2> *, Aligned<3> *,
                      Aligned<4> *, Aligned<5> *, Aligned<6> *, Aligned<7> *>

@@ -139,6 +139,6 @@ public:
   void failIfClustersUnsupported(std::string const &FailureMessage) const;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

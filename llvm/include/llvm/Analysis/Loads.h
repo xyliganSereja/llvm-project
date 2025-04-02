@@ -198,6 +198,6 @@ bool canReplacePointersIfEqual(const Value *From, const Value *To,
                                const DataLayout &DL);
 bool canReplacePointersInUseIfEqual(const Use &U, const Value *To,
                                     const DataLayout &DL);
-}
+} // namespace llvm
 
 #endif

@@ -358,5 +358,5 @@ public:
 
   void emitMipsAbiFlags();
 };
-}
+} // namespace llvm
 #endif

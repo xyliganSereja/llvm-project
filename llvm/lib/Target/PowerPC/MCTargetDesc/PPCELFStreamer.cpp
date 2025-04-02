@@ -82,7 +82,7 @@ void PPCELFStreamer::emitPrefixedInstruction(const MCInst &Inst,
 void PPCELFStreamer::emitInstruction(const MCInst &Inst,
                                      const MCSubtargetInfo &STI) {
   PPCMCCodeEmitter *Emitter =
-      static_cast<PPCMCCodeEmitter*>(getAssembler().getEmitterPtr());
+      static_cast<PPCMCCodeEmitter *>(getAssembler().getEmitterPtr());
 
   // If the instruction is a part of the GOT to PC-Rel link time optimization
   // instruction pair, return a value, otherwise return std::nullopt. A true
@@ -158,9 +158,8 @@ void PPCELFStreamer::emitGOTToPCRelReloc(const MCInst &Inst) {
   assert(DF && "Expecting a valid data fragment.");
   MCFixupKind FixupKind = static_cast<MCFixupKind>(FirstLiteralRelocationKind +
                                                    ELF::R_PPC64_PCREL_OPT);
-  DF->getFixups().push_back(
-      MCFixup::create(LabelSym->getOffset() - 8, SubExpr2,
-                      FixupKind, Inst.getLoc()));
+  DF->getFixups().push_back(MCFixup::create(LabelSym->getOffset() - 8, SubExpr2,
+                                            FixupKind, Inst.getLoc()));
   emitLabel(CurrentLocation, Inst.getLoc());
 }
 
@@ -217,10 +216,11 @@ std::optional<bool> llvm::isPartOfGOTToPCRelPair(const MCInst &Inst,
   return (Inst.getOpcode() == PPC::PLDpc);
 }
 
-MCELFStreamer *llvm::createPPCELFStreamer(
-    MCContext &Context, std::unique_ptr<MCAsmBackend> MAB,
-    std::unique_ptr<MCObjectWriter> OW,
-    std::unique_ptr<MCCodeEmitter> Emitter) {
+MCELFStreamer *
+llvm::createPPCELFStreamer(MCContext &Context,
+                           std::unique_ptr<MCAsmBackend> MAB,
+                           std::unique_ptr<MCObjectWriter> OW,
+                           std::unique_ptr<MCCodeEmitter> Emitter) {
   return new PPCELFStreamer(Context, std::move(MAB), std::move(OW),
                             std::move(Emitter));
 }

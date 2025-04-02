@@ -38,8 +38,7 @@ struct explicitly_convertible<
 ///
 /// This just wraps two iterators into a range-compatible interface. Nothing
 /// fancy at all.
-template <typename IteratorT>
-class iterator_range {
+template <typename IteratorT> class iterator_range {
   IteratorT begin_iterator, end_iterator;
 
 public:
@@ -82,6 +81,6 @@ template <typename T> iterator_range<T> make_range(std::pair<T, T> p) {
   return iterator_range<T>(std::move(p.first), std::move(p.second));
 }
 
-}
+} // namespace llvm
 
 #endif

@@ -37,15 +37,16 @@ using namespace llvm;
 #define DEBUG_TYPE "sccp"
 
 STATISTIC(NumInstRemoved, "Number of instructions removed");
-STATISTIC(NumArgsElimed ,"Number of arguments constant propagated");
+STATISTIC(NumArgsElimed, "Number of arguments constant propagated");
 STATISTIC(NumGlobalConst, "Number of globals found to be constant");
-STATISTIC(NumDeadBlocks , "Number of basic blocks unreachable");
+STATISTIC(NumDeadBlocks, "Number of basic blocks unreachable");
 STATISTIC(NumInstReplaced,
           "Number of instructions replaced with (simpler) instruction");
 
 static cl::opt<unsigned> FuncSpecMaxIters(
-    "funcspec-max-iters", cl::init(10), cl::Hidden, cl::desc(
-    "The maximum number of iterations function specialization is run"));
+    "funcspec-max-iters", cl::init(10), cl::Hidden,
+    cl::desc(
+        "The maximum number of iterations function specialization is run"));
 
 static void findReturnsToZap(Function &F,
                              SmallVector<ReturnInst *, 8> &ReturnsToZap,
@@ -107,14 +108,14 @@ static void findReturnsToZap(Function &F,
   }
 }
 
-static bool runIPSCCP(
-    Module &M, const DataLayout &DL, FunctionAnalysisManager *FAM,
-    std::function<const TargetLibraryInfo &(Function &)> GetTLI,
-    std::function<TargetTransformInfo &(Function &)> GetTTI,
-    std::function<AssumptionCache &(Function &)> GetAC,
-    std::function<DominatorTree &(Function &)> GetDT,
-    std::function<BlockFrequencyInfo &(Function &)> GetBFI,
-    bool IsFuncSpecEnabled) {
+static bool
+runIPSCCP(Module &M, const DataLayout &DL, FunctionAnalysisManager *FAM,
+          std::function<const TargetLibraryInfo &(Function &)> GetTLI,
+          std::function<TargetTransformInfo &(Function &)> GetTTI,
+          std::function<AssumptionCache &(Function &)> GetAC,
+          std::function<DominatorTree &(Function &)> GetDT,
+          std::function<BlockFrequencyInfo &(Function &)> GetBFI,
+          bool IsFuncSpecEnabled) {
   SCCPSolver Solver(DL, GetTLI, M.getContext());
   FunctionSpecializer Specializer(Solver, M, FAM, GetBFI, GetTLI, GetTTI,
                                   GetAC);
@@ -162,7 +163,8 @@ static bool runIPSCCP(
 
   if (IsFuncSpecEnabled) {
     unsigned Iters = 0;
-    while (Iters++ < FuncSpecMaxIters && Specializer.run());
+    while (Iters++ < FuncSpecMaxIters && Specializer.run())
+      ;
   }
 
   // Iterate over all of the instructions in the module, replacing them with
@@ -275,7 +277,7 @@ static bool runIPSCCP(
   // if the address of the function isn't taken.  In cases where a return is the
   // last use of a function, the order of processing functions would affect
   // whether other functions are optimizable.
-  SmallVector<ReturnInst*, 8> ReturnsToZap;
+  SmallVector<ReturnInst *, 8> ReturnsToZap;
 
   Solver.inferReturnAttributes();
   Solver.inferArgAttributes();
@@ -384,7 +386,6 @@ PreservedAnalyses IPSCCPPass::run(Module &M, ModuleAnalysisManager &AM) {
   auto GetBFI = [&FAM](Function &F) -> BlockFrequencyInfo & {
     return FAM.getResult<BlockFrequencyAnalysis>(F);
   };
-
 
   if (!runIPSCCP(M, DL, &FAM, GetTLI, GetTTI, GetAC, GetDT, GetBFI,
                  isFuncSpecEnabled()))

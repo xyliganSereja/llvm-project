@@ -159,12 +159,9 @@ TEST(ELFTest, getELFRelocationTypeNameForLoongArch) {
             getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_GNU_VTINHERIT));
   EXPECT_EQ("R_LARCH_GNU_VTENTRY",
             getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_GNU_VTENTRY));
-  EXPECT_EQ("R_LARCH_B16",
-            getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B16));
-  EXPECT_EQ("R_LARCH_B21",
-            getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B21));
-  EXPECT_EQ("R_LARCH_B26",
-            getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B26));
+  EXPECT_EQ("R_LARCH_B16", getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B16));
+  EXPECT_EQ("R_LARCH_B21", getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B21));
+  EXPECT_EQ("R_LARCH_B26", getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_B26));
   EXPECT_EQ("R_LARCH_ABS_HI20",
             getELFRelocationTypeName(EM_LOONGARCH, R_LARCH_ABS_HI20));
   EXPECT_EQ("R_LARCH_ABS_LO12",
@@ -301,12 +298,14 @@ TEST(ELFTest, Hash) {
 
   // woot!🧙 💑 🌈
   EXPECT_EQ(hashSysV("woot!\xf0\x9f\xa7\x99 \xf0\x9f\x92\x91 "
-                     "\xf0\x9f\x8c\x88"), 0x3522e38U);
+                     "\xf0\x9f\x8c\x88"),
+            0x3522e38U);
   EXPECT_EQ(hashGnu("woot!\xf0\x9f\xa7\x99 \xf0\x9f\x92\x91 "
-                    "\xf0\x9f\x8c\x88"), 0xf7603f3U);
+                    "\xf0\x9f\x8c\x88"),
+            0xf7603f3U);
 
   // This string hashes to 0x100000000 in the originally formulated function,
   // when long is 64 bits -- but that was never the intent. The code was
-  // presuming 32-bit long. Thus make sure that extra bit doesn't appear. 
+  // presuming 32-bit long. Thus make sure that extra bit doesn't appear.
   EXPECT_EQ(hashSysV("ZZZZZW9p"), 0U);
 }

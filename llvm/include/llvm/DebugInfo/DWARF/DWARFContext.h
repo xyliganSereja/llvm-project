@@ -66,6 +66,7 @@ public:
     };
 
     DWARFContext &D;
+
   public:
     DWARFContextState(DWARFContext &DC) : D(DC) {}
     virtual ~DWARFContextState() = default;
@@ -79,8 +80,8 @@ public:
     virtual const DWARFDebugLoc *getDebugLoc() = 0;
     virtual const DWARFDebugAranges *getDebugAranges() = 0;
     virtual Expected<const DWARFDebugLine::LineTable *>
-        getLineTableForUnit(DWARFUnit *U,
-                            function_ref<void(Error)> RecoverableErrHandler) = 0;
+    getLineTableForUnit(DWARFUnit *U,
+                        function_ref<void(Error)> RecoverableErrHandler) = 0;
     virtual void clearLineTableForUnit(DWARFUnit *U) = 0;
     virtual Expected<const DWARFDebugFrame *> getDebugFrame() = 0;
     virtual Expected<const DWARFDebugFrame *> getEHFrame() = 0;
@@ -94,7 +95,7 @@ public:
     virtual const AppleAcceleratorTable &getAppleNamespaces() = 0;
     virtual const AppleAcceleratorTable &getAppleObjC() = 0;
     virtual std::shared_ptr<DWARFContext>
-        getDWOContext(StringRef AbsolutePath) = 0;
+    getDWOContext(StringRef AbsolutePath) = 0;
     virtual const DenseMap<uint64_t, DWARFTypeUnit *> &
     getTypeUnitMap(bool IsDWO) = 0;
     virtual bool isThreadSafe() const = 0;
@@ -102,7 +103,6 @@ public:
     /// Parse a macro[.dwo] or macinfo[.dwo] section.
     std::unique_ptr<DWARFDebugMacro>
     parseMacroOrMacinfo(MacroSecType SectionType);
-
   };
   friend class DWARFContextState;
 
@@ -205,9 +205,7 @@ public:
                                DWOUnits.begin() + DWOUnits.getNumInfoUnits());
   }
 
-  const DWARFUnitVector &getDWOUnitsVector() {
-    return State->getDWOUnits();
-  }
+  const DWARFUnitVector &getDWOUnitsVector() { return State->getDWOUnits(); }
 
   /// Return true of this DWARF context is a DWP file.
   bool isDWP() const;

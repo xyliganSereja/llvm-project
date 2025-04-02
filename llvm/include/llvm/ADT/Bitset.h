@@ -16,18 +16,17 @@
 #ifndef LLVM_ADT_BITSET_H
 #define LLVM_ADT_BITSET_H
 
-#include <llvm/ADT/STLExtras.h>
 #include <array>
 #include <climits>
 #include <cstdint>
+#include <llvm/ADT/STLExtras.h>
 
 namespace llvm {
 
 /// This is a constexpr reimplementation of a subset of std::bitset. It would be
 /// nice to use std::bitset directly, but it doesn't support constant
 /// initialization.
-template <unsigned NumBits>
-class Bitset {
+template <unsigned NumBits> class Bitset {
   typedef uintptr_t BitWord;
 
   enum { BITWORD_SIZE = (unsigned)sizeof(BitWord) * CHAR_BIT };
@@ -35,12 +34,12 @@ class Bitset {
   static_assert(BITWORD_SIZE == 64 || BITWORD_SIZE == 32,
                 "Unsupported word size");
 
-  static constexpr unsigned NumWords = (NumBits + BITWORD_SIZE-1) / BITWORD_SIZE;
+  static constexpr unsigned NumWords =
+      (NumBits + BITWORD_SIZE - 1) / BITWORD_SIZE;
   std::array<BitWord, NumWords> Bits{};
 
 protected:
-  constexpr Bitset(const std::array<BitWord, NumWords> &B)
-      : Bits{B} {}
+  constexpr Bitset(const std::array<BitWord, NumWords> &B) : Bits{B} {}
 
 public:
   constexpr Bitset() = default;
@@ -137,7 +136,7 @@ public:
 
   bool operator!=(const Bitset &RHS) const { return !(*this == RHS); }
 
-  bool operator < (const Bitset &Other) const {
+  bool operator<(const Bitset &Other) const {
     for (unsigned I = 0, E = size(); I != E; ++I) {
       bool LHS = test(I), RHS = Other.test(I);
       if (LHS != RHS)

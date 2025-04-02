@@ -22,7 +22,7 @@ namespace {
 class CSKYELFObjectWriter : public MCELFObjectTargetWriter {
 public:
   CSKYELFObjectWriter(uint8_t OSABI = 0)
-      : MCELFObjectTargetWriter(false, OSABI, ELF::EM_CSKY, true){};
+      : MCELFObjectTargetWriter(false, OSABI, ELF::EM_CSKY, true) {};
   ~CSKYELFObjectWriter() {}
 
   unsigned getRelocType(MCContext &Ctx, const MCValue &Target,

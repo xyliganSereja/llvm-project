@@ -20,7 +20,7 @@ class WritableBinaryStreamRef;
 namespace msf {
 class MSFBuilder;
 struct MSFLayout;
-}
+} // namespace msf
 namespace pdb {
 class NamedStreamMap;
 
@@ -68,6 +68,6 @@ private:
   NamedStreamMap &NamedStreams;
 };
 } // namespace pdb
-}
+} // namespace llvm
 
 #endif

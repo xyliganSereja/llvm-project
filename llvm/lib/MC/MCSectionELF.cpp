@@ -65,8 +65,7 @@ void MCSectionELF::printSwitchToSection(const MCAsmInfo &MAI, const Triple &T,
   printName(OS, getName());
 
   // Handle the weird solaris syntax if desired.
-  if (MAI.usesSunStyleELFSectionSwitchSyntax() &&
-      !(Flags & ELF::SHF_MERGE)) {
+  if (MAI.usesSunStyleELFSectionSwitchSyntax() && !(Flags & ELF::SHF_MERGE)) {
     if (Flags & ELF::SHF_ALLOC)
       OS << ",#alloc";
     if (Flags & ELF::SHF_EXECINSTR)

@@ -64,7 +64,7 @@ void ARMWinCOFFStreamer::finishImpl() {
 
   MCWinCOFFStreamer::finishImpl();
 }
-}
+} // namespace
 
 MCStreamer *
 llvm::createARMWinCOFFStreamer(MCContext &Context,

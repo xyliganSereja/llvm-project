@@ -101,8 +101,8 @@ TEST(MachineInstructionDoubleWidthResult, IsCorrect) {
 
     bool Valid = (Flags & ARMII::DoubleWidthResult) != 0;
     ASSERT_EQ(DoubleWidthResult(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 
@@ -256,8 +256,8 @@ TEST(MachineInstructionHorizontalReduction, IsCorrect) {
       continue;
     bool Valid = (Flags & ARMII::HorizontalReduction) != 0;
     ASSERT_EQ(HorizontalReduction(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 
@@ -356,8 +356,8 @@ TEST(MachineInstructionRetainsPreviousHalfElement, IsCorrect) {
 
     bool Valid = (Flags & ARMII::RetainsPreviousHalfElement) != 0;
     ASSERT_EQ(RetainsPreviousHalfElement(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 // Test for instructions that aren't immediately obviously valid within a
@@ -1058,8 +1058,8 @@ TEST(MachineInstrValidTailPredication, IsCorrect) {
       continue;
     bool Valid = (Flags & ARMII::ValidForTailPredication) != 0;
     ASSERT_EQ(IsValidTPOpcode(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 
@@ -1214,7 +1214,7 @@ TEST(MachineInstr, MVEVecSize) {
   auto MVEVecSize = [](unsigned Opcode) {
     switch (Opcode) {
     default:
-    dbgs() << Opcode << "\n";
+      dbgs() << Opcode << "\n";
       llvm_unreachable("Unexpected MVE instruction!");
     case MVE_ASRLi:
     case MVE_ASRLr:
@@ -2081,7 +2081,6 @@ TEST(MachineInstr, MVEVecSize) {
       continue;
     int Size = (Flags & ARMII::VecSize) >> ARMII::VecSizeShift;
     ASSERT_EQ(MVEVecSize(i), Size)
-              << MII->getName(i)
-              << ": mismatched expectation for MVE vec size\n";
+        << MII->getName(i) << ": mismatched expectation for MVE vec size\n";
   }
 }

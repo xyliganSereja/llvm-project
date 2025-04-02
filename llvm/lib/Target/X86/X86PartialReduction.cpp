@@ -37,7 +37,7 @@ class X86PartialReduction : public FunctionPass {
 public:
   static char ID; // Pass identification, replacement for typeid.
 
-  X86PartialReduction() : FunctionPass(ID) { }
+  X86PartialReduction() : FunctionPass(ID) {}
 
   bool runOnFunction(Function &Fn) override;
 
@@ -45,15 +45,13 @@ public:
     AU.setPreservesCFG();
   }
 
-  StringRef getPassName() const override {
-    return "X86 Partial Reduction";
-  }
+  StringRef getPassName() const override { return "X86 Partial Reduction"; }
 
 private:
   bool tryMAddReplacement(Instruction *Op, bool ReduceInOneBB);
   bool trySADReplacement(Instruction *Op);
 };
-}
+} // namespace
 
 FunctionPass *llvm::createX86PartialReductionPass() {
   return new X86PartialReduction();
@@ -61,8 +59,8 @@ FunctionPass *llvm::createX86PartialReductionPass() {
 
 char X86PartialReduction::ID = 0;
 
-INITIALIZE_PASS(X86PartialReduction, DEBUG_TYPE,
-                "X86 Partial Reduction", false, false)
+INITIALIZE_PASS(X86PartialReduction, DEBUG_TYPE, "X86 Partial Reduction", false,
+                false)
 
 // This function should be aligned with detectExtMul() in X86ISelLowering.cpp.
 static bool matchVPDPBUSDPattern(const X86Subtarget *ST, BinaryOperator *Mul,
@@ -318,7 +316,8 @@ bool X86PartialReduction::trySADReplacement(Instruction *Op) {
     for (unsigned i = 0; i != 1U << (s - 1); ++i) {
       SmallVector<int, 64> ConcatMask(NumConcatElts);
       std::iota(ConcatMask.begin(), ConcatMask.end(), 0);
-      Ops[i] = Builder.CreateShuffleVector(Ops[i*2], Ops[i*2+1], ConcatMask);
+      Ops[i] =
+          Builder.CreateShuffleVector(Ops[i * 2], Ops[i * 2 + 1], ConcatMask);
     }
   }
 

@@ -100,8 +100,8 @@ void LLVMDisasmDispose(LLVMDisasmContextRef DC);
  * no valid instruction.
  */
 size_t LLVMDisasmInstruction(LLVMDisasmContextRef DC, uint8_t *Bytes,
-                             uint64_t BytesSize, uint64_t PC,
-                             char *OutString, size_t OutStringSize);
+                             uint64_t BytesSize, uint64_t PC, char *OutString,
+                             size_t OutStringSize);
 
 /**
  * @}

@@ -48,7 +48,8 @@ public:
                       bool IsSaturated, bool HasUnsignedPadding)
       : Width(Width), LsbWeight(Weight.LsbWeight), IsSigned(IsSigned),
         IsSaturated(IsSaturated), HasUnsignedPadding(HasUnsignedPadding) {
-    assert(isUInt<WidthBitWidth>(Width) && isInt<LsbWeightBitWidth>(Weight.LsbWeight));
+    assert(isUInt<WidthBitWidth>(Width) &&
+           isInt<LsbWeightBitWidth>(Weight.LsbWeight));
     assert(!(IsSigned && HasUnsignedPadding) &&
            "Cannot have unsigned padding on a signed type.");
   }
@@ -59,7 +60,10 @@ public:
     return LsbWeight <= 0 && static_cast<int>(Width) >= -LsbWeight;
   }
   unsigned getWidth() const { return Width; }
-  unsigned getScale() const { assert(isValidLegacySema()); return -LsbWeight; }
+  unsigned getScale() const {
+    assert(isValidLegacySema());
+    return -LsbWeight;
+  }
   int getLsbWeight() const { return LsbWeight; }
   int getMsbWeight() const {
     return LsbWeight + Width - 1 /*Both lsb and msb are both part of width*/;
@@ -88,7 +92,7 @@ public:
   getCommonSemantics(const FixedPointSemantics &Other) const;
 
   /// Print semantics for debug purposes
-  void print(llvm::raw_ostream& OS) const;
+  void print(llvm::raw_ostream &OS) const;
 
   /// Returns true if this fixed-point semantic with its value bits interpreted
   /// as an integer can fit in the given floating point semantic without
@@ -124,10 +128,10 @@ public:
   static FixedPointSemantics getFromOpaqueInt(uint32_t);
 
 private:
-  unsigned Width          : WidthBitWidth;
-  signed int LsbWeight    : LsbWeightBitWidth;
-  unsigned IsSigned       : 1;
-  unsigned IsSaturated    : 1;
+  unsigned Width : WidthBitWidth;
+  signed int LsbWeight : LsbWeightBitWidth;
+  unsigned IsSigned : 1;
+  unsigned IsSaturated : 1;
   unsigned HasUnsignedPadding : 1;
 };
 

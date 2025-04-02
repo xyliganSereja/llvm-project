@@ -28,15 +28,14 @@ protected:
   static ConstantRange Wrap;
 };
 
-template<typename Fn>
-static void EnumerateAPInts(unsigned Bits, Fn TestFn) {
+template <typename Fn> static void EnumerateAPInts(unsigned Bits, Fn TestFn) {
   APInt N(Bits, 0);
   do {
     TestFn(N);
   } while (++N != 0);
 }
 
-template<typename Fn>
+template <typename Fn>
 static void EnumerateConstantRanges(unsigned Bits, Fn TestFn) {
   unsigned Max = 1 << Bits;
   for (unsigned Lo = 0; Lo < Max; Lo++) {
@@ -73,13 +72,14 @@ template <typename Fn>
 static void ForeachNumInConstantRange(const ConstantRange &CR, Fn TestFn) {
   if (!CR.isEmptySet()) {
     APInt N = CR.getLower();
-    do TestFn(N);
+    do
+      TestFn(N);
     while (++N != CR.getUpper());
   }
 }
 
-using PreferFn = llvm::function_ref<bool(const ConstantRange &,
-                                         const ConstantRange &)>;
+using PreferFn =
+    llvm::function_ref<bool(const ConstantRange &, const ConstantRange &)>;
 
 bool PreferSmallest(const ConstantRange &CR1, const ConstantRange &CR2) {
   return CR1.isSizeStrictlySmallerThan(CR2);
@@ -168,9 +168,8 @@ static void TestRange(const ConstantRange &CR, const SmallBitVector &Elems,
     if (Elem < 0)
       Elem = FirstElem; // Wrap around to first element.
 
-    ConstantRange PossibleCR =
-        ConstantRange::getNonEmpty(APInt(BitWidth, Elem),
-                                   APInt(BitWidth, PrevElem) + 1);
+    ConstantRange PossibleCR = ConstantRange::getNonEmpty(
+        APInt(BitWidth, Elem), APInt(BitWidth, PrevElem) + 1);
     // We get a full range any time PrevElem and Elem are adjacent. Avoid
     // repeated checks by skipping here, and explicitly checking below instead.
     if (!PossibleCR.isFullSet()) {
@@ -202,8 +201,8 @@ using BinaryRangeFn = llvm::function_ref<ConstantRange(const ConstantRange &,
                                                        const ConstantRange &)>;
 using BinaryIntFn =
     llvm::function_ref<std::optional<APInt>(const APInt &, const APInt &)>;
-using BinaryCheckFn = llvm::function_ref<bool(const ConstantRange &,
-                                              const ConstantRange &)>;
+using BinaryCheckFn =
+    llvm::function_ref<bool(const ConstantRange &, const ConstantRange &)>;
 
 static bool CheckAll(const ConstantRange &, const ConstantRange &) {
   return true;
@@ -429,8 +428,8 @@ TEST_F(ConstantRangeTest, Trunc) {
   ConstantRange TWrap = Wrap.truncate(10);
   EXPECT_TRUE(TFull.isFullSet());
   EXPECT_TRUE(TEmpty.isEmptySet());
-  EXPECT_EQ(TOne, ConstantRange(One.getLower().trunc(10),
-                                One.getUpper().trunc(10)));
+  EXPECT_EQ(TOne,
+            ConstantRange(One.getLower().trunc(10), One.getUpper().trunc(10)));
   EXPECT_TRUE(TSome.isFullSet());
   EXPECT_TRUE(TWrap.isFullSet());
 
@@ -459,10 +458,10 @@ TEST_F(ConstantRangeTest, ZExt) {
   ConstantRange ZWrap = Wrap.zeroExtend(20);
   EXPECT_EQ(ZFull, ConstantRange(APInt(20, 0), APInt(20, 0x10000)));
   EXPECT_TRUE(ZEmpty.isEmptySet());
-  EXPECT_EQ(ZOne, ConstantRange(One.getLower().zext(20),
-                                One.getUpper().zext(20)));
-  EXPECT_EQ(ZSome, ConstantRange(Some.getLower().zext(20),
-                                 Some.getUpper().zext(20)));
+  EXPECT_EQ(ZOne,
+            ConstantRange(One.getLower().zext(20), One.getUpper().zext(20)));
+  EXPECT_EQ(ZSome,
+            ConstantRange(Some.getLower().zext(20), Some.getUpper().zext(20)));
   EXPECT_EQ(ZWrap, ConstantRange(APInt(20, 0), APInt(20, 0x10000)));
 
   // zext([5, 0), 3->7) = [5, 8)
@@ -479,10 +478,10 @@ TEST_F(ConstantRangeTest, SExt) {
   EXPECT_EQ(SFull, ConstantRange(APInt(20, (uint64_t)INT16_MIN, true),
                                  APInt(20, INT16_MAX + 1, true)));
   EXPECT_TRUE(SEmpty.isEmptySet());
-  EXPECT_EQ(SOne, ConstantRange(One.getLower().sext(20),
-                                One.getUpper().sext(20)));
-  EXPECT_EQ(SSome, ConstantRange(Some.getLower().sext(20),
-                                 Some.getUpper().sext(20)));
+  EXPECT_EQ(SOne,
+            ConstantRange(One.getLower().sext(20), One.getUpper().sext(20)));
+  EXPECT_EQ(SSome,
+            ConstantRange(Some.getLower().sext(20), Some.getUpper().sext(20)));
   EXPECT_EQ(SWrap, ConstantRange(APInt(20, (uint64_t)INT16_MIN, true),
                                  APInt(20, INT16_MAX + 1, true)));
 
@@ -617,14 +616,14 @@ TEST_F(ConstantRangeTest, UnionWith) {
   EXPECT_EQ(Some.unionWith(Wrap), Full);
 
   // PR4545
-  EXPECT_EQ(ConstantRange(APInt(16, 14), APInt(16, 1)).unionWith(
-                                    ConstantRange(APInt(16, 0), APInt(16, 8))),
+  EXPECT_EQ(ConstantRange(APInt(16, 14), APInt(16, 1))
+                .unionWith(ConstantRange(APInt(16, 0), APInt(16, 8))),
             ConstantRange(APInt(16, 14), APInt(16, 8)));
-  EXPECT_EQ(ConstantRange(APInt(16, 6), APInt(16, 4)).unionWith(
-                                    ConstantRange(APInt(16, 4), APInt(16, 0))),
+  EXPECT_EQ(ConstantRange(APInt(16, 6), APInt(16, 4))
+                .unionWith(ConstantRange(APInt(16, 4), APInt(16, 0))),
             ConstantRange::getFull(16));
-  EXPECT_EQ(ConstantRange(APInt(16, 1), APInt(16, 0)).unionWith(
-                                    ConstantRange(APInt(16, 2), APInt(16, 1))),
+  EXPECT_EQ(ConstantRange(APInt(16, 1), APInt(16, 0))
+                .unionWith(ConstantRange(APInt(16, 2), APInt(16, 1))),
             ConstantRange::getFull(16));
 }
 
@@ -703,8 +702,7 @@ TEST_F(ConstantRangeTest, SubtractAPInt) {
             ConstantRange(APInt(16, 0x6), APInt(16, 0xaa6)));
   EXPECT_EQ(Wrap.subtract(APInt(16, 4)),
             ConstantRange(APInt(16, 0xaa6), APInt(16, 0x6)));
-  EXPECT_EQ(One.subtract(APInt(16, 4)),
-            ConstantRange(APInt(16, 0x6)));
+  EXPECT_EQ(One.subtract(APInt(16, 4)), ConstantRange(APInt(16, 0x6)));
 }
 
 TEST_F(ConstantRangeTest, Add) {
@@ -723,16 +721,13 @@ TEST_F(ConstantRangeTest, Add) {
             ConstantRange(APInt(16, 0xe), APInt(16, 0xaae)));
   EXPECT_EQ(Wrap.add(APInt(16, 4)),
             ConstantRange(APInt(16, 0xaae), APInt(16, 0xe)));
-  EXPECT_EQ(One.add(APInt(16, 4)),
-            ConstantRange(APInt(16, 0xe)));
+  EXPECT_EQ(One.add(APInt(16, 4)), ConstantRange(APInt(16, 0xe)));
 
   TestBinaryOpExhaustive(
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.add(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1 + N2;
-      });
+      [](const APInt &N1, const APInt &N2) { return N1 + N2; });
 }
 
 TEST_F(ConstantRangeTest, AddWithNoWrap) {
@@ -912,20 +907,16 @@ TEST_F(ConstantRangeTest, Sub) {
   EXPECT_EQ(Empty.sub(APInt(16, 4)), Empty);
   EXPECT_EQ(Some.sub(APInt(16, 4)),
             ConstantRange(APInt(16, 0x6), APInt(16, 0xaa6)));
-  EXPECT_EQ(Some.sub(Some),
-            ConstantRange(APInt(16, 0xf561), APInt(16, 0xaa0)));
+  EXPECT_EQ(Some.sub(Some), ConstantRange(APInt(16, 0xf561), APInt(16, 0xaa0)));
   EXPECT_EQ(Wrap.sub(APInt(16, 4)),
             ConstantRange(APInt(16, 0xaa6), APInt(16, 0x6)));
-  EXPECT_EQ(One.sub(APInt(16, 4)),
-            ConstantRange(APInt(16, 0x6)));
+  EXPECT_EQ(One.sub(APInt(16, 4)), ConstantRange(APInt(16, 0x6)));
 
   TestBinaryOpExhaustive(
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.sub(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1 - N2;
-      });
+      [](const APInt &N1, const APInt &N2) { return N1 - N2; });
 }
 
 TEST_F(ConstantRangeTest, SubWithNoWrap) {
@@ -980,10 +971,10 @@ TEST_F(ConstantRangeTest, Multiply) {
   EXPECT_EQ(Empty.multiply(One), Empty);
   EXPECT_EQ(Empty.multiply(Some), Empty);
   EXPECT_EQ(Empty.multiply(Wrap), Empty);
-  EXPECT_EQ(One.multiply(One), ConstantRange(APInt(16, 0xa*0xa),
-                                             APInt(16, 0xa*0xa + 1)));
-  EXPECT_EQ(One.multiply(Some), ConstantRange(APInt(16, 0xa*0xa),
-                                              APInt(16, 0xa*0xaa9 + 1)));
+  EXPECT_EQ(One.multiply(One),
+            ConstantRange(APInt(16, 0xa * 0xa), APInt(16, 0xa * 0xa + 1)));
+  EXPECT_EQ(One.multiply(Some),
+            ConstantRange(APInt(16, 0xa * 0xa), APInt(16, 0xa * 0xaa9 + 1)));
   EXPECT_EQ(One.multiply(Wrap), Full);
   EXPECT_EQ(Some.multiply(Some), Full);
   EXPECT_EQ(Some.multiply(Wrap), Full);
@@ -998,15 +989,15 @@ TEST_F(ConstantRangeTest, Multiply) {
   EXPECT_EQ(Wrap.multiply(Zero), Zero);
 
   // http://llvm.org/PR4545
-  EXPECT_EQ(ConstantRange(APInt(4, 1), APInt(4, 6)).multiply(
-                ConstantRange(APInt(4, 6), APInt(4, 2))),
+  EXPECT_EQ(ConstantRange(APInt(4, 1), APInt(4, 6))
+                .multiply(ConstantRange(APInt(4, 6), APInt(4, 2))),
             ConstantRange(4, /*isFullSet=*/true));
 
-  EXPECT_EQ(ConstantRange(APInt(8, 254), APInt(8, 0)).multiply(
-              ConstantRange(APInt(8, 252), APInt(8, 4))),
+  EXPECT_EQ(ConstantRange(APInt(8, 254), APInt(8, 0))
+                .multiply(ConstantRange(APInt(8, 252), APInt(8, 4))),
             ConstantRange(APInt(8, 250), APInt(8, 9)));
-  EXPECT_EQ(ConstantRange(APInt(8, 254), APInt(8, 255)).multiply(
-              ConstantRange(APInt(8, 2), APInt(8, 4))),
+  EXPECT_EQ(ConstantRange(APInt(8, 254), APInt(8, 255))
+                .multiply(ConstantRange(APInt(8, 2), APInt(8, 4))),
             ConstantRange(APInt(8, 250), APInt(8, 253)));
 
   // TODO: This should be return [-2, 0]
@@ -1026,10 +1017,7 @@ TEST_F(ConstantRangeTest, Multiply) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.multiply(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1 * N2;
-      },
-      PreferSmallest,
+      [](const APInt &N1, const APInt &N2) { return N1 * N2; }, PreferSmallest,
       [](const ConstantRange &, const ConstantRange &) {
         return false; // Check correctness only.
       });
@@ -1172,20 +1160,18 @@ TEST_F(ConstantRangeTest, UMax) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.umax(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return APIntOps::umax(N1, N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return APIntOps::umax(N1, N2); },
       PreferSmallestNonFullUnsigned);
 }
 
 TEST_F(ConstantRangeTest, SMax) {
   EXPECT_EQ(Full.smax(Full), Full);
   EXPECT_EQ(Full.smax(Empty), Empty);
-  EXPECT_EQ(Full.smax(Some), ConstantRange(APInt(16, 0xa),
-                                           APInt::getSignedMinValue(16)));
+  EXPECT_EQ(Full.smax(Some),
+            ConstantRange(APInt(16, 0xa), APInt::getSignedMinValue(16)));
   EXPECT_EQ(Full.smax(Wrap), Full);
-  EXPECT_EQ(Full.smax(One), ConstantRange(APInt(16, 0xa),
-                                          APInt::getSignedMinValue(16)));
+  EXPECT_EQ(Full.smax(One),
+            ConstantRange(APInt(16, 0xa), APInt::getSignedMinValue(16)));
   EXPECT_EQ(Empty.smax(Empty), Empty);
   EXPECT_EQ(Empty.smax(Some), Empty);
   EXPECT_EQ(Empty.smax(Wrap), Empty);
@@ -1202,9 +1188,7 @@ TEST_F(ConstantRangeTest, SMax) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.smax(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return APIntOps::smax(N1, N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return APIntOps::smax(N1, N2); },
       PreferSmallestNonFullSigned);
 }
 
@@ -1228,9 +1212,7 @@ TEST_F(ConstantRangeTest, UMin) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.umin(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return APIntOps::umin(N1, N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return APIntOps::umin(N1, N2); },
       PreferSmallestNonFullUnsigned);
 }
 
@@ -1257,19 +1239,17 @@ TEST_F(ConstantRangeTest, SMin) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.smin(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return APIntOps::smin(N1, N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return APIntOps::smin(N1, N2); },
       PreferSmallestNonFullSigned);
 }
 
 TEST_F(ConstantRangeTest, UDiv) {
   EXPECT_EQ(Full.udiv(Full), Full);
   EXPECT_EQ(Full.udiv(Empty), Empty);
-  EXPECT_EQ(Full.udiv(One), ConstantRange(APInt(16, 0),
-                                          APInt(16, 0xffff / 0xa + 1)));
-  EXPECT_EQ(Full.udiv(Some), ConstantRange(APInt(16, 0),
-                                           APInt(16, 0xffff / 0xa + 1)));
+  EXPECT_EQ(Full.udiv(One),
+            ConstantRange(APInt(16, 0), APInt(16, 0xffff / 0xa + 1)));
+  EXPECT_EQ(Full.udiv(Some),
+            ConstantRange(APInt(16, 0), APInt(16, 0xffff / 0xa + 1)));
   EXPECT_EQ(Full.udiv(Wrap), Full);
   EXPECT_EQ(Empty.udiv(Empty), Empty);
   EXPECT_EQ(Empty.udiv(One), Empty);
@@ -1281,7 +1261,6 @@ TEST_F(ConstantRangeTest, UDiv) {
   EXPECT_EQ(Some.udiv(Some), ConstantRange(APInt(16, 0), APInt(16, 0x111)));
   EXPECT_EQ(Some.udiv(Wrap), ConstantRange(APInt(16, 0), APInt(16, 0xaaa)));
   EXPECT_EQ(Wrap.udiv(Wrap), Full);
-
 
   ConstantRange Zero(APInt(16, 0));
   EXPECT_EQ(Zero.udiv(One), Zero);
@@ -1297,60 +1276,60 @@ TEST_F(ConstantRangeTest, SDiv) {
   ConstantRange OneBit = ConstantRange::getFull(1);
   EXPECT_EQ(OneBit.sdiv(OneBit), ConstantRange(APInt(1, 0)));
 
-  EnumerateTwoInterestingConstantRanges([&](const ConstantRange &CR1,
-                                            const ConstantRange &CR2) {
-    // Collect possible results in a bit vector. We store the signed value plus
-    // a bias to make it unsigned.
-    unsigned Bits = CR1.getBitWidth();
-    int Bias = 1 << (Bits - 1);
-    BitVector Results(1 << Bits);
-    ForeachNumInConstantRange(CR1, [&](const APInt &N1) {
-      ForeachNumInConstantRange(CR2, [&](const APInt &N2) {
-        // Division by zero is UB.
-        if (N2 == 0)
-          return;
+  EnumerateTwoInterestingConstantRanges(
+      [&](const ConstantRange &CR1, const ConstantRange &CR2) {
+        // Collect possible results in a bit vector. We store the signed value
+        // plus a bias to make it unsigned.
+        unsigned Bits = CR1.getBitWidth();
+        int Bias = 1 << (Bits - 1);
+        BitVector Results(1 << Bits);
+        ForeachNumInConstantRange(CR1, [&](const APInt &N1) {
+          ForeachNumInConstantRange(CR2, [&](const APInt &N2) {
+            // Division by zero is UB.
+            if (N2 == 0)
+              return;
 
-        // SignedMin / -1 is UB.
-        if (N1.isMinSignedValue() && N2.isAllOnes())
-          return;
+            // SignedMin / -1 is UB.
+            if (N1.isMinSignedValue() && N2.isAllOnes())
+              return;
 
-        APInt N = N1.sdiv(N2);
-        Results.set(N.getSExtValue() + Bias);
+            APInt N = N1.sdiv(N2);
+            Results.set(N.getSExtValue() + Bias);
+          });
+        });
+
+        ConstantRange CR = CR1.sdiv(CR2);
+        if (Results.none()) {
+          EXPECT_TRUE(CR.isEmptySet());
+          return;
+        }
+
+        // If there is a non-full signed envelope, that should be the result.
+        APInt SMin(Bits, Results.find_first() - Bias, true);
+        APInt SMax(Bits, Results.find_last() - Bias, true);
+        ConstantRange Envelope = ConstantRange::getNonEmpty(SMin, SMax + 1);
+        if (!Envelope.isFullSet()) {
+          EXPECT_EQ(Envelope, CR);
+          return;
+        }
+
+        // If the signed envelope is a full set, try to find a smaller sign
+        // wrapped set that is separated in negative and positive components (or
+        // one which can also additionally contain zero).
+        int LastNeg = Results.find_last_in(0, Bias) - Bias;
+        int LastPos = Results.find_next(Bias) - Bias;
+        if (Results[Bias]) {
+          if (LastNeg == -1)
+            ++LastNeg;
+          else if (LastPos == 1)
+            --LastPos;
+        }
+
+        APInt WMax(Bits, LastNeg, true);
+        APInt WMin(Bits, LastPos, true);
+        ConstantRange Wrapped = ConstantRange::getNonEmpty(WMin, WMax + 1);
+        EXPECT_EQ(Wrapped, CR);
       });
-    });
-
-    ConstantRange CR = CR1.sdiv(CR2);
-    if (Results.none()) {
-      EXPECT_TRUE(CR.isEmptySet());
-      return;
-    }
-
-    // If there is a non-full signed envelope, that should be the result.
-    APInt SMin(Bits, Results.find_first() - Bias, true);
-    APInt SMax(Bits, Results.find_last() - Bias, true);
-    ConstantRange Envelope = ConstantRange::getNonEmpty(SMin, SMax + 1);
-    if (!Envelope.isFullSet()) {
-      EXPECT_EQ(Envelope, CR);
-      return;
-    }
-
-    // If the signed envelope is a full set, try to find a smaller sign wrapped
-    // set that is separated in negative and positive components (or one which
-    // can also additionally contain zero).
-    int LastNeg = Results.find_last_in(0, Bias) - Bias;
-    int LastPos = Results.find_next(Bias) - Bias;
-    if (Results[Bias]) {
-      if (LastNeg == -1)
-        ++LastNeg;
-      else if (LastPos == 1)
-        --LastPos;
-    }
-
-    APInt WMax(Bits, LastNeg, true);
-    APInt WMin(Bits, LastPos, true);
-    ConstantRange Wrapped = ConstantRange::getNonEmpty(WMin, WMax + 1);
-    EXPECT_EQ(Wrapped, CR);
-  });
 }
 
 TEST_F(ConstantRangeTest, URem) {
@@ -1471,20 +1450,19 @@ TEST_F(ConstantRangeTest, Shl) {
   ConstantRange WrapNullMax(APInt(16, 0x1), APInt(16, 0x0));
   EXPECT_EQ(Full.shl(Full), Full);
   EXPECT_EQ(Full.shl(Empty), Empty);
-  EXPECT_EQ(Full.shl(One), ConstantRange(APInt(16, 0),
-                                         APInt(16, 0xfc00) + 1));
-  EXPECT_EQ(Full.shl(Some), Full);   // TODO: [0, (-1 << 0xa) + 1)
+  EXPECT_EQ(Full.shl(One), ConstantRange(APInt(16, 0), APInt(16, 0xfc00) + 1));
+  EXPECT_EQ(Full.shl(Some), Full); // TODO: [0, (-1 << 0xa) + 1)
   EXPECT_EQ(Full.shl(Wrap), Full);
   EXPECT_EQ(Empty.shl(Empty), Empty);
   EXPECT_EQ(Empty.shl(One), Empty);
   EXPECT_EQ(Empty.shl(Some), Empty);
   EXPECT_EQ(Empty.shl(Wrap), Empty);
-  EXPECT_EQ(One.shl(One), ConstantRange(APInt(16, 0xa << 0xa),
-                                        APInt(16, (0xa << 0xa) + 1)));
-  EXPECT_EQ(One.shl(Some), Full);    // TODO: [0xa << 0xa, 0)
-  EXPECT_EQ(One.shl(Wrap), Full);    // TODO: [0xa, 0xa << 14 + 1)
-  EXPECT_EQ(Some.shl(Some), Full);   // TODO: [0xa << 0xa, 0xfc01)
-  EXPECT_EQ(Some.shl(Wrap), Full);   // TODO: [0xa, 0x7ff << 0x5 + 1)
+  EXPECT_EQ(One.shl(One),
+            ConstantRange(APInt(16, 0xa << 0xa), APInt(16, (0xa << 0xa) + 1)));
+  EXPECT_EQ(One.shl(Some), Full);  // TODO: [0xa << 0xa, 0)
+  EXPECT_EQ(One.shl(Wrap), Full);  // TODO: [0xa, 0xa << 14 + 1)
+  EXPECT_EQ(Some.shl(Some), Full); // TODO: [0xa << 0xa, 0xfc01)
+  EXPECT_EQ(Some.shl(Wrap), Full); // TODO: [0xa, 0x7ff << 0x5 + 1)
   EXPECT_EQ(Wrap.shl(Wrap), Full);
   EXPECT_EQ(
       Some2.shl(ConstantRange(APInt(16, 0x1))),
@@ -1586,10 +1564,10 @@ TEST_F(ConstantRangeTest, ShlWithNoWrap) {
 TEST_F(ConstantRangeTest, Lshr) {
   EXPECT_EQ(Full.lshr(Full), Full);
   EXPECT_EQ(Full.lshr(Empty), Empty);
-  EXPECT_EQ(Full.lshr(One), ConstantRange(APInt(16, 0),
-                                          APInt(16, (0xffff >> 0xa) + 1)));
-  EXPECT_EQ(Full.lshr(Some), ConstantRange(APInt(16, 0),
-                                           APInt(16, (0xffff >> 0xa) + 1)));
+  EXPECT_EQ(Full.lshr(One),
+            ConstantRange(APInt(16, 0), APInt(16, (0xffff >> 0xa) + 1)));
+  EXPECT_EQ(Full.lshr(Some),
+            ConstantRange(APInt(16, 0), APInt(16, (0xffff >> 0xa) + 1)));
   EXPECT_EQ(Full.lshr(Wrap), Full);
   EXPECT_EQ(Empty.lshr(Empty), Empty);
   EXPECT_EQ(Empty.lshr(One), Empty);
@@ -1598,8 +1576,8 @@ TEST_F(ConstantRangeTest, Lshr) {
   EXPECT_EQ(One.lshr(One), ConstantRange(APInt(16, 0)));
   EXPECT_EQ(One.lshr(Some), ConstantRange(APInt(16, 0)));
   EXPECT_EQ(One.lshr(Wrap), ConstantRange(APInt(16, 0), APInt(16, 0xb)));
-  EXPECT_EQ(Some.lshr(Some), ConstantRange(APInt(16, 0),
-                                           APInt(16, (0xaaa >> 0xa) + 1)));
+  EXPECT_EQ(Some.lshr(Some),
+            ConstantRange(APInt(16, 0), APInt(16, (0xaaa >> 0xa) + 1)));
   EXPECT_EQ(Some.lshr(Wrap), ConstantRange(APInt(16, 0), APInt(16, 0xaaa)));
   EXPECT_EQ(Wrap.lshr(Wrap), Full);
 }
@@ -1607,13 +1585,13 @@ TEST_F(ConstantRangeTest, Lshr) {
 TEST_F(ConstantRangeTest, Ashr) {
   EXPECT_EQ(Full.ashr(Full), Full);
   EXPECT_EQ(Full.ashr(Empty), Empty);
-  EXPECT_EQ(Full.ashr(One), ConstantRange(APInt(16, 0xffe0),
-                                          APInt(16, (0x7fff >> 0xa) + 1 )));
+  EXPECT_EQ(Full.ashr(One),
+            ConstantRange(APInt(16, 0xffe0), APInt(16, (0x7fff >> 0xa) + 1)));
   ConstantRange Small(APInt(16, 0xa), APInt(16, 0xb));
-  EXPECT_EQ(Full.ashr(Small), ConstantRange(APInt(16, 0xffe0),
-                                           APInt(16, (0x7fff >> 0xa) + 1 )));
-  EXPECT_EQ(Full.ashr(Some), ConstantRange(APInt(16, 0xffe0),
-                                           APInt(16, (0x7fff >> 0xa) + 1 )));
+  EXPECT_EQ(Full.ashr(Small),
+            ConstantRange(APInt(16, 0xffe0), APInt(16, (0x7fff >> 0xa) + 1)));
+  EXPECT_EQ(Full.ashr(Some),
+            ConstantRange(APInt(16, 0xffe0), APInt(16, (0x7fff >> 0xa) + 1)));
   EXPECT_EQ(Full.ashr(Wrap), Full);
   EXPECT_EQ(Empty.ashr(Empty), Empty);
   EXPECT_EQ(Empty.ashr(One), Empty);
@@ -1622,8 +1600,8 @@ TEST_F(ConstantRangeTest, Ashr) {
   EXPECT_EQ(One.ashr(One), ConstantRange(APInt(16, 0)));
   EXPECT_EQ(One.ashr(Some), ConstantRange(APInt(16, 0)));
   EXPECT_EQ(One.ashr(Wrap), ConstantRange(APInt(16, 0), APInt(16, 0xb)));
-  EXPECT_EQ(Some.ashr(Some), ConstantRange(APInt(16, 0),
-                                           APInt(16, (0xaaa >> 0xa) + 1)));
+  EXPECT_EQ(Some.ashr(Some),
+            ConstantRange(APInt(16, 0), APInt(16, (0xaaa >> 0xa) + 1)));
   EXPECT_EQ(Some.ashr(Wrap), ConstantRange(APInt(16, 0), APInt(16, 0xaaa)));
   EXPECT_EQ(Wrap.ashr(Wrap), Full);
   ConstantRange Neg(APInt(16, 0xf3f0), APInt(16, 0xf7f8));
@@ -1650,8 +1628,9 @@ TEST(ConstantRange, MakeSatisfyingICmpRegion) {
       ConstantRange::makeSatisfyingICmpRegion(ICmpInst::ICMP_NE, HighHalf),
       LowHalf);
 
-  EXPECT_TRUE(ConstantRange::makeSatisfyingICmpRegion(ICmpInst::ICMP_EQ,
-                                                      HighHalf).isEmptySet());
+  EXPECT_TRUE(
+      ConstantRange::makeSatisfyingICmpRegion(ICmpInst::ICMP_EQ, HighHalf)
+          .isEmptySet());
 
   ConstantRange UnsignedSample(APInt(8, 5), APInt(8, 200));
 
@@ -1794,13 +1773,17 @@ TEST(ConstantRange, MakeGuaranteedNoWrapRegion) {
               NUWForAllValues.getSingleElement()->isMaxValue());
 
   EXPECT_TRUE(ConstantRange::makeGuaranteedNoWrapRegion(
-      Instruction::Add, APInt(32, 0), OBO::NoUnsignedWrap).isFullSet());
+                  Instruction::Add, APInt(32, 0), OBO::NoUnsignedWrap)
+                  .isFullSet());
   EXPECT_TRUE(ConstantRange::makeGuaranteedNoWrapRegion(
-      Instruction::Add, APInt(32, 0), OBO::NoSignedWrap).isFullSet());
+                  Instruction::Add, APInt(32, 0), OBO::NoSignedWrap)
+                  .isFullSet());
   EXPECT_TRUE(ConstantRange::makeGuaranteedNoWrapRegion(
-      Instruction::Sub, APInt(32, 0), OBO::NoUnsignedWrap).isFullSet());
+                  Instruction::Sub, APInt(32, 0), OBO::NoUnsignedWrap)
+                  .isFullSet());
   EXPECT_TRUE(ConstantRange::makeGuaranteedNoWrapRegion(
-      Instruction::Sub, APInt(32, 0), OBO::NoSignedWrap).isFullSet());
+                  Instruction::Sub, APInt(32, 0), OBO::NoSignedWrap)
+                  .isFullSet());
 
   ConstantRange OneToFive(APInt(32, 1), APInt(32, 6));
   EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
@@ -1848,23 +1831,22 @@ TEST(ConstantRange, MakeGuaranteedNoWrapRegion) {
                           APInt::getSignedMinValue(32) - 1));
   EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
                 Instruction::Sub, MinusOneToOne, OBO::NoUnsignedWrap),
-            ConstantRange(APInt::getMaxValue(32),
-                          APInt::getMinValue(32)));
+            ConstantRange(APInt::getMaxValue(32), APInt::getMinValue(32)));
 
   ConstantRange One(APInt(32, 1), APInt(32, 2));
-  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
-                Instruction::Add, One, OBO::NoSignedWrap),
+  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(Instruction::Add, One,
+                                                      OBO::NoSignedWrap),
             ConstantRange(APInt::getSignedMinValue(32),
                           APInt::getSignedMaxValue(32)));
-  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
-                Instruction::Add, One, OBO::NoUnsignedWrap),
+  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(Instruction::Add, One,
+                                                      OBO::NoUnsignedWrap),
             ConstantRange(APInt::getMinValue(32), APInt::getMaxValue(32)));
-  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
-                Instruction::Sub, One, OBO::NoSignedWrap),
+  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(Instruction::Sub, One,
+                                                      OBO::NoSignedWrap),
             ConstantRange(APInt::getSignedMinValue(32) + 1,
                           APInt::getSignedMinValue(32)));
-  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(
-                Instruction::Sub, One, OBO::NoUnsignedWrap),
+  EXPECT_EQ(ConstantRange::makeGuaranteedNoWrapRegion(Instruction::Sub, One,
+                                                      OBO::NoUnsignedWrap),
             ConstantRange(APInt::getMinValue(32) + 1, APInt::getMinValue(32)));
 
   ConstantRange OneLessThanBitWidth(APInt(32, 0), APInt(32, 31) + 1);
@@ -1967,48 +1949,48 @@ void TestNoWrapRegionExhaustive(Instruction::BinaryOps BinOp,
 // Show that makeGuaranteedNoWrapRegion() is maximal, and for single-element
 // ranges also exact.
 TEST(ConstantRange, NoWrapRegionExhaustive) {
-  TestNoWrapRegionExhaustive(
-      Instruction::Add, OverflowingBinaryOperator::NoUnsignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.uadd_ov(N2, Overflow);
-        return Overflow;
-      });
-  TestNoWrapRegionExhaustive(
-      Instruction::Add, OverflowingBinaryOperator::NoSignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.sadd_ov(N2, Overflow);
-        return Overflow;
-      });
-  TestNoWrapRegionExhaustive(
-      Instruction::Sub, OverflowingBinaryOperator::NoUnsignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.usub_ov(N2, Overflow);
-        return Overflow;
-      });
-  TestNoWrapRegionExhaustive(
-      Instruction::Sub, OverflowingBinaryOperator::NoSignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.ssub_ov(N2, Overflow);
-        return Overflow;
-      });
-  TestNoWrapRegionExhaustive(
-      Instruction::Mul, OverflowingBinaryOperator::NoUnsignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.umul_ov(N2, Overflow);
-        return Overflow;
-      });
-  TestNoWrapRegionExhaustive(
-      Instruction::Mul, OverflowingBinaryOperator::NoSignedWrap,
-      [](const APInt &N1, const APInt &N2) {
-        bool Overflow;
-        (void) N1.smul_ov(N2, Overflow);
-        return Overflow;
-      });
+  TestNoWrapRegionExhaustive(Instruction::Add,
+                             OverflowingBinaryOperator::NoUnsignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.uadd_ov(N2, Overflow);
+                               return Overflow;
+                             });
+  TestNoWrapRegionExhaustive(Instruction::Add,
+                             OverflowingBinaryOperator::NoSignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.sadd_ov(N2, Overflow);
+                               return Overflow;
+                             });
+  TestNoWrapRegionExhaustive(Instruction::Sub,
+                             OverflowingBinaryOperator::NoUnsignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.usub_ov(N2, Overflow);
+                               return Overflow;
+                             });
+  TestNoWrapRegionExhaustive(Instruction::Sub,
+                             OverflowingBinaryOperator::NoSignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.ssub_ov(N2, Overflow);
+                               return Overflow;
+                             });
+  TestNoWrapRegionExhaustive(Instruction::Mul,
+                             OverflowingBinaryOperator::NoUnsignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.umul_ov(N2, Overflow);
+                               return Overflow;
+                             });
+  TestNoWrapRegionExhaustive(Instruction::Mul,
+                             OverflowingBinaryOperator::NoSignedWrap,
+                             [](const APInt &N1, const APInt &N2) {
+                               bool Overflow;
+                               (void)N1.smul_ov(N2, Overflow);
+                               return Overflow;
+                             });
   TestNoWrapRegionExhaustive(Instruction::Shl,
                              OverflowingBinaryOperator::NoUnsignedWrap,
                              [](const APInt &N1, const APInt &N2) {
@@ -2126,13 +2108,13 @@ TEST(ConstantRange, GetEquivalentICmp) {
   });
 }
 
-#define EXPECT_MAY_OVERFLOW(op) \
+#define EXPECT_MAY_OVERFLOW(op)                                                \
   EXPECT_EQ(ConstantRange::OverflowResult::MayOverflow, (op))
-#define EXPECT_ALWAYS_OVERFLOWS_LOW(op) \
+#define EXPECT_ALWAYS_OVERFLOWS_LOW(op)                                        \
   EXPECT_EQ(ConstantRange::OverflowResult::AlwaysOverflowsLow, (op))
-#define EXPECT_ALWAYS_OVERFLOWS_HIGH(op) \
+#define EXPECT_ALWAYS_OVERFLOWS_HIGH(op)                                       \
   EXPECT_EQ(ConstantRange::OverflowResult::AlwaysOverflowsHigh, (op))
-#define EXPECT_NEVER_OVERFLOWS(op) \
+#define EXPECT_NEVER_OVERFLOWS(op)                                             \
   EXPECT_EQ(ConstantRange::OverflowResult::NeverOverflows, (op))
 
 TEST_F(ConstantRangeTest, UnsignedAddOverflow) {
@@ -2301,64 +2283,64 @@ TEST_F(ConstantRangeTest, SignedSubOverflow) {
 template <typename Fn1, typename Fn2>
 static void TestOverflowExhaustive(Fn1 OverflowFn, Fn2 MayOverflowFn) {
   // Constant range overflow checks are tested exhaustively on 4-bit numbers.
-  EnumerateTwoInterestingConstantRanges([=](const ConstantRange &CR1,
-                                            const ConstantRange &CR2) {
-    // Loop over all N1 in CR1 and N2 in CR2 and check whether any of the
-    // operations have overflow / have no overflow.
-    bool RangeHasOverflowLow = false;
-    bool RangeHasOverflowHigh = false;
-    bool RangeHasNoOverflow = false;
-    ForeachNumInConstantRange(CR1, [&](const APInt &N1) {
-      ForeachNumInConstantRange(CR2, [&](const APInt &N2) {
-        bool IsOverflowHigh;
-        if (!OverflowFn(IsOverflowHigh, N1, N2)) {
-          RangeHasNoOverflow = true;
-          return;
+  EnumerateTwoInterestingConstantRanges(
+      [=](const ConstantRange &CR1, const ConstantRange &CR2) {
+        // Loop over all N1 in CR1 and N2 in CR2 and check whether any of the
+        // operations have overflow / have no overflow.
+        bool RangeHasOverflowLow = false;
+        bool RangeHasOverflowHigh = false;
+        bool RangeHasNoOverflow = false;
+        ForeachNumInConstantRange(CR1, [&](const APInt &N1) {
+          ForeachNumInConstantRange(CR2, [&](const APInt &N2) {
+            bool IsOverflowHigh;
+            if (!OverflowFn(IsOverflowHigh, N1, N2)) {
+              RangeHasNoOverflow = true;
+              return;
+            }
+
+            if (IsOverflowHigh)
+              RangeHasOverflowHigh = true;
+            else
+              RangeHasOverflowLow = true;
+          });
+        });
+
+        ConstantRange::OverflowResult OR = MayOverflowFn(CR1, CR2);
+        switch (OR) {
+        case ConstantRange::OverflowResult::AlwaysOverflowsLow:
+          EXPECT_TRUE(RangeHasOverflowLow);
+          EXPECT_FALSE(RangeHasOverflowHigh);
+          EXPECT_FALSE(RangeHasNoOverflow);
+          break;
+        case ConstantRange::OverflowResult::AlwaysOverflowsHigh:
+          EXPECT_TRUE(RangeHasOverflowHigh);
+          EXPECT_FALSE(RangeHasOverflowLow);
+          EXPECT_FALSE(RangeHasNoOverflow);
+          break;
+        case ConstantRange::OverflowResult::NeverOverflows:
+          EXPECT_FALSE(RangeHasOverflowLow);
+          EXPECT_FALSE(RangeHasOverflowHigh);
+          EXPECT_TRUE(RangeHasNoOverflow);
+          break;
+        case ConstantRange::OverflowResult::MayOverflow:
+          // We return MayOverflow for empty sets as a conservative result,
+          // but of course neither the RangeHasOverflow nor the
+          // RangeHasNoOverflow flags will be set.
+          if (CR1.isEmptySet() || CR2.isEmptySet())
+            break;
+
+          EXPECT_TRUE(RangeHasOverflowLow || RangeHasOverflowHigh);
+          EXPECT_TRUE(RangeHasNoOverflow);
+          break;
         }
-
-        if (IsOverflowHigh)
-          RangeHasOverflowHigh = true;
-        else
-          RangeHasOverflowLow = true;
       });
-    });
-
-    ConstantRange::OverflowResult OR = MayOverflowFn(CR1, CR2);
-    switch (OR) {
-    case ConstantRange::OverflowResult::AlwaysOverflowsLow:
-      EXPECT_TRUE(RangeHasOverflowLow);
-      EXPECT_FALSE(RangeHasOverflowHigh);
-      EXPECT_FALSE(RangeHasNoOverflow);
-      break;
-    case ConstantRange::OverflowResult::AlwaysOverflowsHigh:
-      EXPECT_TRUE(RangeHasOverflowHigh);
-      EXPECT_FALSE(RangeHasOverflowLow);
-      EXPECT_FALSE(RangeHasNoOverflow);
-      break;
-    case ConstantRange::OverflowResult::NeverOverflows:
-      EXPECT_FALSE(RangeHasOverflowLow);
-      EXPECT_FALSE(RangeHasOverflowHigh);
-      EXPECT_TRUE(RangeHasNoOverflow);
-      break;
-    case ConstantRange::OverflowResult::MayOverflow:
-      // We return MayOverflow for empty sets as a conservative result,
-      // but of course neither the RangeHasOverflow nor the
-      // RangeHasNoOverflow flags will be set.
-      if (CR1.isEmptySet() || CR2.isEmptySet())
-        break;
-
-      EXPECT_TRUE(RangeHasOverflowLow || RangeHasOverflowHigh);
-      EXPECT_TRUE(RangeHasNoOverflow);
-      break;
-    }
-  });
 }
 
 TEST_F(ConstantRangeTest, UnsignedAddOverflowExhaustive) {
   TestOverflowExhaustive(
       [](bool &IsOverflowHigh, const APInt &N1, const APInt &N2) {
         bool Overflow;
-        (void) N1.uadd_ov(N2, Overflow);
+        (void)N1.uadd_ov(N2, Overflow);
         IsOverflowHigh = true;
         return Overflow;
       },
@@ -2371,7 +2353,7 @@ TEST_F(ConstantRangeTest, UnsignedSubOverflowExhaustive) {
   TestOverflowExhaustive(
       [](bool &IsOverflowHigh, const APInt &N1, const APInt &N2) {
         bool Overflow;
-        (void) N1.usub_ov(N2, Overflow);
+        (void)N1.usub_ov(N2, Overflow);
         IsOverflowHigh = false;
         return Overflow;
       },
@@ -2384,7 +2366,7 @@ TEST_F(ConstantRangeTest, UnsignedMulOverflowExhaustive) {
   TestOverflowExhaustive(
       [](bool &IsOverflowHigh, const APInt &N1, const APInt &N2) {
         bool Overflow;
-        (void) N1.umul_ov(N2, Overflow);
+        (void)N1.umul_ov(N2, Overflow);
         IsOverflowHigh = true;
         return Overflow;
       },
@@ -2397,7 +2379,7 @@ TEST_F(ConstantRangeTest, SignedAddOverflowExhaustive) {
   TestOverflowExhaustive(
       [](bool &IsOverflowHigh, const APInt &N1, const APInt &N2) {
         bool Overflow;
-        (void) N1.sadd_ov(N2, Overflow);
+        (void)N1.sadd_ov(N2, Overflow);
         IsOverflowHigh = N1.isNonNegative();
         return Overflow;
       },
@@ -2410,7 +2392,7 @@ TEST_F(ConstantRangeTest, SignedSubOverflowExhaustive) {
   TestOverflowExhaustive(
       [](bool &IsOverflowHigh, const APInt &N1, const APInt &N2) {
         bool Overflow;
-        (void) N1.ssub_ov(N2, Overflow);
+        (void)N1.ssub_ov(N2, Overflow);
         IsOverflowHigh = N1.isNonNegative();
         return Overflow;
       },
@@ -2421,8 +2403,8 @@ TEST_F(ConstantRangeTest, SignedSubOverflowExhaustive) {
 
 TEST_F(ConstantRangeTest, FromKnownBits) {
   KnownBits Unknown(16);
-  EXPECT_EQ(Full, ConstantRange::fromKnownBits(Unknown, /*signed*/false));
-  EXPECT_EQ(Full, ConstantRange::fromKnownBits(Unknown, /*signed*/true));
+  EXPECT_EQ(Full, ConstantRange::fromKnownBits(Unknown, /*signed*/ false));
+  EXPECT_EQ(Full, ConstantRange::fromKnownBits(Unknown, /*signed*/ true));
 
   // .10..01. -> unsigned 01000010 (66)  to 11011011 (219)
   //          -> signed   11000010 (194) to 01011011 (91)
@@ -2431,22 +2413,22 @@ TEST_F(ConstantRangeTest, FromKnownBits) {
   Known.One = 66;
   ConstantRange Unsigned(APInt(8, 66), APInt(8, 219 + 1));
   ConstantRange Signed(APInt(8, 194), APInt(8, 91 + 1));
-  EXPECT_EQ(Unsigned, ConstantRange::fromKnownBits(Known, /*signed*/false));
-  EXPECT_EQ(Signed, ConstantRange::fromKnownBits(Known, /*signed*/true));
+  EXPECT_EQ(Unsigned, ConstantRange::fromKnownBits(Known, /*signed*/ false));
+  EXPECT_EQ(Signed, ConstantRange::fromKnownBits(Known, /*signed*/ true));
 
   // 1.10.10. -> 10100100 (164) to 11101101 (237)
   Known.Zero = 18;
   Known.One = 164;
   ConstantRange CR1(APInt(8, 164), APInt(8, 237 + 1));
-  EXPECT_EQ(CR1, ConstantRange::fromKnownBits(Known, /*signed*/false));
-  EXPECT_EQ(CR1, ConstantRange::fromKnownBits(Known, /*signed*/true));
+  EXPECT_EQ(CR1, ConstantRange::fromKnownBits(Known, /*signed*/ false));
+  EXPECT_EQ(CR1, ConstantRange::fromKnownBits(Known, /*signed*/ true));
 
   // 01.0.1.0 -> 01000100 (68) to 01101110 (110)
   Known.Zero = 145;
   Known.One = 68;
   ConstantRange CR2(APInt(8, 68), APInt(8, 110 + 1));
-  EXPECT_EQ(CR2, ConstantRange::fromKnownBits(Known, /*signed*/false));
-  EXPECT_EQ(CR2, ConstantRange::fromKnownBits(Known, /*signed*/true));
+  EXPECT_EQ(CR2, ConstantRange::fromKnownBits(Known, /*signed*/ false));
+  EXPECT_EQ(CR2, ConstantRange::fromKnownBits(Known, /*signed*/ true));
 }
 
 TEST_F(ConstantRangeTest, FromKnownBitsExhaustive) {
@@ -2468,10 +2450,10 @@ TEST_F(ConstantRangeTest, FromKnownBitsExhaustive) {
         Elems.set(Num.getZExtValue());
       }
 
-      TestRange(ConstantRange::fromKnownBits(Known, false),
-                Elems, PreferSmallestUnsigned, {});
-      TestRange(ConstantRange::fromKnownBits(Known, true),
-                Elems, PreferSmallestSigned, {});
+      TestRange(ConstantRange::fromKnownBits(Known, false), Elems,
+                PreferSmallestUnsigned, {});
+      TestRange(ConstantRange::fromKnownBits(Known, true), Elems,
+                PreferSmallestSigned, {});
     }
   }
 }
@@ -2532,9 +2514,7 @@ TEST_F(ConstantRangeTest, UAddSat) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.uadd_sat(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1.uadd_sat(N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return N1.uadd_sat(N2); },
       PreferSmallestUnsigned);
 }
 
@@ -2543,9 +2523,7 @@ TEST_F(ConstantRangeTest, USubSat) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.usub_sat(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1.usub_sat(N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return N1.usub_sat(N2); },
       PreferSmallestUnsigned);
 }
 
@@ -2572,9 +2550,7 @@ TEST_F(ConstantRangeTest, SAddSat) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.sadd_sat(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1.sadd_sat(N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return N1.sadd_sat(N2); },
       PreferSmallestSigned);
 }
 
@@ -2583,9 +2559,7 @@ TEST_F(ConstantRangeTest, SSubSat) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.ssub_sat(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1.ssub_sat(N2);
-      },
+      [](const APInt &N1, const APInt &N2) { return N1.ssub_sat(N2); },
       PreferSmallestSigned);
 }
 
@@ -2608,9 +2582,8 @@ TEST_F(ConstantRangeTest, SShlSat) {
 }
 
 TEST_F(ConstantRangeTest, Abs) {
-  TestUnaryOpExhaustive(
-      [](const ConstantRange &CR) { return CR.abs(); },
-      [](const APInt &N) { return N.abs(); });
+  TestUnaryOpExhaustive([](const ConstantRange &CR) { return CR.abs(); },
+                        [](const APInt &N) { return N.abs(); });
 
   TestUnaryOpExhaustive(
       [](const ConstantRange &CR) { return CR.abs(/*IntMinIsPoison=*/true); },
@@ -2821,18 +2794,13 @@ TEST_F(ConstantRangeTest, binaryXor) {
       [](const ConstantRange &CR1, const ConstantRange &CR2) {
         return CR1.binaryXor(CR2);
       },
-      [](const APInt &N1, const APInt &N2) {
-        return N1 ^ N2;
-      },
-      PreferSmallest,
+      [](const APInt &N1, const APInt &N2) { return N1 ^ N2; }, PreferSmallest,
       CheckSingleElementsOnly);
 }
 
 TEST_F(ConstantRangeTest, binaryNot) {
-  TestUnaryOpExhaustive(
-      [](const ConstantRange &CR) { return CR.binaryNot(); },
-      [](const APInt &N) { return ~N; },
-      PreferSmallest);
+  TestUnaryOpExhaustive([](const ConstantRange &CR) { return CR.binaryNot(); },
+                        [](const APInt &N) { return ~N; }, PreferSmallest);
   TestUnaryOpExhaustive(
       [](const ConstantRange &CR) {
         return CR.binaryXor(ConstantRange(APInt::getAllOnes(CR.getBitWidth())));

@@ -312,7 +312,7 @@ protected:
   virtual void onCallPenalty() {}
 
   /// Called to account for a load or store.
-  virtual void onMemAccess(){};
+  virtual void onMemAccess() {};
 
   /// Called to account for the expectation the inlining would result in a load
   /// elimination.
@@ -916,7 +916,8 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
             CurrentSavings += InstrCost;
           }
         } else if (SwitchInst *SI = dyn_cast<SwitchInst>(&I)) {
-          if (isa_and_present<ConstantInt>(SimplifiedValues.lookup(SI->getCondition())))
+          if (isa_and_present<ConstantInt>(
+                  SimplifiedValues.lookup(SI->getCondition())))
             CurrentSavings += InstrCost;
         } else if (Value *V = dyn_cast<Value>(&I)) {
           // Count an instruction as savings if we can fold it.

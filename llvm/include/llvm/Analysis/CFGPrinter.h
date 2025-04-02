@@ -141,8 +141,7 @@ std::string CompleteNodeLabelString(
     const BasicBlockT *Node,
     function_ref<void(raw_string_ostream &, const BasicBlockT &)>
         HandleBasicBlock,
-    function_ref<void(std::string &, unsigned &, unsigned)>
-        HandleComment) {
+    function_ref<void(std::string &, unsigned &, unsigned)> HandleComment) {
 
   enum { MaxColumns = 80 };
   std::string OutStr;
@@ -215,8 +214,8 @@ struct DOTGraphTraits<DOTFuncInfo *> : public DefaultDOTGraphTraits {
       const BasicBlock *Node, DOTFuncInfo *,
       function_ref<void(raw_string_ostream &, const BasicBlock &)>
           HandleBasicBlock = printBasicBlock,
-      function_ref<void(std::string &, unsigned &, unsigned)>
-          HandleComment = eraseComment) {
+      function_ref<void(std::string &, unsigned &, unsigned)> HandleComment =
+          eraseComment) {
     return CompleteNodeLabelString(Node, HandleBasicBlock, HandleComment);
   }
 
@@ -337,6 +336,6 @@ struct DOTGraphTraits<DOTFuncInfo *> : public DefaultDOTGraphTraits {
   bool isNodeHidden(const BasicBlock *Node, const DOTFuncInfo *CFGInfo);
   void computeDeoptOrUnreachablePaths(const Function *F);
 };
-} // End llvm namespace
+} // namespace llvm
 
 #endif

@@ -83,9 +83,10 @@ public:
   };
   struct CallMutation : public ScheduleDAGMutation {
     void apply(ScheduleDAGInstrs *DAG) override;
+
   private:
-    bool shouldTFRICallBind(const HexagonInstrInfo &HII,
-          const SUnit &Inst1, const SUnit &Inst2) const;
+    bool shouldTFRICallBind(const HexagonInstrInfo &HII, const SUnit &Inst1,
+                            const SUnit &Inst2) const;
   };
   struct BankConflictMutation : public ScheduleDAGMutation {
     void apply(ScheduleDAGInstrs *DAG) override;
@@ -302,19 +303,17 @@ public:
 
   bool enableSubRegLiveness() const override;
 
-  const std::string &getCPUString () const { return CPUString; }
+  const std::string &getCPUString() const { return CPUString; }
 
   const Hexagon::ArchEnum &getHexagonArchVersion() const {
     return HexagonArchVersion;
   }
 
-  void getPostRAMutations(
-      std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations)
-      const override;
+  void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
+                              &Mutations) const override;
 
-  void getSMSMutations(
-      std::vector<std::unique_ptr<ScheduleDAGMutation>> &Mutations)
-      const override;
+  void getSMSMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
+                           &Mutations) const override;
 
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).
@@ -366,7 +365,8 @@ private:
   void restoreLatency(SUnit *Src, SUnit *Dst) const;
   void changeLatency(SUnit *Src, SUnit *Dst, unsigned Lat) const;
   bool isBestZeroLatency(SUnit *Src, SUnit *Dst, const HexagonInstrInfo *TII,
-      SmallSet<SUnit*, 4> &ExclSrc, SmallSet<SUnit*, 4> &ExclDst) const;
+                         SmallSet<SUnit *, 4> &ExclSrc,
+                         SmallSet<SUnit *, 4> &ExclDst) const;
 };
 
 } // end namespace llvm

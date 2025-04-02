@@ -129,7 +129,8 @@ const VPRecipeBase *VPValue::getDefiningRecipe() const {
 }
 
 // Get the top-most entry block of \p Start. This is the entry block of the
-// containing VPlan. This function is templated to support both const and non-const blocks
+// containing VPlan. This function is templated to support both const and
+// non-const blocks
 template <typename T> static T *getPlanEntry(T *Start) {
   T *Next = Start;
   T *Current = Start;
@@ -708,8 +709,8 @@ VPRegionBlock *VPRegionBlock::clone() {
 }
 
 void VPRegionBlock::execute(VPTransformState *State) {
-  ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>>
-      RPOT(Entry);
+  ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>> RPOT(
+      Entry);
 
   if (!isReplicator()) {
     // Create and register the new vector loop.
@@ -1280,13 +1281,13 @@ void VPlanPrinter::dump() {
 
   {
     // Print live-ins.
-  std::string Str;
-  raw_string_ostream SS(Str);
-  Plan.printLiveIns(SS);
-  SmallVector<StringRef, 0> Lines;
-  StringRef(Str).rtrim('\n').split(Lines, "\n");
-  for (auto Line : Lines)
-    OS << DOT::EscapeString(Line.str()) << "\\n";
+    std::string Str;
+    raw_string_ostream SS(Str);
+    Plan.printLiveIns(SS);
+    SmallVector<StringRef, 0> Lines;
+    StringRef(Str).rtrim('\n').split(Lines, "\n");
+    for (auto Line : Lines)
+      OS << DOT::EscapeString(Line.str()) << "\\n";
   }
 
   OS << "\"]\n";
@@ -1462,8 +1463,8 @@ void VPUser::printOperands(raw_ostream &O, VPSlotTracker &SlotTracker) const {
 void VPInterleavedAccessInfo::visitRegion(VPRegionBlock *Region,
                                           Old2NewTy &Old2New,
                                           InterleavedAccessInfo &IAI) {
-  ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>>
-      RPOT(Region->getEntry());
+  ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>> RPOT(
+      Region->getEntry());
   for (VPBlockBase *Base : RPOT) {
     visitBlock(Base, Old2New, IAI);
   }

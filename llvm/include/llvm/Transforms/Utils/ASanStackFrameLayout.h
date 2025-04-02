@@ -42,9 +42,9 @@ struct ASanStackVariableDescription {
 
 // Output data struct for ComputeASanStackFrameLayout.
 struct ASanStackFrameLayout {
-  uint64_t Granularity;     // Shadow granularity.
-  uint64_t FrameAlignment;  // Alignment for the entire frame.
-  uint64_t FrameSize;       // Size of the frame in bytes.
+  uint64_t Granularity;    // Shadow granularity.
+  uint64_t FrameAlignment; // Alignment for the entire frame.
+  uint64_t FrameSize;      // Size of the frame in bytes.
 };
 
 ASanStackFrameLayout ComputeASanStackFrameLayout(
@@ -75,6 +75,6 @@ SmallVector<uint8_t, 64> GetShadowBytesAfterScope(
     const SmallVectorImpl<ASanStackVariableDescription> &Vars,
     const ASanStackFrameLayout &Layout);
 
-} // llvm namespace
+} // namespace llvm
 
-#endif  // LLVM_TRANSFORMS_UTILS_ASANSTACKFRAMELAYOUT_H
+#endif // LLVM_TRANSFORMS_UTILS_ASANSTACKFRAMELAYOUT_H

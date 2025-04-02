@@ -60,7 +60,7 @@ class MCObjectStreamer : public MCStreamer {
   DenseMap<const MCSymbol *, SmallVector<PendingAssignment, 1>>
       pendingAssignments;
 
-  virtual void emitInstToData(const MCInst &Inst, const MCSubtargetInfo&) = 0;
+  virtual void emitInstToData(const MCInst &Inst, const MCSubtargetInfo &) = 0;
   void emitCFIStartProcImpl(MCDwarfFrameInfo &Frame) override;
   void emitCFIEndProcImpl(MCDwarfFrameInfo &Frame) override;
   MCSymbol *emitCFILabel() override;
@@ -96,7 +96,7 @@ public:
   /// fragment is not a data fragment.
   /// Optionally a \p STI can be passed in so that a new fragment is created
   /// if the Subtarget differs from the current fragment.
-  MCDataFragment *getOrCreateDataFragment(const MCSubtargetInfo* STI = nullptr);
+  MCDataFragment *getOrCreateDataFragment(const MCSubtargetInfo *STI = nullptr);
 
 protected:
   bool changeSectionImpl(MCSection *Section, uint32_t Subsection);

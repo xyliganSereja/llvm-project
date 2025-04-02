@@ -44,8 +44,7 @@ using namespace llvm;
 
 static cl::opt<bool> DisableDemotion(
     "disable-demotion", cl::Hidden,
-    cl::desc(
-        "Clone multicolor basic blocks but do not demote cross scopes"),
+    cl::desc("Clone multicolor basic blocks but do not demote cross scopes"),
     cl::init(false));
 
 static cl::opt<bool> DisableCleanups(
@@ -391,8 +390,8 @@ static void calculateCXXStateNumbers(WinEHFuncInfo &FuncInfo,
     int TryLow = addUnwindMapEntry(FuncInfo, ParentState, nullptr);
     FuncInfo.EHPadStateMap[CatchSwitch] = TryLow;
     for (const BasicBlock *PredBlock : predecessors(BB))
-      if ((PredBlock = getEHPadFromPredecessor(PredBlock,
-                                               CatchSwitch->getParentPad())))
+      if ((PredBlock =
+               getEHPadFromPredecessor(PredBlock, CatchSwitch->getParentPad())))
         calculateCXXStateNumbers(FuncInfo, &*PredBlock->getFirstNonPHIIt(),
                                  TryLow);
     int CatchLow = addUnwindMapEntry(FuncInfo, ParentState, nullptr);
@@ -524,8 +523,8 @@ static void calculateSEHStateNumbers(WinEHFuncInfo &FuncInfo,
     LLVM_DEBUG(dbgs() << "Assigning state #" << TryState << " to BB "
                       << CatchPadBB->getName() << '\n');
     for (const BasicBlock *PredBlock : predecessors(BB))
-      if ((PredBlock = getEHPadFromPredecessor(PredBlock,
-                                               CatchSwitch->getParentPad())))
+      if ((PredBlock =
+               getEHPadFromPredecessor(PredBlock, CatchSwitch->getParentPad())))
         calculateSEHStateNumbers(FuncInfo, &*PredBlock->getFirstNonPHIIt(),
                                  TryState);
 
@@ -1401,9 +1400,9 @@ void WinEHFuncInfo::addIPToStateRange(const InvokeInst *II,
   LabelToStateMap[InvokeBegin] = std::make_pair(InvokeStateMap[II], InvokeEnd);
 }
 
-void WinEHFuncInfo::addIPToStateRange(int State, MCSymbol* InvokeBegin,
-    MCSymbol* InvokeEnd) {
-    LabelToStateMap[InvokeBegin] = std::make_pair(State, InvokeEnd);
+void WinEHFuncInfo::addIPToStateRange(int State, MCSymbol *InvokeBegin,
+                                      MCSymbol *InvokeEnd) {
+  LabelToStateMap[InvokeBegin] = std::make_pair(State, InvokeEnd);
 }
 
 WinEHFuncInfo::WinEHFuncInfo() = default;

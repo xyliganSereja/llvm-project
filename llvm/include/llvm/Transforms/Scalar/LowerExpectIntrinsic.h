@@ -32,6 +32,6 @@ struct LowerExpectIntrinsicPass : PassInfoMixin<LowerExpectIntrinsicPass> {
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &);
 };
 
-}
+} // namespace llvm
 
 #endif

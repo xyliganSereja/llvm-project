@@ -18,7 +18,7 @@
 namespace llvm {
 
 class ARMAsmBackend : public MCAsmBackend {
-  bool isThumbMode;    // Currently emitting Thumb code.
+  bool isThumbMode; // Currently emitting Thumb code.
 public:
   ARMAsmBackend(const Target &T, bool isThumb, llvm::endianness Endian)
       : MCAsmBackend(Endian), isThumbMode(isThumb) {}

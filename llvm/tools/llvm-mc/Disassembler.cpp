@@ -49,8 +49,7 @@ static bool PrintInsts(const MCDisassembler &DisAsm, const ByteArrayTy &Bytes,
     switch (S) {
     case MCDisassembler::Fail:
       SM.PrintMessage(SMLoc::getFromPointer(Bytes.second[Index]),
-                      SourceMgr::DK_Warning,
-                      "invalid instruction encoding");
+                      SourceMgr::DK_Warning, "invalid instruction encoding");
       // Don't try to resynchronise the stream in a block
       if (InAtomicBlock)
         return true;
@@ -88,7 +87,7 @@ static bool SkipToToken(StringRef &Str) {
 
     // If this is the start of a comment, remove the rest of the line.
     if (Str[0] == '#') {
-        Str = Str.substr(Str.find_first_of('\n'));
+      Str = Str.substr(Str.find_first_of('\n'));
       continue;
     }
     return true;
@@ -162,7 +161,7 @@ int Disassembler::disassemble(const Target &T, const std::string &Triple,
   }
 
   std::unique_ptr<const MCDisassembler> DisAsm(
-    T.createMCDisassembler(STI, Ctx));
+      T.createMCDisassembler(STI, Ctx));
   if (!DisAsm) {
     errs() << "error: no disassembler for target " << Triple << "\n";
     return -1;

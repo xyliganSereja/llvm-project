@@ -86,4 +86,4 @@ TEST(TypedPointerType, PrintTest) {
   EXPECT_EQ(StringRef(Buffer), ("typedptr(i8, 0)"));
 }
 
-}  // end anonymous namespace
+} // end anonymous namespace

@@ -153,8 +153,8 @@ protected:
   SSAUpdater &SSA;
 
 public:
-  LoadAndStorePromoter(ArrayRef<const Instruction *> Insts,
-                       SSAUpdater &S, StringRef Name = StringRef());
+  LoadAndStorePromoter(ArrayRef<const Instruction *> Insts, SSAUpdater &S,
+                       StringRef Name = StringRef());
   virtual ~LoadAndStorePromoter() = default;
 
   /// This does the promotion.

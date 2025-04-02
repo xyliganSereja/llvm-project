@@ -40,18 +40,13 @@ public:
   bool runOnMachineFunction(MachineFunction &Fn) override;
 
 private:
-  void selectLOCRMux(MachineBasicBlock &MBB,
-                     MachineBasicBlock::iterator MBBI,
-                     MachineBasicBlock::iterator &NextMBBI,
-                     unsigned LowOpcode,
+  void selectLOCRMux(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
+                     MachineBasicBlock::iterator &NextMBBI, unsigned LowOpcode,
                      unsigned HighOpcode);
-  void selectSELRMux(MachineBasicBlock &MBB,
-                     MachineBasicBlock::iterator MBBI,
-                     MachineBasicBlock::iterator &NextMBBI,
-                     unsigned LowOpcode,
+  void selectSELRMux(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
+                     MachineBasicBlock::iterator &NextMBBI, unsigned LowOpcode,
                      unsigned HighOpcode);
-  bool expandCondMove(MachineBasicBlock &MBB,
-                      MachineBasicBlock::iterator MBBI,
+  bool expandCondMove(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                       MachineBasicBlock::iterator &NextMBBI);
   bool selectMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
@@ -126,14 +121,16 @@ void SystemZPostRewrite::selectSELRMux(MachineBasicBlock &MBB,
     if (DestIsHigh != Src1IsHigh) {
       BuildMI(*MBBI->getParent(), MBBI, MBBI->getDebugLoc(),
               TII->get(SystemZ::COPY), DestReg)
-        .addReg(MBBI->getOperand(1).getReg(), getRegState(MBBI->getOperand(1)));
+          .addReg(MBBI->getOperand(1).getReg(),
+                  getRegState(MBBI->getOperand(1)));
       MBBI->getOperand(1).setReg(DestReg);
       Src1Reg = DestReg;
       Src1IsHigh = DestIsHigh;
     } else if (DestIsHigh != Src2IsHigh) {
       BuildMI(*MBBI->getParent(), MBBI, MBBI->getDebugLoc(),
               TII->get(SystemZ::COPY), DestReg)
-        .addReg(MBBI->getOperand(2).getReg(), getRegState(MBBI->getOperand(2)));
+          .addReg(MBBI->getOperand(2).getReg(),
+                  getRegState(MBBI->getOperand(2)));
       MBBI->getOperand(2).setReg(DestReg);
       Src2Reg = DestReg;
       Src2IsHigh = DestIsHigh;
@@ -196,7 +193,9 @@ bool SystemZPostRewrite::expandCondMove(MachineBasicBlock &MBB,
   // At the end of MBB, create a conditional branch to RestMBB if the
   // condition is false, otherwise fall through to MoveMBB.
   BuildMI(&MBB, DL, TII->get(SystemZ::BRC))
-    .addImm(CCValid).addImm(CCMask ^ CCValid).addMBB(RestMBB);
+      .addImm(CCValid)
+      .addImm(CCMask ^ CCValid)
+      .addMBB(RestMBB);
   MBB.addSuccessor(RestMBB);
   MBB.addSuccessor(MoveMBB);
 
@@ -231,7 +230,7 @@ bool SystemZPostRewrite::selectMI(MachineBasicBlock &MBB,
     MachineOperand &SrcMO = MI.getOperand(1);
     if (DstReg != SrcMO.getReg()) {
       BuildMI(MBB, &MI, MI.getDebugLoc(), TII->get(SystemZ::COPY), DstReg)
-        .addReg(SrcMO.getReg());
+          .addReg(SrcMO.getReg());
       SrcMO.setReg(DstReg);
       MemFoldCopies++;
     }
@@ -274,4 +273,3 @@ bool SystemZPostRewrite::runOnMachineFunction(MachineFunction &MF) {
 
   return Modified;
 }
-

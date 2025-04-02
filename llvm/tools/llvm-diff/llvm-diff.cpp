@@ -20,11 +20,10 @@
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/SourceMgr.h"
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/WithColor.h"
+#include "llvm/Support/raw_ostream.h"
 #include <string>
 #include <utility>
-
 
 using namespace llvm;
 
@@ -77,7 +76,8 @@ int main(int argc, char **argv) {
   // Load both modules.  Die if that fails.
   std::unique_ptr<Module> LModule = readModule(Context, LeftFilename);
   std::unique_ptr<Module> RModule = readModule(Context, RightFilename);
-  if (!LModule || !RModule) return 1;
+  if (!LModule || !RModule)
+    return 1;
 
   DiffConsumer Consumer;
   DifferenceEngine Engine(Consumer);
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     for (unsigned I = 0, E = GlobalsToCompare.size(); I != E; ++I)
       diffGlobal(Engine, *LModule, *RModule, GlobalsToCompare[I]);
 
-  // Otherwise, diff everything in the module.
+    // Otherwise, diff everything in the module.
   } else {
     Engine.diff(LModule.get(), RModule.get());
   }

@@ -21,26 +21,26 @@ using namespace llvm;
 
 namespace {
 
-#if LLVM_ENABLE_THREADS != 0 && defined(HAVE_PTHREAD_H) && \
-  !__has_feature(memory_sanitizer)
+#if LLVM_ENABLE_THREADS != 0 && defined(HAVE_PTHREAD_H) &&                     \
+    !__has_feature(memory_sanitizer)
 namespace test1 {
-  llvm::ManagedStatic<int> ms;
-  void *helper(void*) {
-    *ms;
-    return nullptr;
-  }
-
-  // Valgrind's leak checker complains glibc's stack allocation.
-  // To appease valgrind, we provide our own stack for each thread.
-  void *allocate_stack(pthread_attr_t &a, size_t n = 65536) {
-    void *stack = safe_malloc(n);
-    pthread_attr_init(&a);
-#if defined(__linux__)
-    pthread_attr_setstack(&a, stack, n);
-#endif
-    return stack;
-  }
+llvm::ManagedStatic<int> ms;
+void *helper(void *) {
+  *ms;
+  return nullptr;
 }
+
+// Valgrind's leak checker complains glibc's stack allocation.
+// To appease valgrind, we provide our own stack for each thread.
+void *allocate_stack(pthread_attr_t &a, size_t n = 65536) {
+  void *stack = safe_malloc(n);
+  pthread_attr_init(&a);
+#if defined(__linux__)
+  pthread_attr_setstack(&a, stack, n);
+#endif
+  return stack;
+}
+} // namespace test1
 
 TEST(Initialize, MultipleThreads) {
   // Run this test under tsan: http://code.google.com/p/data-race-test/
@@ -62,9 +62,7 @@ TEST(Initialize, MultipleThreads) {
 namespace NestedStatics {
 static ManagedStatic<int> Ms1;
 struct Nest {
-  Nest() {
-    ++(*Ms1);
-  }
+  Nest() { ++(*Ms1); }
 
   ~Nest() {
     assert(Ms1.isConstructed());
@@ -95,9 +93,7 @@ struct CustomDelete {
   static void call(void *P) { std::free(P); }
 };
 static ManagedStatic<int, CustomCreate, CustomDelete> Custom;
-TEST(ManagedStaticTest, CustomCreatorDeletor) {
-  EXPECT_EQ(42, *Custom);
-}
+TEST(ManagedStaticTest, CustomCreatorDeletor) { EXPECT_EQ(42, *Custom); }
 } // namespace CustomCreatorDeletor
 
 } // anonymous namespace

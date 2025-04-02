@@ -40,8 +40,8 @@
 #include "llvm/Analysis/LoopAnalysisManager.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/LoopNestAnalysis.h"
-#include "llvm/IR/PassManager.h"
 #include "llvm/IR/PassInstrumentation.h"
+#include "llvm/IR/PassManager.h"
 #include "llvm/Transforms/Utils/LCSSA.h"
 #include "llvm/Transforms/Utils/LoopSimplify.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
@@ -323,15 +323,11 @@ public:
     Worklist.insert(CurrentL);
   }
 
-  bool isLoopNestChanged() const {
-    return LoopNestChanged;
-  }
+  bool isLoopNestChanged() const { return LoopNestChanged; }
 
   /// Loopnest passes should use this method to indicate if the
   /// loopnest has been modified.
-  void markLoopNestChanged(bool Changed) {
-    LoopNestChanged = Changed;
-  }
+  void markLoopNestChanged(bool Changed) { LoopNestChanged = Changed; }
 
 private:
   friend class llvm::FunctionToLoopPassAdaptor;
@@ -514,6 +510,6 @@ public:
   PreservedAnalyses run(Loop &L, LoopAnalysisManager &,
                         LoopStandardAnalysisResults &, LPMUpdater &);
 };
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_SCALAR_LOOPPASSMANAGER_H

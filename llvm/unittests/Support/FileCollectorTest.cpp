@@ -164,7 +164,9 @@ TEST(FileCollectorTest, recordVFSAccesses) {
   TempDir subdir3(file_root.path("subdir3"));
   TempFile subdir3a(subdir3.path("aa"));
   TempDir subdir3b(subdir3.path("subdirb"));
-  { TempFile subdir3fileremoved(subdir3.path("removed")); }
+  {
+    TempFile subdir3fileremoved(subdir3.path("removed"));
+  }
 
   // Create file collector and add files.
   TempDir root("copy_files_root", /*Unique*/ true);

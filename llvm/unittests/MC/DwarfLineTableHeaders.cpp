@@ -179,7 +179,8 @@ public:
 
   ///  Open ObjFileData as an object file and read its .debug_line section
   void readAndCheckDebugContents(StringRef ObjFileData,
-                                     ArrayRef<uint8_t> Expected, uint8_t DwarfVersion) {
+                                 ArrayRef<uint8_t> Expected,
+                                 uint8_t DwarfVersion) {
     std::unique_ptr<MemoryBuffer> MB =
         MemoryBuffer::getMemBuffer(ObjFileData, "", false);
     std::unique_ptr<object::Binary> Bin =
@@ -206,17 +207,17 @@ TEST_F(DwarfLineTableHeaders, TestDWARF4HeaderEmission) {
   C.Ctx->setDwarfVersion(DwarfVersion);
   emitDebugLineSection(C);
   C.Streamer->finish();
-  readAndCheckDebugContents(
-      EmittedBinContents.str(),
-      {/*    Total length=*/0x30, 0, 0, 0,
-       /*   DWARF version=*/DwarfVersion, 0,
-       /* Prologue length=*/0x14, 0, 0, 0,
-       /* min_inst_length=*/1,
-       /*max_ops_per_inst=*/1,
-       /* default_is_stmt=*/DWARF2_LINE_DEFAULT_IS_STMT,
-       /*       line_base=*/static_cast<uint8_t>(-5),
-       /*      line_range=*/14,
-       /*     opcode_base=*/13}, DwarfVersion);
+  readAndCheckDebugContents(EmittedBinContents.str(),
+                            {/*    Total length=*/0x30, 0, 0, 0,
+                             /*   DWARF version=*/DwarfVersion, 0,
+                             /* Prologue length=*/0x14, 0, 0, 0,
+                             /* min_inst_length=*/1,
+                             /*max_ops_per_inst=*/1,
+                             /* default_is_stmt=*/DWARF2_LINE_DEFAULT_IS_STMT,
+                             /*       line_base=*/static_cast<uint8_t>(-5),
+                             /*      line_range=*/14,
+                             /*     opcode_base=*/13},
+                            DwarfVersion);
 }
 
 TEST_F(DwarfLineTableHeaders, TestDWARF5HeaderEmission) {
@@ -230,17 +231,17 @@ TEST_F(DwarfLineTableHeaders, TestDWARF5HeaderEmission) {
   C.Ctx->setDwarfVersion(DwarfVersion);
   emitDebugLineSection(C);
   C.Streamer->finish();
-  readAndCheckDebugContents(
-      EmittedBinContents.str(),
-      {/*    Total length=*/0x43, 0, 0, 0,
-       /*   DWARF version=*/DwarfVersion, 0,
-       /*        ptr size=*/8,
-       /*         segment=*/0,
-       /* Prologue length=*/0x25, 0, 0, 0,
-       /* min_inst_length=*/1,
-       /*max_ops_per_inst=*/1,
-       /* default_is_stmt=*/DWARF2_LINE_DEFAULT_IS_STMT,
-       /*       line_base=*/static_cast<uint8_t>(-5),
-       /*      line_range=*/14,
-       /*     opcode_base=*/13}, DwarfVersion);
+  readAndCheckDebugContents(EmittedBinContents.str(),
+                            {/*    Total length=*/0x43, 0, 0, 0,
+                             /*   DWARF version=*/DwarfVersion, 0,
+                             /*        ptr size=*/8,
+                             /*         segment=*/0,
+                             /* Prologue length=*/0x25, 0, 0, 0,
+                             /* min_inst_length=*/1,
+                             /*max_ops_per_inst=*/1,
+                             /* default_is_stmt=*/DWARF2_LINE_DEFAULT_IS_STMT,
+                             /*       line_base=*/static_cast<uint8_t>(-5),
+                             /*      line_range=*/14,
+                             /*     opcode_base=*/13},
+                            DwarfVersion);
 }

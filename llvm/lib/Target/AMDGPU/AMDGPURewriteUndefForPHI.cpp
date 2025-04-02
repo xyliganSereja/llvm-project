@@ -73,7 +73,8 @@ class AMDGPURewriteUndefForPHILegacy : public FunctionPass {
 public:
   static char ID;
   AMDGPURewriteUndefForPHILegacy() : FunctionPass(ID) {
-    initializeAMDGPURewriteUndefForPHILegacyPass(*PassRegistry::getPassRegistry());
+    initializeAMDGPURewriteUndefForPHILegacyPass(
+        *PassRegistry::getPassRegistry());
   }
   bool runOnFunction(Function &F) override;
   StringRef getPassName() const override {

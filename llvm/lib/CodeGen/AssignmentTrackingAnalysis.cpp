@@ -2184,8 +2184,8 @@ static AssignmentTrackingLowering::OverlapMap buildOverlapMapAndRecordDeclares(
         ProcessDbgRecord(&DVR, DPDeclares);
       if (auto *DII = dyn_cast<DbgVariableIntrinsic>(&I)) {
         ProcessDbgRecord(DII, InstDeclares);
-      } else if (auto Info = getUntaggedStoreAssignmentInfo(
-                     I, Fn.getDataLayout())) {
+      } else if (auto Info =
+                     getUntaggedStoreAssignmentInfo(I, Fn.getDataLayout())) {
         // Find markers linked to this alloca.
         auto HandleDbgAssignForStore = [&](auto *Assign) {
           std::optional<DIExpression::FragmentInfo> FragInfo;
@@ -2193,8 +2193,8 @@ static AssignmentTrackingLowering::OverlapMap buildOverlapMapAndRecordDeclares(
           // Skip this assignment if the affected bits are outside of the
           // variable fragment.
           if (!at::calculateFragmentIntersect(
-                  I.getDataLayout(), Info->Base,
-                  Info->OffsetInBits, Info->SizeInBits, Assign, FragInfo) ||
+                  I.getDataLayout(), Info->Base, Info->OffsetInBits,
+                  Info->SizeInBits, Assign, FragInfo) ||
               (FragInfo && FragInfo->SizeInBits == 0))
             return;
 

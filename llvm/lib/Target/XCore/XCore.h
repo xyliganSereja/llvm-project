@@ -19,20 +19,20 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-  class FunctionPass;
-  class ModulePass;
-  class PassRegistry;
-  class TargetMachine;
-  class XCoreTargetMachine;
+class FunctionPass;
+class ModulePass;
+class PassRegistry;
+class TargetMachine;
+class XCoreTargetMachine;
 
-  void initializeXCoreLowerThreadLocalPass(PassRegistry &p);
+void initializeXCoreLowerThreadLocalPass(PassRegistry &p);
 
-  FunctionPass *createXCoreFrameToArgsOffsetEliminationPass();
-  FunctionPass *createXCoreISelDag(XCoreTargetMachine &TM,
-                                   CodeGenOptLevel OptLevel);
-  ModulePass *createXCoreLowerThreadLocalPass();
-  void initializeXCoreDAGToDAGISelLegacyPass(PassRegistry &);
+FunctionPass *createXCoreFrameToArgsOffsetEliminationPass();
+FunctionPass *createXCoreISelDag(XCoreTargetMachine &TM,
+                                 CodeGenOptLevel OptLevel);
+ModulePass *createXCoreLowerThreadLocalPass();
+void initializeXCoreDAGToDAGISelLegacyPass(PassRegistry &);
 
-} // end namespace llvm;
+} // namespace llvm
 
 #endif

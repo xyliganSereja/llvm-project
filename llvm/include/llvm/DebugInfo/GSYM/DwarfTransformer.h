@@ -62,7 +62,6 @@ public:
   llvm::Error verify(StringRef GsymPath, OutputAggregator &OS);
 
 private:
-
   /// Parse the DWARF in the object file and convert it into the GsymCreator.
   Error parse();
 

@@ -96,8 +96,10 @@ static unsigned getPCRelReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
 // Return the R_390_TLS_LE* relocation type for MCFixupKind Kind.
 static unsigned getTLSLEReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4: return ELF::R_390_TLS_LE32;
-  case FK_Data_8: return ELF::R_390_TLS_LE64;
+  case FK_Data_4:
+    return ELF::R_390_TLS_LE32;
+  case FK_Data_8:
+    return ELF::R_390_TLS_LE64;
   }
   Ctx.reportError(Loc, "Unsupported thread-local address (local-exec)");
   return 0;
@@ -106,8 +108,10 @@ static unsigned getTLSLEReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
 // Return the R_390_TLS_LDO* relocation type for MCFixupKind Kind.
 static unsigned getTLSLDOReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4: return ELF::R_390_TLS_LDO32;
-  case FK_Data_8: return ELF::R_390_TLS_LDO64;
+  case FK_Data_4:
+    return ELF::R_390_TLS_LDO32;
+  case FK_Data_8:
+    return ELF::R_390_TLS_LDO64;
   }
   Ctx.reportError(Loc, "Unsupported thread-local address (local-dynamic)");
   return 0;
@@ -116,9 +120,12 @@ static unsigned getTLSLDOReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
 // Return the R_390_TLS_LDM* relocation type for MCFixupKind Kind.
 static unsigned getTLSLDMReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4: return ELF::R_390_TLS_LDM32;
-  case FK_Data_8: return ELF::R_390_TLS_LDM64;
-  case SystemZ::FK_390_TLS_CALL: return ELF::R_390_TLS_LDCALL;
+  case FK_Data_4:
+    return ELF::R_390_TLS_LDM32;
+  case FK_Data_8:
+    return ELF::R_390_TLS_LDM64;
+  case SystemZ::FK_390_TLS_CALL:
+    return ELF::R_390_TLS_LDCALL;
   }
   Ctx.reportError(Loc, "Unsupported thread-local address (local-dynamic)");
   return 0;
@@ -127,9 +134,12 @@ static unsigned getTLSLDMReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
 // Return the R_390_TLS_GD* relocation type for MCFixupKind Kind.
 static unsigned getTLSGDReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
   switch (Kind) {
-  case FK_Data_4: return ELF::R_390_TLS_GD32;
-  case FK_Data_8: return ELF::R_390_TLS_GD64;
-  case SystemZ::FK_390_TLS_CALL: return ELF::R_390_TLS_GDCALL;
+  case FK_Data_4:
+    return ELF::R_390_TLS_GD32;
+  case FK_Data_8:
+    return ELF::R_390_TLS_GD64;
+  case SystemZ::FK_390_TLS_CALL:
+    return ELF::R_390_TLS_GDCALL;
   }
   Ctx.reportError(Loc, "Unsupported thread-local address (general-dynamic)");
   return 0;
@@ -138,10 +148,14 @@ static unsigned getTLSGDReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
 // Return the PLT relocation counterpart of MCFixupKind Kind.
 static unsigned getPLTReloc(MCContext &Ctx, SMLoc Loc, unsigned Kind) {
   switch (Kind) {
-  case SystemZ::FK_390_PC12DBL: return ELF::R_390_PLT12DBL;
-  case SystemZ::FK_390_PC16DBL: return ELF::R_390_PLT16DBL;
-  case SystemZ::FK_390_PC24DBL: return ELF::R_390_PLT24DBL;
-  case SystemZ::FK_390_PC32DBL: return ELF::R_390_PLT32DBL;
+  case SystemZ::FK_390_PC12DBL:
+    return ELF::R_390_PLT12DBL;
+  case SystemZ::FK_390_PC16DBL:
+    return ELF::R_390_PLT16DBL;
+  case SystemZ::FK_390_PC24DBL:
+    return ELF::R_390_PLT24DBL;
+  case SystemZ::FK_390_PC32DBL:
+    return ELF::R_390_PLT32DBL;
   }
   Ctx.reportError(Loc, "Unsupported PC-relative PLT address");
   return 0;
@@ -169,7 +183,8 @@ unsigned SystemZELFObjectWriter::getRelocType(MCContext &Ctx,
   case MCSymbolRefExpr::VK_INDNTPOFF:
     if (IsPCRel && Kind == SystemZ::FK_390_PC32DBL)
       return ELF::R_390_TLS_IEENT;
-    Ctx.reportError(Loc, "Only PC-relative INDNTPOFF accesses are supported for now");
+    Ctx.reportError(
+        Loc, "Only PC-relative INDNTPOFF accesses are supported for now");
     return 0;
 
   case MCSymbolRefExpr::VK_DTPOFF:

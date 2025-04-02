@@ -43,4 +43,4 @@ TEST(AllocSize, AllocationBuiltinsTest) {
   // functions.
   EXPECT_FALSE(isAllocationFn(Caller.get(), TLI));
 }
-}
+} // namespace

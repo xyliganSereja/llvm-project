@@ -50,10 +50,9 @@ struct ProfiledCallGraphNode {
   using edges = std::set<edge, ProfiledCallGraphEdgeComparer>;
   using iterator = edges::iterator;
   using const_iterator = edges::const_iterator;
-  
-  ProfiledCallGraphNode(FunctionId FName = FunctionId()) : Name(FName)
-  {}
-  
+
+  ProfiledCallGraphNode(FunctionId FName = FunctionId()) : Name(FName) {}
+
   FunctionId Name;
   edges Edges;
 };
@@ -133,7 +132,7 @@ public:
   iterator begin() { return Root.Edges.begin(); }
   iterator end() { return Root.Edges.end(); }
   ProfiledCallGraphNode *getEntryNode() { return &Root; }
-  
+
   void addProfiledFunction(FunctionId Name) {
     if (!ProfiledFunctions.count(Name)) {
       // Link to synthetic root to make sure every node is reachable
@@ -153,8 +152,8 @@ private:
     auto CalleeIt = ProfiledFunctions.find(CalleeName);
     if (CalleeIt == ProfiledFunctions.end())
       return;
-    ProfiledCallGraphEdge Edge(ProfiledFunctions[CallerName],
-                               CalleeIt->second, Weight);
+    ProfiledCallGraphEdge Edge(ProfiledFunctions[CallerName], CalleeIt->second,
+                               Weight);
     auto &Edges = ProfiledFunctions[CallerName]->Edges;
     auto [EdgeIt, Inserted] = Edges.insert(Edge);
     if (!Inserted) {
@@ -206,7 +205,7 @@ private:
   ProfiledCallGraphNode Root;
   // backing buffer for ProfiledCallGraphNodes.
   std::list<ProfiledCallGraphNode> ProfiledCallGraphNodeList;
-  HashKeyMap<llvm::DenseMap, FunctionId, ProfiledCallGraphNode*>
+  HashKeyMap<llvm::DenseMap, FunctionId, ProfiledCallGraphNode *>
       ProfiledFunctions;
 };
 

@@ -46,7 +46,7 @@ enum {
   GFX11 = 10,
   GFX12 = 11,
 };
-}
+} // namespace SIEncodingFamily
 
 namespace SIInstrFlags {
 // This needs to be kept in sync with the field bits in InstSI.
@@ -181,18 +181,18 @@ enum : uint64_t {
 // v_cmp_class_* etc. use a 10-bit mask for what operation is checked.
 // The result is true if any of these tests are true.
 enum ClassFlags : unsigned {
-  S_NAN = 1 << 0,        // Signaling NaN
-  Q_NAN = 1 << 1,        // Quiet NaN
-  N_INFINITY = 1 << 2,   // Negative infinity
-  N_NORMAL = 1 << 3,     // Negative normal
-  N_SUBNORMAL = 1 << 4,  // Negative subnormal
-  N_ZERO = 1 << 5,       // Negative zero
-  P_ZERO = 1 << 6,       // Positive zero
-  P_SUBNORMAL = 1 << 7,  // Positive subnormal
-  P_NORMAL = 1 << 8,     // Positive normal
-  P_INFINITY = 1 << 9    // Positive infinity
+  S_NAN = 1 << 0,       // Signaling NaN
+  Q_NAN = 1 << 1,       // Quiet NaN
+  N_INFINITY = 1 << 2,  // Negative infinity
+  N_NORMAL = 1 << 3,    // Negative normal
+  N_SUBNORMAL = 1 << 4, // Negative subnormal
+  N_ZERO = 1 << 5,      // Negative zero
+  P_ZERO = 1 << 6,      // Positive zero
+  P_SUBNORMAL = 1 << 7, // Positive subnormal
+  P_NORMAL = 1 << 8,    // Positive normal
+  P_INFINITY = 1 << 9   // Positive infinity
 };
-}
+} // namespace SIInstrFlags
 
 namespace AMDGPU {
 enum OperandType : unsigned {
@@ -278,30 +278,25 @@ enum OperandSemantics : unsigned {
   FP32 = 3,
   FP64 = 4,
 };
-}
+} // namespace AMDGPU
 
 // Input operand modifiers bit-masks
 // NEG and SEXT share same bit-mask because they can't be set simultaneously.
 namespace SISrcMods {
-  enum : unsigned {
-   NONE = 0,
-   NEG = 1 << 0,   // Floating-point negate modifier
-   ABS = 1 << 1,   // Floating-point absolute modifier
-   SEXT = 1 << 0,  // Integer sign-extend modifier
-   NEG_HI = ABS,   // Floating-point negate high packed component modifier.
-   OP_SEL_0 = 1 << 2,
-   OP_SEL_1 = 1 << 3,
-   DST_OP_SEL = 1 << 3 // VOP3 dst op_sel (share mask with OP_SEL_1)
-  };
+enum : unsigned {
+  NONE = 0,
+  NEG = 1 << 0,  // Floating-point negate modifier
+  ABS = 1 << 1,  // Floating-point absolute modifier
+  SEXT = 1 << 0, // Integer sign-extend modifier
+  NEG_HI = ABS,  // Floating-point negate high packed component modifier.
+  OP_SEL_0 = 1 << 2,
+  OP_SEL_1 = 1 << 3,
+  DST_OP_SEL = 1 << 3 // VOP3 dst op_sel (share mask with OP_SEL_1)
+};
 }
 
 namespace SIOutMods {
-  enum : unsigned {
-    NONE = 0,
-    MUL2 = 1,
-    MUL4 = 2,
-    DIV2 = 3
-  };
+enum : unsigned { NONE = 0, MUL2 = 1, MUL4 = 2, DIV2 = 3 };
 }
 
 namespace AMDGPU {
@@ -331,14 +326,14 @@ enum EncBits : unsigned {
 } // namespace AMDGPU
 
 namespace AMDGPUAsmVariants {
-  enum : unsigned {
-    DEFAULT = 0,
-    VOP3 = 1,
-    SDWA = 2,
-    SDWA9 = 3,
-    DPP = 4,
-    VOP3_DPP = 5
-  };
+enum : unsigned {
+  DEFAULT = 0,
+  VOP3 = 1,
+  SDWA = 2,
+  SDWA9 = 3,
+  DPP = 4,
+  VOP3_DPP = 5
+};
 } // namespace AMDGPUAsmVariants
 
 namespace AMDGPU {
@@ -494,7 +489,7 @@ enum StreamId : unsigned { // Stream ID, (2) [9:8].
   STREAM_ID_LAST_ = 4,
   STREAM_ID_FIRST_ = STREAM_ID_DEFAULT_,
   STREAM_ID_SHIFT_ = 8,
-  STREAM_ID_WIDTH_=  2,
+  STREAM_ID_WIDTH_ = 2,
   STREAM_ID_MASK_ = (((1 << STREAM_ID_WIDTH_) - 1) << STREAM_ID_SHIFT_)
 };
 
@@ -615,8 +610,8 @@ enum NumFormat : int64_t {
   NFMT_SSCALED,
   NFMT_UINT,
   NFMT_SINT,
-  NFMT_RESERVED_6,                    // VI and GFX9
-  NFMT_SNORM_OGL = NFMT_RESERVED_6,   // SI and CI only
+  NFMT_RESERVED_6,                  // VI and GFX9
+  NFMT_SNORM_OGL = NFMT_RESERVED_6, // SI and CI only
   NFMT_FLOAT,
 
   NFMT_MIN = NFMT_UNORM,
@@ -633,7 +628,6 @@ enum MergedFormat : int64_t {
   DFMT_NFMT_UNDEF = -1,
   DFMT_NFMT_DEFAULT = ((DFMT_DEFAULT & DFMT_MASK) << DFMT_SHIFT) |
                       ((NFMT_DEFAULT & NFMT_MASK) << NFMT_SHIFT),
-
 
   DFMT_NFMT_MASK = (DFMT_MASK << DFMT_SHIFT) | (NFMT_MASK << NFMT_SHIFT),
 
@@ -983,8 +977,8 @@ enum DppCtrl : unsigned {
 // clang-format on
 
 enum DppFiMode {
-  DPP_FI_0  = 0,
-  DPP_FI_1  = 1,
+  DPP_FI_0 = 0,
+  DPP_FI_1 = 1,
   DPP8_FI_0 = 0xE9,
   DPP8_FI_1 = 0xEA,
 };
@@ -997,7 +991,7 @@ enum Target : unsigned {
   ET_MRT0 = 0,
   ET_MRT7 = 7,
   ET_MRTZ = 8,
-  ET_NULL = 9,             // Pre-GFX11
+  ET_NULL = 9, // Pre-GFX11
   ET_POS0 = 12,
   ET_POS3 = 15,
   ET_POS4 = 16,            // GFX10+

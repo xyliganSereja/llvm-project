@@ -116,7 +116,6 @@ TEST(IListNodeBaseTest, setPrevAndNext) {
   EXPECT_EQ(nullptr, PTB.getNext());
   EXPECT_EQ(nullptr, PTC.getPrev());
   EXPECT_EQ(nullptr, PTC.getNext());
-
 }
 
 TEST(IListNodeBaseTest, isKnownSentinel) {

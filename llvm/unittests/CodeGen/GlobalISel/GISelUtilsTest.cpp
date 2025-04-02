@@ -122,7 +122,6 @@ TEST(GISelUtilsTest, getGCDType) {
   EXPECT_EQ(P0, getGCDType(P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V2P0, P0));
 
-
   EXPECT_EQ(V2P0, getGCDType(V2P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V3P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V2P0, V3P0));
@@ -302,13 +301,11 @@ TEST(GISelUtilsTest, getLCMType) {
   EXPECT_EQ(V2P0, getLCMType(V2P0, S64));
   EXPECT_EQ(V2S64, getLCMType(S64, V2P0));
 
-
   EXPECT_EQ(V2P0, getLCMType(V2P0, V2P1));
   EXPECT_EQ(V4P1, getLCMType(V2P1, V2P0));
 
   EXPECT_EQ(V2P0, getLCMType(V2P0, V4P1));
   EXPECT_EQ(V4P1, getLCMType(V4P1, V2P0));
-
 
   EXPECT_EQ(V2S32, getLCMType(V2S32, S64));
   EXPECT_EQ(S64, getLCMType(S64, V2S32));
@@ -503,4 +500,4 @@ TEST_F(AMDGPUGISelMITest, isConstantOrConstantSplatVectorFP) {
   EXPECT_FALSE(
       isConstantOrConstantSplatVectorFP(*MIList[15], *MRI).has_value());
 }
-}
+} // namespace

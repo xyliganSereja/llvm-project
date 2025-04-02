@@ -16,8 +16,8 @@
 #define LLVM_TRANSFORMS_IPO_SAMPLEPROFILEPROBE_H
 
 #include "llvm/Analysis/LazyCallGraph.h"
-#include "llvm/IR/PassManager.h"
 #include "llvm/IR/PassInstrumentation.h"
+#include "llvm/IR/PassManager.h"
 #include "llvm/ProfileData/SampleProf.h"
 #include <unordered_map>
 
@@ -39,7 +39,6 @@ using InstructionIdMap = std::unordered_map<Instruction *, uint32_t>;
 using ProbeFactorMap = std::unordered_map<std::pair<uint64_t, uint64_t>, float,
                                           pair_hash<uint64_t, uint64_t>>;
 using FuncProbeFactorMap = StringMap<ProbeFactorMap>;
-
 
 // A pseudo probe verifier that can be run after each IR passes to detect the
 // violation of updating probe factors. In principle, the sum of distribution

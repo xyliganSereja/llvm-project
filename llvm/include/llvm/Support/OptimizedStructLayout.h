@@ -35,8 +35,8 @@
 #ifndef LLVM_SUPPORT_OPTIMIZEDSTRUCTLAYOUT_H
 #define LLVM_SUPPORT_OPTIMIZEDSTRUCTLAYOUT_H
 
-#include "llvm/Support/Alignment.h"
 #include "llvm/ADT/ArrayRef.h"
+#include "llvm/Support/Alignment.h"
 #include <utility>
 
 namespace llvm {
@@ -74,9 +74,7 @@ struct OptimizedStructLayoutField {
 
   /// Return true if this field has been assigned a fixed offset.
   /// After layout, this will be true of all the fields.
-  bool hasFixedOffset() const {
-    return (Offset != FlexibleOffset);
-  }
+  bool hasFixedOffset() const { return (Offset != FlexibleOffset); }
 
   /// Given that this field has a fixed offset, return the offset
   /// of the first byte following it.
@@ -136,7 +134,7 @@ struct OptimizedStructLayoutField {
 /// alignment.  Note that the total size is not rounded up to a multiple
 /// of the required alignment; clients which require this can do so easily.
 std::pair<uint64_t, Align> performOptimizedStructLayout(
-                        MutableArrayRef<OptimizedStructLayoutField> Fields);
+    MutableArrayRef<OptimizedStructLayoutField> Fields);
 
 } // namespace llvm
 

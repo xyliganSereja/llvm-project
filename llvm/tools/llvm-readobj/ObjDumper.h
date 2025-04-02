@@ -117,11 +117,11 @@ public:
 
   // Only implemented for ELF at this time.
   virtual void printDependentLibs() {}
-  virtual void printDynamicRelocations() { }
-  virtual void printDynamicTable() { }
-  virtual void printNeededLibraries() { }
+  virtual void printDynamicRelocations() {}
+  virtual void printDynamicTable() {}
+  virtual void printNeededLibraries() {}
   virtual void printSectionAsHex(StringRef SectionName) {}
-  virtual void printHashTable() { }
+  virtual void printHashTable() {}
   virtual void printGnuHashTable() {}
   virtual void printHashSymbols() {}
   virtual void printLoadName() {}
@@ -141,15 +141,15 @@ public:
   virtual void printMemtag() {}
 
   // Only implemented for PE/COFF.
-  virtual void printCOFFImports() { }
-  virtual void printCOFFExports() { }
-  virtual void printCOFFDirectives() { }
-  virtual void printCOFFBaseReloc() { }
-  virtual void printCOFFDebugDirectory() { }
+  virtual void printCOFFImports() {}
+  virtual void printCOFFExports() {}
+  virtual void printCOFFDirectives() {}
+  virtual void printCOFFBaseReloc() {}
+  virtual void printCOFFDebugDirectory() {}
   virtual void printCOFFTLSDirectory() {}
   virtual void printCOFFResources() {}
-  virtual void printCOFFLoadConfig() { }
-  virtual void printCodeViewDebugInfo() { }
+  virtual void printCOFFLoadConfig() {}
+  virtual void printCodeViewDebugInfo() {}
   virtual void
   mergeCodeViewTypes(llvm::codeview::MergingTypeTableBuilder &CVIDs,
                      llvm::codeview::MergingTypeTableBuilder &CVTypes,
@@ -165,12 +165,12 @@ public:
                                   bool PrintRelocations) {}
 
   // Only implemented for MachO.
-  virtual void printMachODataInCode() { }
-  virtual void printMachOVersionMin() { }
-  virtual void printMachODysymtab() { }
-  virtual void printMachOSegment() { }
-  virtual void printMachOIndirectSymbols() { }
-  virtual void printMachOLinkerOptions() { }
+  virtual void printMachODataInCode() {}
+  virtual void printMachOVersionMin() {}
+  virtual void printMachODysymtab() {}
+  virtual void printMachOSegment() {}
+  virtual void printMachOIndirectSymbols() {}
+  virtual void printMachOLinkerOptions() {}
 
   virtual void printStackMap() const = 0;
 

@@ -17,12 +17,12 @@ namespace llvm {
 
 class SystemZMCExpr : public MCTargetExpr {
 public:
-// HLASM docs for address constants:
-// https://www.ibm.com/docs/en/hla-and-tf/1.6?topic=value-address-constants
+  // HLASM docs for address constants:
+  // https://www.ibm.com/docs/en/hla-and-tf/1.6?topic=value-address-constants
   enum VariantKind {
     VK_SystemZ_None,
-    VK_SystemZ_RCon,            // Address of ADA of symbol.
-    VK_SystemZ_VCon,            // Address of external function symbol.
+    VK_SystemZ_RCon, // Address of ADA of symbol.
+    VK_SystemZ_VCon, // Address of external function symbol.
   };
 
 private:

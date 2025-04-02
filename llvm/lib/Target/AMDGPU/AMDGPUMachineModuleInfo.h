@@ -22,7 +22,6 @@ namespace llvm {
 
 class AMDGPUMachineModuleInfo final : public MachineModuleInfoELF {
 private:
-
   // All supported memory/synchronization scopes can be found here:
   //   http://llvm.org/docs/AMDGPUUsage.html#memory-scopes
 
@@ -60,8 +59,7 @@ private:
     else if (SSID == getWorkgroupSSID() ||
              SSID == getWorkgroupOneAddressSpaceSSID())
       return 2;
-    else if (SSID == getAgentSSID() ||
-             SSID == getAgentOneAddressSpaceSSID())
+    else if (SSID == getAgentSSID() || SSID == getAgentOneAddressSpaceSSID())
       return 3;
     else if (SSID == SyncScope::System ||
              SSID == getSystemOneAddressSpaceSSID())
@@ -74,27 +72,21 @@ private:
   /// otherwise
   bool isOneAddressSpace(SyncScope::ID SSID) const {
     return SSID == getSingleThreadOneAddressSpaceSSID() ||
-        SSID == getWavefrontOneAddressSpaceSSID() ||
-        SSID == getWorkgroupOneAddressSpaceSSID() ||
-        SSID == getAgentOneAddressSpaceSSID() ||
-        SSID == getSystemOneAddressSpaceSSID();
+           SSID == getWavefrontOneAddressSpaceSSID() ||
+           SSID == getWorkgroupOneAddressSpaceSSID() ||
+           SSID == getAgentOneAddressSpaceSSID() ||
+           SSID == getSystemOneAddressSpaceSSID();
   }
 
 public:
   AMDGPUMachineModuleInfo(const MachineModuleInfo &MMI);
 
   /// \returns Agent synchronization scope ID (cross address space).
-  SyncScope::ID getAgentSSID() const {
-    return AgentSSID;
-  }
+  SyncScope::ID getAgentSSID() const { return AgentSSID; }
   /// \returns Workgroup synchronization scope ID (cross address space).
-  SyncScope::ID getWorkgroupSSID() const {
-    return WorkgroupSSID;
-  }
+  SyncScope::ID getWorkgroupSSID() const { return WorkgroupSSID; }
   /// \returns Wavefront synchronization scope ID (cross address space).
-  SyncScope::ID getWavefrontSSID() const {
-    return WavefrontSSID;
-  }
+  SyncScope::ID getWavefrontSSID() const { return WavefrontSSID; }
   /// \returns System synchronization scope ID (single address space).
   SyncScope::ID getSystemOneAddressSpaceSSID() const {
     return SystemOneAddressSpaceSSID;

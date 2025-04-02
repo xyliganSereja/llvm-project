@@ -145,7 +145,7 @@ bool SystemZShortenInst::shortenOn001(MachineInstr &MI, unsigned Opcode) {
 bool SystemZShortenInst::shortenOn001AddCC(MachineInstr &MI, unsigned Opcode) {
   if (LiveRegs.available(SystemZ::CC) && shortenOn001(MI, Opcode)) {
     MachineInstrBuilder(*MI.getParent()->getParent(), &MI)
-      .addReg(SystemZ::CC, RegState::ImplicitDefine | RegState::Dead);
+        .addReg(SystemZ::CC, RegState::ImplicitDefine | RegState::Dead);
     return true;
   }
   return false;
@@ -360,7 +360,7 @@ bool SystemZShortenInst::processBlock(MachineBasicBlock &MBB) {
           (!MI.isCommutable() ||
            MI.getOperand(0).getReg() != MI.getOperand(2).getReg() ||
            !TII->commuteInstruction(MI, false, 1, 2)))
-          break;
+        break;
 
       MI.setDesc(TII->get(TwoOperandOpcode));
       MI.tieOperands(0, 1);

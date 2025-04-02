@@ -9,8 +9,8 @@
 #ifndef LLVM_ADT_POINTERSUMTYPE_H
 #define LLVM_ADT_POINTERSUMTYPE_H
 
-#include "llvm/ADT/bit.h"
 #include "llvm/ADT/DenseMapInfo.h"
+#include "llvm/ADT/bit.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include <cassert>
 #include <cstdint>
@@ -215,8 +215,8 @@ struct PointerSumTypeHelper : MemberTs... {
   template <TagT N> static void LookupOverload(...);
   template <TagT N> struct Lookup {
     // Compute a particular member type by resolving the lookup helper overload.
-    using MemberT = decltype(
-        LookupOverload<N>(static_cast<PointerSumTypeHelper *>(nullptr)));
+    using MemberT = decltype(LookupOverload<N>(
+        static_cast<PointerSumTypeHelper *>(nullptr)));
 
     /// The Nth member's pointer type.
     using PointerT = typename MemberT::PointerT;

@@ -513,8 +513,8 @@ public:
     return false;
   }
 
-  static bool canFoldMergeOpcode(unsigned MergeOp, unsigned ConvertOp,
-                                 LLT OpTy, LLT DestTy) {
+  static bool canFoldMergeOpcode(unsigned MergeOp, unsigned ConvertOp, LLT OpTy,
+                                 LLT DestTy) {
     // Check if we found a definition that is like G_MERGE_VALUES.
     switch (MergeOp) {
     default:
@@ -1137,8 +1137,8 @@ public:
       MergeI = getDefIgnoringCopies(SrcDef->getOperand(1).getReg(), MRI);
     }
 
-    if (!MergeI || !canFoldMergeOpcode(MergeI->getOpcode(),
-                                       ConvertOp, OpTy, DestTy)) {
+    if (!MergeI ||
+        !canFoldMergeOpcode(MergeI->getOpcode(), ConvertOp, OpTy, DestTy)) {
       // We might have a chance to combine later by trying to combine
       // unmerge(cast) first
       return tryFoldUnmergeCast(MI, *SrcDef, DeadInsts, UpdatedDefs);

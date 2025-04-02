@@ -45,8 +45,8 @@ cl::opt<bool> NoGlobalRM("disable-global-remove",
                          cl::init(false));
 
 cl::opt<bool> NoAttributeRM("disable-attribute-remove",
-                         cl::desc("Do not remove function attributes"),
-                         cl::init(false));
+                            cl::desc("Do not remove function attributes"),
+                            cl::init(false));
 
 cl::opt<bool> ReplaceFuncsWithNull(
     "replace-funcs-with-null",
@@ -62,13 +62,14 @@ cl::opt<bool> NoNamedMDRM("disable-namedmd-remove",
 cl::opt<bool> NoStripDebugInfo("disable-strip-debuginfo",
                                cl::desc("Do not strip debug info metadata"),
                                cl::init(false));
-cl::opt<bool> NoStripDebugTypeInfo("disable-strip-debug-types",
-                               cl::desc("Do not strip debug type info metadata"),
-                               cl::init(false));
+cl::opt<bool>
+    NoStripDebugTypeInfo("disable-strip-debug-types",
+                         cl::desc("Do not strip debug type info metadata"),
+                         cl::init(false));
 cl::opt<bool> VerboseErrors("verbose-errors",
                             cl::desc("Print the output of crashing program"),
                             cl::init(false));
-}
+} // namespace
 
 static bool isValidModule(std::unique_ptr<Module> &M,
                           bool ExitOnFailure = true) {
@@ -95,7 +96,7 @@ public:
   Expected<TestResult> doTest(std::vector<std::string> &Removed,
                               std::vector<std::string> &Kept) override;
 };
-}
+} // namespace llvm
 
 Expected<ReducePassList::TestResult>
 ReducePassList::doTest(std::vector<std::string> &Prefix,
@@ -156,7 +157,7 @@ public:
 
   bool TestGlobalVariables(std::vector<GlobalVariable *> &GVs);
 };
-}
+} // namespace
 
 bool ReduceCrashingGlobalInitializers::TestGlobalVariables(
     std::vector<GlobalVariable *> &GVs) {
@@ -223,7 +224,7 @@ public:
 
   bool TestFuncs(std::vector<Function *> &Prefix);
 };
-}
+} // namespace
 
 static void RemoveFunctionReferences(Module *M, const char *Name) {
   auto *UsedVar = M->getGlobalVariable(Name, true);
@@ -356,7 +357,7 @@ public:
 
   bool TestFuncAttrs(std::vector<Attribute> &Attrs);
 };
-}
+} // namespace
 
 bool ReduceCrashingFunctionAttributes::TestFuncAttrs(
     std::vector<Attribute> &Attrs) {
@@ -462,7 +463,7 @@ public:
 
   bool TestBlocks(std::vector<const BasicBlock *> &Prefix);
 };
-}
+} // namespace
 
 bool ReduceCrashingBlocks::TestBlocks(std::vector<const BasicBlock *> &BBs) {
   // Clone the program to try hacking it apart...
@@ -574,7 +575,7 @@ public:
 
   bool TestBlocks(std::vector<const BasicBlock *> &Prefix);
 };
-}
+} // namespace
 
 bool ReduceCrashingConditionals::TestBlocks(
     std::vector<const BasicBlock *> &BBs) {
@@ -673,7 +674,7 @@ public:
 
   bool TestBlocks(std::vector<const BasicBlock *> &Prefix);
 };
-}
+} // namespace
 
 bool ReduceSimplifyCFG::TestBlocks(std::vector<const BasicBlock *> &BBs) {
   // Clone the program to try hacking it apart...
@@ -758,7 +759,7 @@ public:
 
   bool TestInsts(std::vector<const Instruction *> &Prefix);
 };
-}
+} // namespace
 
 bool ReduceCrashingInstructions::TestInsts(
     std::vector<const Instruction *> &Insts) {
@@ -901,7 +902,7 @@ public:
 
   bool TestNamedMDs(std::vector<std::string> &NamedMDs);
 };
-}
+} // namespace
 
 bool ReduceCrashingNamedMD::TestNamedMDs(std::vector<std::string> &NamedMDs) {
 
@@ -966,7 +967,7 @@ public:
 
   bool TestNamedMDOps(std::vector<const MDNode *> &NamedMDOps);
 };
-}
+} // namespace
 
 bool ReduceCrashingNamedMDOps::TestNamedMDOps(
     std::vector<const MDNode *> &NamedMDOps) {
@@ -1222,7 +1223,8 @@ static Error DebugACrash(BugDriver &BD, BugTester TestFn) {
 
         OldSize += Attrs.size();
         Expected<bool> Result =
-          ReduceCrashingFunctionAttributes(BD, Name, TestFn).reduceList(Attrs);
+            ReduceCrashingFunctionAttributes(BD, Name, TestFn)
+                .reduceList(Attrs);
         if (Error E = Result.takeError())
           return E;
 

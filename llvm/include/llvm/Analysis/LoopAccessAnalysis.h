@@ -285,7 +285,7 @@ private:
   const DenseMap<Value *, const SCEV *> &SymbolicStrides;
 
   /// Maps access locations (ptr, read/write) to program order.
-  DenseMap<MemAccessInfo, std::vector<unsigned> > Accesses;
+  DenseMap<MemAccessInfo, std::vector<unsigned>> Accesses;
 
   /// Memory access instructions in program order.
   SmallVector<Instruction *, 16> InstMap;
@@ -671,7 +671,7 @@ public:
   bool isInvariant(Value *V) const;
 
   unsigned getNumStores() const { return NumStores; }
-  unsigned getNumLoads() const { return NumLoads;}
+  unsigned getNumLoads() const { return NumLoads; }
 
   /// The diagnostics report generated for the analysis.  E.g. why we
   /// couldn't analyze the loop.
@@ -820,7 +820,8 @@ replaceSymbolicStrideSCEV(PredicatedScalarEvolution &PSE,
 std::optional<int64_t>
 getPtrStride(PredicatedScalarEvolution &PSE, Type *AccessTy, Value *Ptr,
              const Loop *Lp,
-             const DenseMap<Value *, const SCEV *> &StridesMap = DenseMap<Value *, const SCEV *>(),
+             const DenseMap<Value *, const SCEV *> &StridesMap =
+                 DenseMap<Value *, const SCEV *>(),
              bool Assume = false, bool ShouldCheckWrap = true);
 
 /// Returns the distance between the pointers \p PtrA and \p PtrB iff they are
@@ -905,8 +906,7 @@ public:
 /// querying the loop access info via AM.getResult<LoopAccessAnalysis>.
 /// getResult return a LoopAccessInfo object.  See this class for the
 /// specifics of what information is provided.
-class LoopAccessAnalysis
-    : public AnalysisInfoMixin<LoopAccessAnalysis> {
+class LoopAccessAnalysis : public AnalysisInfoMixin<LoopAccessAnalysis> {
   friend AnalysisInfoMixin<LoopAccessAnalysis>;
   static AnalysisKey Key;
 
@@ -926,6 +926,6 @@ inline Instruction *MemoryDepChecker::Dependence::getDestination(
   return DepChecker.getMemoryInstructions()[Destination];
 }
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

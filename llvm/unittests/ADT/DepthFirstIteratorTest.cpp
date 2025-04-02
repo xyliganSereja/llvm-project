@@ -32,8 +32,8 @@ template <typename T> struct CountedSet {
   }
 
   size_t count(const T &Item) const { return S.count(Item); }
-  
-  void completed(T) { }
+
+  void completed(T) {}
 };
 
 template <typename T> class df_iterator_storage<CountedSet<T>, true> {
@@ -90,4 +90,4 @@ TEST(DepthFirstIteratorTest, MultiPassSafeWithInternalSet) {
 
   EXPECT_EQ(NodesFirstPass, NodesSecondPass);
 }
-}
+} // namespace llvm

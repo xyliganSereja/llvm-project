@@ -38,9 +38,7 @@ enum Libcall {
 
 /// A simple container for information about the supported runtime calls.
 struct RuntimeLibcallsInfo {
-  explicit RuntimeLibcallsInfo(const Triple &TT) {
-    initLibcalls(TT);
-  }
+  explicit RuntimeLibcallsInfo(const Triple &TT) { initLibcalls(TT); }
 
   /// Rename the default libcall routine name for the specified libcall.
   void setLibcallName(RTLIB::Libcall Call, const char *Name) {

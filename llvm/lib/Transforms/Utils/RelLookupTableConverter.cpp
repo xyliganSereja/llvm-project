@@ -28,9 +28,7 @@ static bool shouldConvertToRelLookupTable(Module &M, GlobalVariable &GV) {
   // TODO: Add support for lookup tables with multiple uses.
   // For ex, this can happen when a function that uses a lookup table gets
   // inlined into multiple call sites.
-  if (!GV.hasInitializer() ||
-      !GV.isConstant() ||
-      !GV.hasOneUse())
+  if (!GV.hasInitializer() || !GV.isConstant() || !GV.hasOneUse())
     return false;
 
   GetElementPtrInst *GEP =
@@ -51,9 +49,7 @@ static bool shouldConvertToRelLookupTable(Module &M, GlobalVariable &GV) {
   // To be able to generate these offsets, relative lookup table and
   // its elements should have internal linkage and be dso_local, which means
   // that they should resolve to symbols within the same linkage unit.
-  if (!GV.hasLocalLinkage() ||
-      !GV.isDSOLocal() ||
-      !GV.isImplicitDSOLocal())
+  if (!GV.hasLocalLinkage() || !GV.isDSOLocal() || !GV.isImplicitDSOLocal())
     return false;
 
   ConstantArray *Array = dyn_cast<ConstantArray>(GV.getInitializer());
@@ -81,8 +77,7 @@ static bool shouldConvertToRelLookupTable(Module &M, GlobalVariable &GV) {
     if (!GlovalVarOp || !GlovalVarOp->isConstant())
       return false;
 
-    if (!GlovalVarOp->hasLocalLinkage() ||
-        !GlovalVarOp->isDSOLocal() ||
+    if (!GlovalVarOp->hasLocalLinkage() || !GlovalVarOp->isDSOLocal() ||
         !GlovalVarOp->isImplicitDSOLocal())
       return false;
   }

@@ -46,7 +46,7 @@ public:
   FORWARD_SYMBOL_METHOD(isVolatileType)
   FORWARD_SYMBOL_METHOD(getAccess)
 };
-}
+} // namespace pdb
 } // namespace llvm
 
 #endif // LLVM_DEBUGINFO_PDB_PDBSYMBOLTYPEUDT_H

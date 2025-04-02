@@ -35,7 +35,7 @@ static_assert(uses_format_member<const volatile Format &>::value, "");
 
 struct NoFormat {};
 static_assert(uses_missing_provider<NoFormat>::value, "");
-}
+} // namespace
 
 // Helper to parse format string with no validation.
 static SmallVector<ReplacementItem, 2> parseFormatString(StringRef Fmt) {
@@ -556,7 +556,7 @@ struct format_tuple {
   const char *Fmt;
   explicit format_tuple(const char *Fmt) : Fmt(Fmt) {}
 
-  template <typename... Ts> auto operator()(Ts &&... Values) const {
+  template <typename... Ts> auto operator()(Ts &&...Values) const {
     return formatv(Fmt, std::forward<Ts>(Values)...);
   }
 };
@@ -726,7 +726,7 @@ template <> struct format_provider<Recorder> {
     OS << R.Copied << "C " << R.Moved << "M";
   }
 };
-} // namespace
+} // namespace llvm
 
 TEST(FormatVariadicTest, CopiesAndMoves) {
   Recorder R;

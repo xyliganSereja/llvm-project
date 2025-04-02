@@ -97,7 +97,6 @@ struct OurExceptionType_t {
   int type;
 };
 
-
 /// This is our Exception class which relies on a negative offset to calculate
 /// pointers to its instances from pointers to its unwindException member.
 ///
@@ -111,7 +110,6 @@ struct OurBaseException_t {
   struct _Unwind_Exception unwindException;
 };
 
-
 // Note: Not needed since we are C++
 typedef struct OurBaseException_t OurException;
 typedef struct _Unwind_Exception OurUnwindException;
@@ -121,13 +119,12 @@ typedef struct _Unwind_Exception OurUnwindException;
 // general
 //
 
-static std::map<std::string, llvm::Value*> namedValues;
+static std::map<std::string, llvm::Value *> namedValues;
 
 int64_t ourBaseFromUnwindOffset;
 
-const unsigned char ourBaseExcpClassChars[] =
-{'o', 'b', 'j', '\0', 'b', 'a', 's', '\0'};
-
+const unsigned char ourBaseExcpClassChars[] = {'o', 'b', 'j', '\0',
+                                               'b', 'a', 's', '\0'};
 
 static uint64_t ourBaseExceptionClass = 0;
 
@@ -144,7 +141,7 @@ static llvm::ConstantInt *ourExceptionThrownState;
 static llvm::ConstantInt *ourExceptionCaughtState;
 
 typedef std::vector<std::string> ArgNames;
-typedef std::vector<llvm::Type*> ArgTypes;
+typedef std::vector<llvm::Type *> ArgTypes;
 typedef llvm::ArrayRef<llvm::Type *> TypeArray;
 
 //
@@ -163,34 +160,30 @@ typedef llvm::ArrayRef<llvm::Type *> TypeArray;
 /// @param declarationOnly for function declarations
 /// @param isVarArg function uses vararg arguments
 /// @returns function instance
-llvm::Function *createFunction(llvm::Module &module,
-                               llvm::Type *retType,
+llvm::Function *createFunction(llvm::Module &module, llvm::Type *retType,
                                const ArgTypes &theArgTypes,
                                const ArgNames &theArgNames,
                                const std::string &functName,
                                llvm::GlobalValue::LinkageTypes linkage,
-                               bool declarationOnly,
-                               bool isVarArg) {
+                               bool declarationOnly, bool isVarArg) {
   llvm::FunctionType *functType =
-    llvm::FunctionType::get(retType, theArgTypes, isVarArg);
+      llvm::FunctionType::get(retType, theArgTypes, isVarArg);
   llvm::Function *ret =
-    llvm::Function::Create(functType, linkage, functName, &module);
+      llvm::Function::Create(functType, linkage, functName, &module);
   if (!ret || declarationOnly)
-    return(ret);
+    return (ret);
 
   namedValues.clear();
   unsigned i = 0;
   for (llvm::Function::arg_iterator argIndex = ret->arg_begin();
-       i != theArgNames.size();
-       ++argIndex, ++i) {
+       i != theArgNames.size(); ++argIndex, ++i) {
 
     argIndex->setName(theArgNames[i]);
     namedValues[theArgNames[i]] = argIndex;
   }
 
-  return(ret);
+  return (ret);
 }
-
 
 /// Create an alloca instruction in the entry block of
 /// the parent function.  This is used for mutable variables etc.
@@ -210,9 +203,8 @@ static llvm::AllocaInst *createEntryBlockAlloca(llvm::Function &function,
   if (initWith)
     tmp.CreateStore(initWith, ret);
 
-  return(ret);
+  return (ret);
 }
-
 
 //
 // Code Generation Utilities End
@@ -223,14 +215,13 @@ static llvm::AllocaInst *createEntryBlockAlloca(llvm::Function &function,
 //
 
 namespace {
-template <typename Type_>
-uintptr_t ReadType(const uint8_t *&p) {
+template <typename Type_> uintptr_t ReadType(const uint8_t *&p) {
   Type_ value;
   memcpy(&value, p, sizeof(Type_));
   p += sizeof(Type_);
   return static_cast<uintptr_t>(value);
 }
-}
+} // namespace
 
 // Note: using an extern "C" block so that static functions can be used
 extern "C" {
@@ -244,13 +235,11 @@ void print32Int(int intToPrint, const char *format) {
   if (format) {
     // Note: No NULL check
     fprintf(stderr, format, intToPrint);
-  }
-  else {
+  } else {
     // Note: No NULL check
     fprintf(stderr, "::print32Int(...):NULL arg.\n");
   }
 }
-
 
 // Note: Better ways to decide on bit width
 //
@@ -261,25 +250,21 @@ void print64Int(long int intToPrint, const char *format) {
   if (format) {
     // Note: No NULL check
     fprintf(stderr, format, intToPrint);
-  }
-  else {
+  } else {
     // Note: No NULL check
     fprintf(stderr, "::print64Int(...):NULL arg.\n");
   }
 }
-
 
 /// Prints a C string to stderr
 /// @param toPrint string to print
 void printStr(char *toPrint) {
   if (toPrint) {
     fprintf(stderr, "%s", toPrint);
-  }
-  else {
+  } else {
     fprintf(stderr, "::printStr(...):NULL arg.\n");
   }
 }
-
 
 /// Deletes the true previously allocated exception whose address
 /// is calculated from the supplied OurBaseException_t::unwindException
@@ -287,17 +272,14 @@ void printStr(char *toPrint) {
 /// @param expToDelete exception to delete
 void deleteOurException(OurUnwindException *expToDelete) {
 #ifdef DEBUG
-  fprintf(stderr,
-          "deleteOurException(...).\n");
+  fprintf(stderr, "deleteOurException(...).\n");
 #endif
 
-  if (expToDelete &&
-      (expToDelete->exception_class == ourBaseExceptionClass)) {
+  if (expToDelete && (expToDelete->exception_class == ourBaseExceptionClass)) {
 
-    free(((char*) expToDelete) + ourBaseFromUnwindOffset);
+    free(((char *)expToDelete) + ourBaseFromUnwindOffset);
   }
 }
-
 
 /// This function is the struct _Unwind_Exception API mandated delete function
 /// used by foreign exception handlers when deleting our exception
@@ -308,27 +290,24 @@ void deleteOurException(OurUnwindException *expToDelete) {
 void deleteFromUnwindOurException(_Unwind_Reason_Code reason,
                                   OurUnwindException *expToDelete) {
 #ifdef DEBUG
-  fprintf(stderr,
-          "deleteFromUnwindOurException(...).\n");
+  fprintf(stderr, "deleteFromUnwindOurException(...).\n");
 #endif
 
   deleteOurException(expToDelete);
 }
-
 
 /// Creates (allocates on the heap), an exception (OurException instance),
 /// of the supplied type info type.
 /// @param type type info type
 OurUnwindException *createOurException(int type) {
   size_t size = sizeof(OurException);
-  OurException *ret = (OurException*) memset(malloc(size), 0, size);
+  OurException *ret = (OurException *)memset(malloc(size), 0, size);
   (ret->type).type = type;
   (ret->unwindException).exception_class = ourBaseExceptionClass;
   (ret->unwindException).exception_cleanup = deleteFromUnwindOurException;
 
-  return(&(ret->unwindException));
+  return (&(ret->unwindException));
 }
-
 
 /// Read a uleb128 encoded value and advance pointer
 /// See Variable Length Data in:
@@ -345,14 +324,12 @@ static uintptr_t readULEB128(const uint8_t **data) {
     byte = *p++;
     result |= (byte & 0x7f) << shift;
     shift += 7;
-  }
-  while (byte & 0x80);
+  } while (byte & 0x80);
 
   *data = p;
 
   return result;
 }
-
 
 /// Read a sleb128 encoded value and advance pointer
 /// See Variable Length Data in:
@@ -369,8 +346,7 @@ static uintptr_t readSLEB128(const uint8_t **data) {
     byte = *p++;
     result |= (byte & 0x7f) << shift;
     shift += 7;
-  }
-  while (byte & 0x80);
+  } while (byte & 0x80);
 
   *data = p;
 
@@ -417,72 +393,71 @@ static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
   const uint8_t *p = *data;
 
   if (encoding == llvm::dwarf::DW_EH_PE_omit)
-    return(result);
+    return (result);
 
   // first get value
   switch (encoding & 0x0F) {
-    case llvm::dwarf::DW_EH_PE_absptr:
-      result = ReadType<uintptr_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_uleb128:
-      result = readULEB128(&p);
-      break;
-      // Note: This case has not been tested
-    case llvm::dwarf::DW_EH_PE_sleb128:
-      result = readSLEB128(&p);
-      break;
-    case llvm::dwarf::DW_EH_PE_udata2:
-      result = ReadType<uint16_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_udata4:
-      result = ReadType<uint32_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_udata8:
-      result = ReadType<uint64_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_sdata2:
-      result = ReadType<int16_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_sdata4:
-      result = ReadType<int32_t>(p);
-      break;
-    case llvm::dwarf::DW_EH_PE_sdata8:
-      result = ReadType<int64_t>(p);
-      break;
-    default:
-      // not supported
-      abort();
-      break;
+  case llvm::dwarf::DW_EH_PE_absptr:
+    result = ReadType<uintptr_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_uleb128:
+    result = readULEB128(&p);
+    break;
+    // Note: This case has not been tested
+  case llvm::dwarf::DW_EH_PE_sleb128:
+    result = readSLEB128(&p);
+    break;
+  case llvm::dwarf::DW_EH_PE_udata2:
+    result = ReadType<uint16_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_udata4:
+    result = ReadType<uint32_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_udata8:
+    result = ReadType<uint64_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_sdata2:
+    result = ReadType<int16_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_sdata4:
+    result = ReadType<int32_t>(p);
+    break;
+  case llvm::dwarf::DW_EH_PE_sdata8:
+    result = ReadType<int64_t>(p);
+    break;
+  default:
+    // not supported
+    abort();
+    break;
   }
 
   // then add relative offset
   switch (encoding & 0x70) {
-    case llvm::dwarf::DW_EH_PE_absptr:
-      // do nothing
-      break;
-    case llvm::dwarf::DW_EH_PE_pcrel:
-      result += (uintptr_t)(*data);
-      break;
-    case llvm::dwarf::DW_EH_PE_textrel:
-    case llvm::dwarf::DW_EH_PE_datarel:
-    case llvm::dwarf::DW_EH_PE_funcrel:
-    case llvm::dwarf::DW_EH_PE_aligned:
-    default:
-      // not supported
-      abort();
-      break;
+  case llvm::dwarf::DW_EH_PE_absptr:
+    // do nothing
+    break;
+  case llvm::dwarf::DW_EH_PE_pcrel:
+    result += (uintptr_t)(*data);
+    break;
+  case llvm::dwarf::DW_EH_PE_textrel:
+  case llvm::dwarf::DW_EH_PE_datarel:
+  case llvm::dwarf::DW_EH_PE_funcrel:
+  case llvm::dwarf::DW_EH_PE_aligned:
+  default:
+    // not supported
+    abort();
+    break;
   }
 
   // then apply indirection
   if (encoding & llvm::dwarf::DW_EH_PE_indirect) {
-    result = *((uintptr_t*)result);
+    result = *((uintptr_t *)result);
   }
 
   *data = p;
 
   return result;
 }
-
 
 /// Deals with Dwarf actions matching our type infos
 /// (OurExceptionType_t instances). Returns whether or not a dwarf emitted
@@ -502,21 +477,19 @@ static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
 /// @param exceptionObject thrown _Unwind_Exception instance.
 /// @returns whether or not a type info was found. False is returned if only
 ///          a cleanup was found
-static bool handleActionValue(int64_t *resultAction,
-                              uint8_t TTypeEncoding,
-                              const uint8_t *ClassInfo,
-                              uintptr_t actionEntry,
+static bool handleActionValue(int64_t *resultAction, uint8_t TTypeEncoding,
+                              const uint8_t *ClassInfo, uintptr_t actionEntry,
                               uint64_t exceptionClass,
                               struct _Unwind_Exception *exceptionObject) {
   bool ret = false;
 
-  if (!resultAction ||
-      !exceptionObject ||
+  if (!resultAction || !exceptionObject ||
       (exceptionClass != ourBaseExceptionClass))
-    return(ret);
+    return (ret);
 
-  struct OurBaseException_t *excp = (struct OurBaseException_t*)
-  (((char*) exceptionObject) + ourBaseFromUnwindOffset);
+  struct OurBaseException_t *excp =
+      (struct OurBaseException_t *)(((char *)exceptionObject) +
+                                    ourBaseFromUnwindOffset);
   struct OurExceptionType_t *excpType = &(excp->type);
   int type = excpType->type;
 
@@ -524,14 +497,11 @@ static bool handleActionValue(int64_t *resultAction,
   fprintf(stderr,
           "handleActionValue(...): exceptionObject = <%p>, "
           "excp = <%p>.\n",
-          (void*)exceptionObject,
-          (void*)excp);
+          (void *)exceptionObject, (void *)excp);
 #endif
 
-  const uint8_t *actionPos = (uint8_t*) actionEntry,
-  *tempActionPos;
-  int64_t typeOffset = 0,
-  actionOffset;
+  const uint8_t *actionPos = (uint8_t *)actionEntry, *tempActionPos;
+  int64_t typeOffset = 0, actionOffset;
 
   for (int i = 0; true; ++i) {
     // Each emitted dwarf action corresponds to a 2 tuple of
@@ -545,8 +515,7 @@ static bool handleActionValue(int64_t *resultAction,
     fprintf(stderr,
             "handleActionValue(...):typeOffset: <%" PRIi64 ">, "
             "actionOffset: <%" PRIi64 ">.\n",
-            typeOffset,
-            actionOffset);
+            typeOffset, actionOffset);
 #endif
     assert((typeOffset >= 0) &&
            "handleActionValue(...):filters are not supported.");
@@ -555,15 +524,13 @@ static bool handleActionValue(int64_t *resultAction,
     //       argument has been matched.
     if (typeOffset > 0) {
 #ifdef DEBUG
-      fprintf(stderr,
-              "handleActionValue(...):actionValue <%d> found.\n",
-              i);
+      fprintf(stderr, "handleActionValue(...):actionValue <%d> found.\n", i);
 #endif
       unsigned EncSize = getEncodingSize(TTypeEncoding);
       const uint8_t *EntryP = ClassInfo - typeOffset * EncSize;
       uintptr_t P = readEncodedPointer(&EntryP, TTypeEncoding);
       struct OurExceptionType_t *ThisClassInfo =
-        reinterpret_cast<struct OurExceptionType_t *>(P);
+          reinterpret_cast<struct OurExceptionType_t *>(P);
       if (ThisClassInfo->type == type) {
         *resultAction = i + 1;
         ret = true;
@@ -572,8 +539,7 @@ static bool handleActionValue(int64_t *resultAction,
     }
 
 #ifdef DEBUG
-    fprintf(stderr,
-            "handleActionValue(...):actionValue not found.\n");
+    fprintf(stderr, "handleActionValue(...):actionValue not found.\n");
 #endif
     if (!actionOffset)
       break;
@@ -581,9 +547,8 @@ static bool handleActionValue(int64_t *resultAction,
     actionPos += actionOffset;
   }
 
-  return(ret);
+  return (ret);
 }
-
 
 /// Deals with the Language specific data portion of the emitted dwarf code.
 /// See @link http://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html @unlink
@@ -604,16 +569,15 @@ static _Unwind_Reason_Code handleLsda(int version, const uint8_t *lsda,
   _Unwind_Reason_Code ret = _URC_CONTINUE_UNWIND;
 
   if (!lsda)
-    return(ret);
+    return (ret);
 
 #ifdef DEBUG
-  fprintf(stderr,
-          "handleLsda(...):lsda is non-zero.\n");
+  fprintf(stderr, "handleLsda(...):lsda is non-zero.\n");
 #endif
 
   // Get the current instruction pointer and offset it before next
   // instruction in the current frame which threw the exception.
-  uintptr_t pc = _Unwind_GetIP(context)-1;
+  uintptr_t pc = _Unwind_GetIP(context) - 1;
 
   // Get beginning current frame's code (as defined by the
   // emitted dwarf code)
@@ -645,21 +609,17 @@ static _Unwind_Reason_Code handleLsda(int version, const uint8_t *lsda,
   // Walk call-site table looking for range that
   // includes current PC.
 
-  uint8_t         callSiteEncoding = *lsda++;
-  uint32_t        callSiteTableLength = readULEB128(&lsda);
-  const uint8_t   *callSiteTableStart = lsda;
-  const uint8_t   *callSiteTableEnd = callSiteTableStart +
-  callSiteTableLength;
-  const uint8_t   *actionTableStart = callSiteTableEnd;
-  const uint8_t   *callSitePtr = callSiteTableStart;
+  uint8_t callSiteEncoding = *lsda++;
+  uint32_t callSiteTableLength = readULEB128(&lsda);
+  const uint8_t *callSiteTableStart = lsda;
+  const uint8_t *callSiteTableEnd = callSiteTableStart + callSiteTableLength;
+  const uint8_t *actionTableStart = callSiteTableEnd;
+  const uint8_t *callSitePtr = callSiteTableStart;
 
   while (callSitePtr < callSiteTableEnd) {
-    uintptr_t start = readEncodedPointer(&callSitePtr,
-                                         callSiteEncoding);
-    uintptr_t length = readEncodedPointer(&callSitePtr,
-                                          callSiteEncoding);
-    uintptr_t landingPad = readEncodedPointer(&callSitePtr,
-                                              callSiteEncoding);
+    uintptr_t start = readEncodedPointer(&callSitePtr, callSiteEncoding);
+    uintptr_t length = readEncodedPointer(&callSitePtr, callSiteEncoding);
+    uintptr_t landingPad = readEncodedPointer(&callSitePtr, callSiteEncoding);
 
     // Note: Action value
     uintptr_t actionEntry = readULEB128(&callSitePtr);
@@ -672,20 +632,17 @@ static _Unwind_Reason_Code handleLsda(int version, const uint8_t *lsda,
 
     if (landingPad == 0) {
 #ifdef DEBUG
-      fprintf(stderr,
-              "handleLsda(...): No landing pad found.\n");
+      fprintf(stderr, "handleLsda(...): No landing pad found.\n");
 #endif
 
       continue; // no landing pad for this entry
     }
 
     if (actionEntry) {
-      actionEntry += ((uintptr_t) actionTableStart) - 1;
-    }
-    else {
+      actionEntry += ((uintptr_t)actionTableStart) - 1;
+    } else {
 #ifdef DEBUG
-      fprintf(stderr,
-              "handleLsda(...):No action table found.\n");
+      fprintf(stderr, "handleLsda(...):No action table found.\n");
 #endif
     }
 
@@ -693,70 +650,56 @@ static _Unwind_Reason_Code handleLsda(int version, const uint8_t *lsda,
 
     if ((start <= pcOffset) && (pcOffset < (start + length))) {
 #ifdef DEBUG
-      fprintf(stderr,
-              "handleLsda(...): Landing pad found.\n");
+      fprintf(stderr, "handleLsda(...): Landing pad found.\n");
 #endif
       int64_t actionValue = 0;
 
       if (actionEntry) {
-        exceptionMatched = handleActionValue(&actionValue,
-                                             ttypeEncoding,
-                                             ClassInfo,
-                                             actionEntry,
-                                             exceptionClass,
-                                             exceptionObject);
+        exceptionMatched =
+            handleActionValue(&actionValue, ttypeEncoding, ClassInfo,
+                              actionEntry, exceptionClass, exceptionObject);
       }
 
       if (!(actions & _UA_SEARCH_PHASE)) {
 #ifdef DEBUG
-        fprintf(stderr,
-                "handleLsda(...): installed landing pad "
-                "context.\n");
+        fprintf(stderr, "handleLsda(...): installed landing pad "
+                        "context.\n");
 #endif
 
         // Found landing pad for the PC.
         // Set Instruction Pointer to so we re-enter function
         // at landing pad. The landing pad is created by the
         // compiler to take two parameters in registers.
-        _Unwind_SetGR(context,
-                      __builtin_eh_return_data_regno(0),
+        _Unwind_SetGR(context, __builtin_eh_return_data_regno(0),
                       (uintptr_t)exceptionObject);
 
         // Note: this virtual register directly corresponds
         //       to the return of the llvm.eh.selector intrinsic
         if (!actionEntry || !exceptionMatched) {
           // We indicate cleanup only
-          _Unwind_SetGR(context,
-                        __builtin_eh_return_data_regno(1),
-                        0);
-        }
-        else {
+          _Unwind_SetGR(context, __builtin_eh_return_data_regno(1), 0);
+        } else {
           // Matched type info index of llvm.eh.selector intrinsic
           // passed here.
-          _Unwind_SetGR(context,
-                        __builtin_eh_return_data_regno(1),
+          _Unwind_SetGR(context, __builtin_eh_return_data_regno(1),
                         actionValue);
         }
 
         // To execute landing pad set here
         _Unwind_SetIP(context, funcStart + landingPad);
         ret = _URC_INSTALL_CONTEXT;
-      }
-      else if (exceptionMatched) {
+      } else if (exceptionMatched) {
 #ifdef DEBUG
-        fprintf(stderr,
-                "handleLsda(...): setting handler found.\n");
+        fprintf(stderr, "handleLsda(...): setting handler found.\n");
 #endif
         ret = _URC_HANDLER_FOUND;
-      }
-      else {
+      } else {
         // Note: Only non-clean up handlers are marked as
         //       found. Otherwise the clean up handlers will be
         //       re-found and executed during the clean up
         //       phase.
 #ifdef DEBUG
-        fprintf(stderr,
-                "handleLsda(...): cleanup handler found.\n");
+        fprintf(stderr, "handleLsda(...): cleanup handler found.\n");
 #endif
       }
 
@@ -764,9 +707,8 @@ static _Unwind_Reason_Code handleLsda(int version, const uint8_t *lsda,
     }
   }
 
-  return(ret);
+  return (ret);
 }
-
 
 /// This is the personality function which is embedded (dwarf emitted), in the
 /// dwarf unwind info block. Again see: JITDwarfEmitter.cpp.
@@ -784,35 +726,26 @@ _Unwind_Reason_Code ourPersonality(int version, _Unwind_Action actions,
                                    struct _Unwind_Exception *exceptionObject,
                                    struct _Unwind_Context *context) {
 #ifdef DEBUG
-  fprintf(stderr,
-          "We are in ourPersonality(...):actions is <%d>.\n",
-          actions);
+  fprintf(stderr, "We are in ourPersonality(...):actions is <%d>.\n", actions);
 
   if (actions & _UA_SEARCH_PHASE) {
     fprintf(stderr, "ourPersonality(...):In search phase.\n");
-  }
-  else {
+  } else {
     fprintf(stderr, "ourPersonality(...):In non-search phase.\n");
   }
 #endif
 
-  const uint8_t *lsda = (const uint8_t *)_Unwind_GetLanguageSpecificData(context);
+  const uint8_t *lsda =
+      (const uint8_t *)_Unwind_GetLanguageSpecificData(context);
 
 #ifdef DEBUG
-  fprintf(stderr,
-          "ourPersonality(...):lsda = <%p>.\n",
-          (void*)lsda);
+  fprintf(stderr, "ourPersonality(...):lsda = <%p>.\n", (void *)lsda);
 #endif
 
   // The real work of the personality function is captured here
-  return(handleLsda(version,
-                    lsda,
-                    actions,
-                    exceptionClass,
-                    exceptionObject,
-                    context));
+  return (handleLsda(version, lsda, actions, exceptionClass, exceptionObject,
+                     context));
 }
-
 
 /// Generates our _Unwind_Exception class from a given character array.
 /// thereby handling arbitrary lengths (not in standard), and handling
@@ -821,8 +754,7 @@ _Unwind_Reason_Code ourPersonality(int version, _Unwind_Action actions,
 /// @param classChars char array to encode. NULL values not checkedf
 /// @param classCharsSize number of chars in classChars. Value is not checked.
 /// @returns class value
-uint64_t genClass(const unsigned char classChars[], size_t classCharsSize)
-{
+uint64_t genClass(const unsigned char classChars[], size_t classCharsSize) {
   uint64_t ret = classChars[0];
 
   for (unsigned i = 1; i < classCharsSize; ++i) {
@@ -830,7 +762,7 @@ uint64_t genClass(const unsigned char classChars[], size_t classCharsSize)
     ret += classChars[i];
   }
 
-  return(ret);
+  return (ret);
 }
 
 } // extern "C"
@@ -852,34 +784,26 @@ uint64_t genClass(const unsigned char classChars[], size_t classCharsSize)
 ///        generated, and is used to hold the constant string. A value of
 ///        false indicates that the constant string will be stored on the
 ///        stack.
-void generateStringPrint(llvm::LLVMContext &context,
-                         llvm::Module &module,
-                         llvm::IRBuilder<> &builder,
-                         std::string toPrint,
+void generateStringPrint(llvm::LLVMContext &context, llvm::Module &module,
+                         llvm::IRBuilder<> &builder, std::string toPrint,
                          bool useGlobal = true) {
   llvm::Function *printFunct = module.getFunction("printStr");
 
   llvm::Value *stringVar;
   llvm::Constant *stringConstant =
-  llvm::ConstantDataArray::getString(context, toPrint);
+      llvm::ConstantDataArray::getString(context, toPrint);
 
   if (useGlobal) {
     // Note: Does not work without allocation
-    stringVar =
-    new llvm::GlobalVariable(module,
-                             stringConstant->getType(),
-                             true,
-                             llvm::GlobalValue::PrivateLinkage,
-                             stringConstant,
-                             "");
-  }
-  else {
+    stringVar = new llvm::GlobalVariable(
+        module, stringConstant->getType(), true,
+        llvm::GlobalValue::PrivateLinkage, stringConstant, "");
+  } else {
     stringVar = builder.CreateAlloca(stringConstant->getType());
     builder.CreateStore(stringConstant, stringVar);
   }
 
-  llvm::Value *cast = builder.CreatePointerCast(stringVar,
-                                                builder.getPtrTy());
+  llvm::Value *cast = builder.CreatePointerCast(stringVar, builder.getPtrTy());
   builder.CreateCall(printFunct, cast);
 }
 
@@ -900,26 +824,20 @@ void generateIntegerPrint(llvm::LLVMContext &context, llvm::Module &module,
                           llvm::Function &printFunct, llvm::Value *toPrint,
                           std::string format, bool useGlobal = true) {
   llvm::Constant *stringConstant =
-    llvm::ConstantDataArray::getString(context, format);
+      llvm::ConstantDataArray::getString(context, format);
   llvm::Value *stringVar;
 
   if (useGlobal) {
     // Note: Does not seem to work without allocation
-    stringVar =
-    new llvm::GlobalVariable(module,
-                             stringConstant->getType(),
-                             true,
-                             llvm::GlobalValue::PrivateLinkage,
-                             stringConstant,
-                             "");
-  }
-  else {
+    stringVar = new llvm::GlobalVariable(
+        module, stringConstant->getType(), true,
+        llvm::GlobalValue::PrivateLinkage, stringConstant, "");
+  } else {
     stringVar = builder.CreateAlloca(stringConstant->getType());
     builder.CreateStore(stringConstant, stringVar);
   }
 
-  llvm::Value *cast = builder.CreateBitCast(stringVar,
-                                            builder.getPtrTy());
+  llvm::Value *cast = builder.CreateBitCast(stringVar, builder.getPtrTy());
   builder.CreateCall(&printFunct, {toPrint, cast});
 }
 
@@ -943,17 +861,12 @@ void generateIntegerPrint(llvm::LLVMContext &context, llvm::Module &module,
 /// @param exceptionStorage reference to exception pointer storage
 /// @param caughtResultStorage reference to landingpad result storage
 /// @returns newly created block
-static llvm::BasicBlock *createFinallyBlock(llvm::LLVMContext &context,
-                                            llvm::Module &module,
-                                            llvm::IRBuilder<> &builder,
-                                            llvm::Function &toAddTo,
-                                            std::string &blockName,
-                                            std::string &functionId,
-                                            llvm::BasicBlock &terminatorBlock,
-                                            llvm::BasicBlock &unwindResumeBlock,
-                                            llvm::Value **exceptionCaughtFlag,
-                                            llvm::Value **exceptionStorage,
-                                            llvm::Value **caughtResultStorage) {
+static llvm::BasicBlock *createFinallyBlock(
+    llvm::LLVMContext &context, llvm::Module &module,
+    llvm::IRBuilder<> &builder, llvm::Function &toAddTo, std::string &blockName,
+    std::string &functionId, llvm::BasicBlock &terminatorBlock,
+    llvm::BasicBlock &unwindResumeBlock, llvm::Value **exceptionCaughtFlag,
+    llvm::Value **exceptionStorage, llvm::Value **caughtResultStorage) {
   assert(exceptionCaughtFlag &&
          "ExceptionDemo::createFinallyBlock(...):exceptionCaughtFlag "
          "is NULL");
@@ -964,36 +877,27 @@ static llvm::BasicBlock *createFinallyBlock(llvm::LLVMContext &context,
          "ExceptionDemo::createFinallyBlock(...):caughtResultStorage "
          "is NULL");
 
-  *exceptionCaughtFlag = createEntryBlockAlloca(toAddTo,
-                                         "exceptionCaught",
-                                         ourExceptionNotThrownState->getType(),
-                                         ourExceptionNotThrownState);
+  *exceptionCaughtFlag = createEntryBlockAlloca(
+      toAddTo, "exceptionCaught", ourExceptionNotThrownState->getType(),
+      ourExceptionNotThrownState);
 
   llvm::PointerType *exceptionStorageType = builder.getPtrTy();
-  *exceptionStorage = createEntryBlockAlloca(toAddTo,
-                                             "exceptionStorage",
-                                             exceptionStorageType,
-                                             llvm::ConstantPointerNull::get(
-                                               exceptionStorageType));
-  *caughtResultStorage = createEntryBlockAlloca(toAddTo,
-                                              "caughtResultStorage",
-                                              ourCaughtResultType,
-                                              llvm::ConstantAggregateZero::get(
-                                                ourCaughtResultType));
+  *exceptionStorage = createEntryBlockAlloca(
+      toAddTo, "exceptionStorage", exceptionStorageType,
+      llvm::ConstantPointerNull::get(exceptionStorageType));
+  *caughtResultStorage = createEntryBlockAlloca(
+      toAddTo, "caughtResultStorage", ourCaughtResultType,
+      llvm::ConstantAggregateZero::get(ourCaughtResultType));
 
-  llvm::BasicBlock *ret = llvm::BasicBlock::Create(context,
-                                                   blockName,
-                                                   &toAddTo);
+  llvm::BasicBlock *ret =
+      llvm::BasicBlock::Create(context, blockName, &toAddTo);
 
   builder.SetInsertPoint(ret);
 
   std::ostringstream bufferToPrint;
-  bufferToPrint << "Gen: Executing finally block "
-    << blockName << " in " << functionId << "\n";
-  generateStringPrint(context,
-                      module,
-                      builder,
-                      bufferToPrint.str(),
+  bufferToPrint << "Gen: Executing finally block " << blockName << " in "
+                << functionId << "\n";
+  generateStringPrint(context, module, builder, bufferToPrint.str(),
                       USE_GLOBAL_STR_CONSTS);
 
   llvm::SwitchInst *theSwitch = builder.CreateSwitch(
@@ -1003,9 +907,8 @@ static llvm::BasicBlock *createFinallyBlock(llvm::LLVMContext &context,
   theSwitch->addCase(ourExceptionCaughtState, &terminatorBlock);
   theSwitch->addCase(ourExceptionThrownState, &unwindResumeBlock);
 
-  return(ret);
+  return (ret);
 }
-
 
 /// Generates catch block semantics which print a string to indicate type of
 /// catch executed, sets an exception caught flag, and executes passed in
@@ -1019,38 +922,28 @@ static llvm::BasicBlock *createFinallyBlock(llvm::LLVMContext &context,
 /// @param terminatorBlock terminator "end" block
 /// @param exceptionCaughtFlag exception caught/thrown status
 /// @returns newly created block
-static llvm::BasicBlock *createCatchBlock(llvm::LLVMContext &context,
-                                          llvm::Module &module,
-                                          llvm::IRBuilder<> &builder,
-                                          llvm::Function &toAddTo,
-                                          std::string &blockName,
-                                          std::string &functionId,
-                                          llvm::BasicBlock &terminatorBlock,
-                                          llvm::Value &exceptionCaughtFlag) {
+static llvm::BasicBlock *
+createCatchBlock(llvm::LLVMContext &context, llvm::Module &module,
+                 llvm::IRBuilder<> &builder, llvm::Function &toAddTo,
+                 std::string &blockName, std::string &functionId,
+                 llvm::BasicBlock &terminatorBlock,
+                 llvm::Value &exceptionCaughtFlag) {
 
-  llvm::BasicBlock *ret = llvm::BasicBlock::Create(context,
-                                                   blockName,
-                                                   &toAddTo);
+  llvm::BasicBlock *ret =
+      llvm::BasicBlock::Create(context, blockName, &toAddTo);
 
   builder.SetInsertPoint(ret);
 
   std::ostringstream bufferToPrint;
-  bufferToPrint << "Gen: Executing catch block "
-  << blockName
-  << " in "
-  << functionId
-  << std::endl;
-  generateStringPrint(context,
-                      module,
-                      builder,
-                      bufferToPrint.str(),
+  bufferToPrint << "Gen: Executing catch block " << blockName << " in "
+                << functionId << std::endl;
+  generateStringPrint(context, module, builder, bufferToPrint.str(),
                       USE_GLOBAL_STR_CONSTS);
   builder.CreateStore(ourExceptionCaughtState, &exceptionCaughtFlag);
   builder.CreateBr(&terminatorBlock);
 
-  return(ret);
+  return (ret);
 }
-
 
 /// Generates a function which invokes a function (toInvoke) and, whose
 /// unwind block will "catch" the type info types correspondingly held in the
@@ -1086,99 +979,70 @@ static llvm::Function *createCatchWrappedInvokeFunction(
   ArgNames argNames;
   argNames.push_back("exceptTypeToThrow");
 
-  llvm::Function *ret = createFunction(module,
-                                       builder.getVoidTy(),
-                                       argTypes,
-                                       argNames,
-                                       ourId,
-                                       llvm::Function::ExternalLinkage,
-                                       false,
-                                       false);
+  llvm::Function *ret =
+      createFunction(module, builder.getVoidTy(), argTypes, argNames, ourId,
+                     llvm::Function::ExternalLinkage, false, false);
 
   // Block which calls invoke
-  llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(context,
-                                                          "entry",
-                                                          ret);
+  llvm::BasicBlock *entryBlock =
+      llvm::BasicBlock::Create(context, "entry", ret);
   // Normal block for invoke
-  llvm::BasicBlock *normalBlock = llvm::BasicBlock::Create(context,
-                                                           "normal",
-                                                           ret);
+  llvm::BasicBlock *normalBlock =
+      llvm::BasicBlock::Create(context, "normal", ret);
   // Unwind block for invoke
-  llvm::BasicBlock *exceptionBlock = llvm::BasicBlock::Create(context,
-                                                              "exception",
-                                                              ret);
+  llvm::BasicBlock *exceptionBlock =
+      llvm::BasicBlock::Create(context, "exception", ret);
 
   // Block which routes exception to correct catch handler block
-  llvm::BasicBlock *exceptionRouteBlock = llvm::BasicBlock::Create(context,
-                                                             "exceptionRoute",
-                                                             ret);
+  llvm::BasicBlock *exceptionRouteBlock =
+      llvm::BasicBlock::Create(context, "exceptionRoute", ret);
 
   // Foreign exception handler
-  llvm::BasicBlock *externalExceptionBlock = llvm::BasicBlock::Create(context,
-                                                          "externalException",
-                                                          ret);
+  llvm::BasicBlock *externalExceptionBlock =
+      llvm::BasicBlock::Create(context, "externalException", ret);
 
   // Block which calls _Unwind_Resume
-  llvm::BasicBlock *unwindResumeBlock = llvm::BasicBlock::Create(context,
-                                                               "unwindResume",
-                                                               ret);
+  llvm::BasicBlock *unwindResumeBlock =
+      llvm::BasicBlock::Create(context, "unwindResume", ret);
 
   // Clean up block which delete exception if needed
   llvm::BasicBlock *endBlock = llvm::BasicBlock::Create(context, "end", ret);
 
   std::string nextName;
-  std::vector<llvm::BasicBlock*> catchBlocks(numExceptionsToCatch);
+  std::vector<llvm::BasicBlock *> catchBlocks(numExceptionsToCatch);
   llvm::Value *exceptionCaughtFlag = NULL;
   llvm::Value *exceptionStorage = NULL;
   llvm::Value *caughtResultStorage = NULL;
 
   // Finally block which will branch to unwindResumeBlock if
   // exception is not caught. Initializes/allocates stack locations.
-  llvm::BasicBlock *finallyBlock = createFinallyBlock(context,
-                                                      module,
-                                                      builder,
-                                                      *ret,
-                                                      nextName = "finally",
-                                                      ourId,
-                                                      *endBlock,
-                                                      *unwindResumeBlock,
-                                                      &exceptionCaughtFlag,
-                                                      &exceptionStorage,
-                                                      &caughtResultStorage
-                                                      );
+  llvm::BasicBlock *finallyBlock = createFinallyBlock(
+      context, module, builder, *ret, nextName = "finally", ourId, *endBlock,
+      *unwindResumeBlock, &exceptionCaughtFlag, &exceptionStorage,
+      &caughtResultStorage);
 
   for (unsigned i = 0; i < numExceptionsToCatch; ++i) {
     nextName = ourTypeInfoNames[exceptionTypesToCatch[i]];
 
     // One catch block per type info to be caught
-    catchBlocks[i] = createCatchBlock(context,
-                                      module,
-                                      builder,
-                                      *ret,
-                                      nextName,
-                                      ourId,
-                                      *finallyBlock,
-                                      *exceptionCaughtFlag);
+    catchBlocks[i] =
+        createCatchBlock(context, module, builder, *ret, nextName, ourId,
+                         *finallyBlock, *exceptionCaughtFlag);
   }
 
   // Entry Block
 
   builder.SetInsertPoint(entryBlock);
 
-  std::vector<llvm::Value*> args;
+  std::vector<llvm::Value *> args;
   args.push_back(namedValues["exceptTypeToThrow"]);
-  builder.CreateInvoke(&toInvoke,
-                       normalBlock,
-                       exceptionBlock,
-                       args);
+  builder.CreateInvoke(&toInvoke, normalBlock, exceptionBlock, args);
 
   // End Block
 
   builder.SetInsertPoint(endBlock);
 
-  generateStringPrint(context,
-                      module,
-                      builder,
+  generateStringPrint(context, module, builder,
                       "Gen: In end block: exiting in " + ourId + ".\n",
                       USE_GLOBAL_STR_CONSTS);
   llvm::Function *deleteOurException = module.getFunction("deleteOurException");
@@ -1192,9 +1056,7 @@ static llvm::Function *createCatchWrappedInvokeFunction(
 
   builder.SetInsertPoint(normalBlock);
 
-  generateStringPrint(context,
-                      module,
-                      builder,
+  generateStringPrint(context, module, builder,
                       "Gen: No exception in " + ourId + "!\n",
                       USE_GLOBAL_STR_CONSTS);
 
@@ -1215,17 +1077,15 @@ static llvm::Function *createCatchWrappedInvokeFunction(
   llvm::Function *personality = module.getFunction("ourPersonality");
   ret->setPersonalityFn(personality);
 
-  llvm::LandingPadInst *caughtResult =
-    builder.CreateLandingPad(ourCaughtResultType,
-                             numExceptionsToCatch,
-                             "landingPad");
+  llvm::LandingPadInst *caughtResult = builder.CreateLandingPad(
+      ourCaughtResultType, numExceptionsToCatch, "landingPad");
 
   caughtResult->setCleanup(true);
 
   for (unsigned i = 0; i < numExceptionsToCatch; ++i) {
     // Set up type infos to be caught
-    caughtResult->addClause(module.getGlobalVariable(
-                             ourTypeInfoNames[exceptionTypesToCatch[i]]));
+    caughtResult->addClause(
+        module.getGlobalVariable(ourTypeInfoNames[exceptionTypesToCatch[i]]));
   }
 
   llvm::Value *unwindException = builder.CreateExtractValue(caughtResult, 0);
@@ -1247,19 +1107,17 @@ static llvm::Function *createCatchWrappedInvokeFunction(
 
   // Branch to the externalExceptionBlock if the exception is foreign or
   // to a catch router if not. Either way the finally block will be run.
-  builder.CreateCondBr(builder.CreateICmpEQ(unwindExceptionClass,
-                            llvm::ConstantInt::get(builder.getInt64Ty(),
-                                                   ourBaseExceptionClass)),
-                       exceptionRouteBlock,
-                       externalExceptionBlock);
+  builder.CreateCondBr(
+      builder.CreateICmpEQ(
+          unwindExceptionClass,
+          llvm::ConstantInt::get(builder.getInt64Ty(), ourBaseExceptionClass)),
+      exceptionRouteBlock, externalExceptionBlock);
 
   // External Exception Block
 
   builder.SetInsertPoint(externalExceptionBlock);
 
-  generateStringPrint(context,
-                      module,
-                      builder,
+  generateStringPrint(context, module, builder,
                       "Gen: Foreign exception received.\n",
                       USE_GLOBAL_STR_CONSTS);
 
@@ -1295,9 +1153,8 @@ static llvm::Function *createCatchWrappedInvokeFunction(
                        USE_GLOBAL_STR_CONSTS);
 
   // Route to matched type info catch block or run cleanup finally block
-  llvm::SwitchInst *switchToCatchBlock = builder.CreateSwitch(retTypeInfoIndex,
-                                                          finallyBlock,
-                                                          numExceptionsToCatch);
+  llvm::SwitchInst *switchToCatchBlock = builder.CreateSwitch(
+      retTypeInfoIndex, finallyBlock, numExceptionsToCatch);
 
   unsigned nextTypeToCatch;
 
@@ -1310,9 +1167,8 @@ static llvm::Function *createCatchWrappedInvokeFunction(
   llvm::verifyFunction(*ret);
   fpm.run(*ret);
 
-  return(ret);
+  return (ret);
 }
-
 
 /// Generates function which throws either an exception matched to a runtime
 /// determined type info type (argument to generated function), or if this
@@ -1340,28 +1196,20 @@ createThrowExceptionFunction(llvm::Module &module, llvm::IRBuilder<> &builder,
   ArgNames unwindArgNames;
   unwindArgNames.push_back("exceptTypeToThrow");
 
-  llvm::Function *ret = createFunction(module,
-                                       builder.getVoidTy(),
-                                       unwindArgTypes,
-                                       unwindArgNames,
-                                       ourId,
-                                       llvm::Function::ExternalLinkage,
-                                       false,
-                                       false);
+  llvm::Function *ret = createFunction(
+      module, builder.getVoidTy(), unwindArgTypes, unwindArgNames, ourId,
+      llvm::Function::ExternalLinkage, false, false);
 
   // Throws either one of our exception or a native C++ exception depending
   // on a runtime argument value containing a type info type.
-  llvm::BasicBlock *entryBlock = llvm::BasicBlock::Create(context,
-                                                          "entry",
-                                                          ret);
+  llvm::BasicBlock *entryBlock =
+      llvm::BasicBlock::Create(context, "entry", ret);
   // Throws a foreign exception
-  llvm::BasicBlock *nativeThrowBlock = llvm::BasicBlock::Create(context,
-                                                                "nativeThrow",
-                                                                ret);
+  llvm::BasicBlock *nativeThrowBlock =
+      llvm::BasicBlock::Create(context, "nativeThrow", ret);
   // Throws one of our Exceptions
-  llvm::BasicBlock *generatedThrowBlock = llvm::BasicBlock::Create(context,
-                                                             "generatedThrow",
-                                                             ret);
+  llvm::BasicBlock *generatedThrowBlock =
+      llvm::BasicBlock::Create(context, "generatedThrow", ret);
   // Retrieved runtime type info type to throw
   llvm::Value *exceptionType = namedValues["exceptTypeToThrow"];
 
@@ -1387,25 +1235,24 @@ createThrowExceptionFunction(llvm::Module &module, llvm::IRBuilder<> &builder,
   // Switches on runtime type info type value to determine whether or not
   // a foreign exception is thrown. Defaults to throwing one of our
   // generated exceptions.
-  llvm::SwitchInst *theSwitch = builder.CreateSwitch(exceptionType,
-                                                     generatedThrowBlock,
-                                                     1);
+  llvm::SwitchInst *theSwitch =
+      builder.CreateSwitch(exceptionType, generatedThrowBlock, 1);
 
-  theSwitch->addCase(llvm::ConstantInt::get(llvm::Type::getInt32Ty(context),
-                                            nativeThrowType),
-                     nativeThrowBlock);
+  theSwitch->addCase(
+      llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), nativeThrowType),
+      nativeThrowBlock);
 
   // generatedThrow block
 
   builder.SetInsertPoint(generatedThrowBlock);
 
   llvm::Function *createOurException = module.getFunction("createOurException");
-  llvm::Function *raiseOurException = module.getFunction(
-                                        "_Unwind_RaiseException");
+  llvm::Function *raiseOurException =
+      module.getFunction("_Unwind_RaiseException");
 
   // Creates exception to throw with runtime type info type.
-  llvm::Value *exception = builder.CreateCall(createOurException,
-                                              namedValues["exceptTypeToThrow"]);
+  llvm::Value *exception =
+      builder.CreateCall(createOurException, namedValues["exceptTypeToThrow"]);
 
   // Throw generated Exception
   builder.CreateCall(raiseOurException, exception);
@@ -1414,7 +1261,7 @@ createThrowExceptionFunction(llvm::Module &module, llvm::IRBuilder<> &builder,
   llvm::verifyFunction(*ret);
   fpm.run(*ret);
 
-  return(ret);
+  return (ret);
 }
 
 static void createStandardUtilityFunctions(unsigned numTypeInfos,
@@ -1450,64 +1297,49 @@ createUnwindExceptionTest(llvm::Module &module, llvm::IRBuilder<> &builder,
 
   // Initialze intrisics and external functions to use along with exception
   // and type info globals.
-  createStandardUtilityFunctions(numTypeInfos,
-                                 module,
-                                 builder);
+  createStandardUtilityFunctions(numTypeInfos, module, builder);
   llvm::Function *nativeThrowFunct = module.getFunction(nativeThrowFunctName);
 
   // Create exception throw function using the value ~0 to cause
   // foreign exceptions to be thrown.
-  llvm::Function *throwFunct = createThrowExceptionFunction(module,
-                                                            builder,
-                                                            fpm,
-                                                            "throwFunct",
-                                                            ~0,
-                                                            *nativeThrowFunct);
+  llvm::Function *throwFunct = createThrowExceptionFunction(
+      module, builder, fpm, "throwFunct", ~0, *nativeThrowFunct);
   // Inner function will catch even type infos
   unsigned innerExceptionTypesToCatch[] = {6, 2, 4};
-  size_t numExceptionTypesToCatch = sizeof(innerExceptionTypesToCatch) /
-                                    sizeof(unsigned);
+  size_t numExceptionTypesToCatch =
+      sizeof(innerExceptionTypesToCatch) / sizeof(unsigned);
 
   // Generate inner function.
-  llvm::Function *innerCatchFunct = createCatchWrappedInvokeFunction(module,
-                                                    builder,
-                                                    fpm,
-                                                    *throwFunct,
-                                                    "innerCatchFunct",
-                                                    numExceptionTypesToCatch,
-                                                    innerExceptionTypesToCatch);
+  llvm::Function *innerCatchFunct = createCatchWrappedInvokeFunction(
+      module, builder, fpm, *throwFunct, "innerCatchFunct",
+      numExceptionTypesToCatch, innerExceptionTypesToCatch);
 
   // Outer function will catch odd type infos
   unsigned outerExceptionTypesToCatch[] = {3, 1, 5};
-  numExceptionTypesToCatch = sizeof(outerExceptionTypesToCatch) /
-  sizeof(unsigned);
+  numExceptionTypesToCatch =
+      sizeof(outerExceptionTypesToCatch) / sizeof(unsigned);
 
   // Generate outer function
-  llvm::Function *outerCatchFunct = createCatchWrappedInvokeFunction(module,
-                                                    builder,
-                                                    fpm,
-                                                    *innerCatchFunct,
-                                                    "outerCatchFunct",
-                                                    numExceptionTypesToCatch,
-                                                    outerExceptionTypesToCatch);
+  llvm::Function *outerCatchFunct = createCatchWrappedInvokeFunction(
+      module, builder, fpm, *innerCatchFunct, "outerCatchFunct",
+      numExceptionTypesToCatch, outerExceptionTypesToCatch);
 
   // Return outer function to run
-  return(outerCatchFunct);
+  return (outerCatchFunct);
 }
 
 namespace {
 /// Represents our foreign exceptions
 class OurCppRunException : public std::runtime_error {
 public:
-  OurCppRunException(const std::string reason) :
-  std::runtime_error(reason) {}
+  OurCppRunException(const std::string reason) : std::runtime_error(reason) {}
 
-  OurCppRunException (const OurCppRunException &toCopy) :
-  std::runtime_error(toCopy) {}
+  OurCppRunException(const OurCppRunException &toCopy)
+      : std::runtime_error(toCopy) {}
 
-  OurCppRunException &operator = (const OurCppRunException &toCopy) {
-    return(reinterpret_cast<OurCppRunException&>(
-                                 std::runtime_error::operator=(toCopy)));
+  OurCppRunException &operator=(const OurCppRunException &toCopy) {
+    return (reinterpret_cast<OurCppRunException &>(
+        std::runtime_error::operator=(toCopy)));
   }
 
   ~OurCppRunException(void) throw() override {}
@@ -1517,12 +1349,11 @@ public:
 /// Throws foreign C++ exception.
 /// @param ignoreIt unused parameter that allows function to match implied
 ///        generated function contract.
-extern "C"
-void throwCppException (int32_t ignoreIt) {
+extern "C" void throwCppException(int32_t ignoreIt) {
   throw(OurCppRunException("thrown by throwCppException(...)"));
 }
 
-typedef void (*OurExceptionThrowFunctType) (int32_t typeToThrow);
+typedef void (*OurExceptionThrowFunctType)(int32_t typeToThrow);
 
 /// This is a test harness which runs test by executing generated
 /// function with a type info type to throw. Harness wraps the execution
@@ -1543,23 +1374,20 @@ static void runExceptionThrow(llvm::orc::LLJIT *JIT, std::string function,
   try {
     // Run test
     (*functPtr)(typeToThrow);
-  }
-  catch (OurCppRunException exc) {
+  } catch (OurCppRunException exc) {
     // Catch foreign C++ exception
     fprintf(stderr,
             "\nrunExceptionThrow(...):In C++ catch OurCppRunException "
             "with reason: %s.\n",
             exc.what());
-  }
-  catch (...) {
+  } catch (...) {
     // Catch all exceptions including our generated ones. This latter
     // functionality works according to the example in rules 1.6.4 of
     // http://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html (v1.22),
     // given that these will be exceptions foreign to C++
     // (the _Unwind_Exception::exception_class should be different from
     // the one used by C++).
-    fprintf(stderr,
-            "\nrunExceptionThrow(...):In C++ catch all.\n");
+    fprintf(stderr, "\nrunExceptionThrow(...):In C++ catch all.\n");
   }
 }
 
@@ -1583,44 +1411,38 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   // Setup exception catch state
   ourExceptionNotThrownState =
-    llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 0),
+      llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 0),
   ourExceptionThrownState =
-    llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 1),
+      llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 1),
   ourExceptionCaughtState =
-    llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 2),
-
-
+      llvm::ConstantInt::get(llvm::Type::getInt8Ty(context), 2),
 
   // Create our type info type
-  ourTypeInfoType = llvm::StructType::get(context,
-                                          TypeArray(builder.getInt32Ty()));
+      ourTypeInfoType =
+          llvm::StructType::get(context, TypeArray(builder.getInt32Ty()));
 
-  llvm::Type *caughtResultFieldTypes[] = {
-    builder.getPtrTy(),
-    builder.getInt32Ty()
-  };
+  llvm::Type *caughtResultFieldTypes[] = {builder.getPtrTy(),
+                                          builder.getInt32Ty()};
 
   // Create our landingpad result type
-  ourCaughtResultType = llvm::StructType::get(context,
-                                            TypeArray(caughtResultFieldTypes));
+  ourCaughtResultType =
+      llvm::StructType::get(context, TypeArray(caughtResultFieldTypes));
 
   // Create OurException type
-  ourExceptionType = llvm::StructType::get(context,
-                                           TypeArray(ourTypeInfoType));
+  ourExceptionType = llvm::StructType::get(context, TypeArray(ourTypeInfoType));
 
   // Create portion of _Unwind_Exception type
   //
   // Note: Declaring only a portion of the _Unwind_Exception struct.
   //       Does this cause problems?
   ourUnwindExceptionType =
-    llvm::StructType::get(context,
-                    TypeArray(builder.getInt64Ty()));
+      llvm::StructType::get(context, TypeArray(builder.getInt64Ty()));
 
   struct OurBaseException_t dummyException;
 
   // Calculate offset of OurException::unwindException member.
-  ourBaseFromUnwindOffset = ((uintptr_t) &dummyException) -
-                            ((uintptr_t) &(dummyException.unwindException));
+  ourBaseFromUnwindOffset = ((uintptr_t)&dummyException) -
+                            ((uintptr_t)&(dummyException.unwindException));
 
 #ifdef DEBUG
   fprintf(stderr,
@@ -1628,8 +1450,7 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
           "= %" PRIi64 ", sizeof(struct OurBaseException_t) - "
           "sizeof(struct _Unwind_Exception) = %lu.\n",
           ourBaseFromUnwindOffset,
-          sizeof(struct OurBaseException_t) -
-          sizeof(struct _Unwind_Exception));
+          sizeof(struct OurBaseException_t) - sizeof(struct _Unwind_Exception));
 #endif
 
   size_t numChars = sizeof(ourBaseExcpClassChars) / sizeof(char);
@@ -1641,7 +1462,7 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   std::string baseStr = "typeInfo", typeInfoName;
   std::ostringstream typeInfoNameBuilder;
-  std::vector<llvm::Constant*> structVals;
+  std::vector<llvm::Constant *> structVals;
 
   llvm::Constant *nextStruct;
 
@@ -1658,11 +1479,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
     typeInfoName = typeInfoNameBuilder.str();
 
     // Note: Does not seem to work without allocation
-    new llvm::GlobalVariable(module,
-                             ourTypeInfoType,
-                             true,
-                             llvm::GlobalValue::ExternalLinkage,
-                             nextStruct,
+    new llvm::GlobalVariable(module, ourTypeInfoType, true,
+                             llvm::GlobalValue::ExternalLinkage, nextStruct,
                              typeInfoName);
 
     ourTypeInfoNames.push_back(typeInfoName);
@@ -1683,14 +1501,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "print32Int",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "print32Int",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // print64Int
 
@@ -1702,14 +1514,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "print64Int",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "print64Int",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // printStr
 
@@ -1720,14 +1526,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "printStr",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "printStr",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // throwCppException
 
@@ -1738,14 +1538,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "throwCppException",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "throwCppException",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // deleteOurException
 
@@ -1756,14 +1550,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "deleteOurException",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "deleteOurException",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // createOurException
 
@@ -1774,14 +1562,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "createOurException",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "createOurException",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // _Unwind_RaiseException
 
@@ -1792,14 +1574,9 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  funct = createFunction(module,
-                         retType,
-                         argTypes,
-                         argNames,
+  funct = createFunction(module, retType, argTypes, argNames,
                          "_Unwind_RaiseException",
-                         llvm::Function::ExternalLinkage,
-                         true,
-                         false);
+                         llvm::Function::ExternalLinkage, true, false);
 
   funct->setDoesNotReturn();
 
@@ -1812,14 +1589,8 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  funct = createFunction(module,
-                         retType,
-                         argTypes,
-                         argNames,
-                         "_Unwind_Resume",
-                         llvm::Function::ExternalLinkage,
-                         true,
-                         false);
+  funct = createFunction(module, retType, argTypes, argNames, "_Unwind_Resume",
+                         llvm::Function::ExternalLinkage, true, false);
 
   funct->setDoesNotReturn();
 
@@ -1836,21 +1607,14 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 
   argNames.clear();
 
-  createFunction(module,
-                 retType,
-                 argTypes,
-                 argNames,
-                 "ourPersonality",
-                 llvm::Function::ExternalLinkage,
-                 true,
-                 false);
+  createFunction(module, retType, argTypes, argNames, "ourPersonality",
+                 llvm::Function::ExternalLinkage, true, false);
 
   // llvm.eh.typeid.for intrinsic
 
   getOrInsertDeclaration(&module, llvm::Intrinsic::eh_typeid_for,
                          builder.getPtrTy());
 }
-
 
 //===----------------------------------------------------------------------===//
 // Main test driver code.
@@ -1864,17 +1628,16 @@ static void createStandardUtilityFunctions(unsigned numTypeInfos,
 /// type info types are not supported and could cause a crash.
 int main(int argc, char *argv[]) {
   if (argc == 1) {
-    fprintf(stderr,
-            "\nUsage: ExceptionDemo <exception type to throw> "
-            "[<type 2>...<type n>].\n"
-            "   Each type must have the value of 1 - 6 for "
-            "generated exceptions to be caught;\n"
-            "   the value -1 for foreign C++ exceptions to be "
-            "generated and thrown;\n"
-            "   or the values > 6 for exceptions to be ignored.\n"
-            "\nTry: ExceptionDemo 2 3 7 -1\n"
-            "   for a full test.\n\n");
-    return(0);
+    fprintf(stderr, "\nUsage: ExceptionDemo <exception type to throw> "
+                    "[<type 2>...<type n>].\n"
+                    "   Each type must have the value of 1 - 6 for "
+                    "generated exceptions to be caught;\n"
+                    "   the value -1 for foreign C++ exceptions to be "
+                    "generated and thrown;\n"
+                    "   or the values > 6 for exceptions to be ignored.\n"
+                    "\nTry: ExceptionDemo 2 3 7 -1\n"
+                    "   for a full test.\n\n");
+    return (0);
   }
 
   llvm::InitializeNativeTarget();
@@ -1915,7 +1678,7 @@ int main(int argc, char *argv[]) {
   // Simplify the control flow graph (deleting unreachable
   // blocks, etc).
   fpm.add(llvm::createCFGSimplificationPass());
-#endif  // ADD_OPT_PASSES
+#endif // ADD_OPT_PASSES
 
   fpm.doInitialization();
 

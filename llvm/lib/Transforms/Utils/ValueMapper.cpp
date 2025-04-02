@@ -409,8 +409,9 @@ Value *Mapper::mapValue(const Value *V) {
         } else if (Value *LV = mapValue(VAM->getValue())) {
           MappedArgs.push_back(
               LV == VAM->getValue() ? VAM : ValueAsMetadata::get(LV));
-        } else if ((Flags & RF_IgnoreMissingLocals) && isa<LocalAsMetadata>(VAM)) {
-            MappedArgs.push_back(VAM);
+        } else if ((Flags & RF_IgnoreMissingLocals) &&
+                   isa<LocalAsMetadata>(VAM)) {
+          MappedArgs.push_back(VAM);
         } else {
           // If we cannot map the value, set the argument as poison.
           MappedArgs.push_back(ValueAsMetadata::get(
@@ -435,7 +436,7 @@ Value *Mapper::mapValue(const Value *V) {
 
   // Okay, this either must be a constant (which may or may not be mappable) or
   // is something that is not in the mapping table.
-  Constant *C = const_cast<Constant*>(dyn_cast<Constant>(V));
+  Constant *C = const_cast<Constant *>(dyn_cast<Constant>(V));
   if (!C)
     return nullptr;
 
@@ -495,7 +496,7 @@ Value *Mapper::mapValue(const Value *V) {
 
   // Okay, we need to create a new constant.  We've already processed some or
   // all of the operands, set them all up now.
-  SmallVector<Constant*, 8> Ops;
+  SmallVector<Constant *, 8> Ops;
   Ops.reserve(NumOperands);
   for (unsigned j = 0; j != OpNo; ++j)
     Ops.push_back(cast<Constant>(C->getOperand(j)));
@@ -1263,8 +1264,7 @@ void ValueMapper::remapGlobalObjectMetadata(GlobalObject &GO) {
 }
 
 void ValueMapper::scheduleMapGlobalInitializer(GlobalVariable &GV,
-                                               Constant &Init,
-                                               unsigned MCID) {
+                                               Constant &Init, unsigned MCID) {
   getAsMapper(pImpl)->scheduleMapGlobalInitializer(GV, Init, MCID);
 }
 

@@ -52,4 +52,3 @@ TEST(AllocGroupSmallMap, NonEmptyMap) {
   EXPECT_EQ(NEM.begin()->second, 42U);
   EXPECT_EQ((NEM.begin() + 1)->second, 7U);
 }
-

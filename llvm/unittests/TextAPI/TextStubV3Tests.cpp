@@ -358,7 +358,7 @@ TEST(TBDv3, WriteMultipleDocuments) {
   Document.addSymbol(EncodeKind::GlobalSymbol, "_sym3", Targets);
   Document.addSymbol(EncodeKind::GlobalSymbol, "_sym4", Targets);
   File.addDocument(std::make_shared<InterfaceFile>(std::move(Document)));
-  
+
   SmallString<4096> Buffer;
   raw_svector_ostream OS(Buffer);
   Error Result = TextAPIWriter::writeToStream(OS, File);
@@ -524,7 +524,7 @@ TEST(TBDv3, Platform_zippered) {
   Platforms.insert(PLATFORM_MACCATALYST);
   EXPECT_EQ(Platforms.size(), File->getPlatforms().size());
   for (auto Platform : File->getPlatforms())
-	    EXPECT_EQ(Platforms.count(Platform), 1U);
+    EXPECT_EQ(Platforms.count(Platform), 1U);
 
   SmallString<4096> Buffer;
   raw_svector_ostream OS(Buffer);
@@ -879,8 +879,6 @@ TEST(TBDv3, InterfaceEquality) {
   EXPECT_FALSE(FileA.getPath() == FileB.getPath());
   EXPECT_TRUE(FileA == FileB);
 }
-
-
 
 TEST(TBDv3, InterfaceInequality) {
   static const char TBDv3File[] = "--- !tapi-tbd-v3\n"

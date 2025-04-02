@@ -300,7 +300,8 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   EXPECT_TRUE(ExtsRV64GCV.at("f") == (RISCVISAUtils::ExtensionVersion{2, 2}));
   EXPECT_TRUE(ExtsRV64GCV.at("d") == (RISCVISAUtils::ExtensionVersion{2, 2}));
   EXPECT_TRUE(ExtsRV64GCV.at("c") == (RISCVISAUtils::ExtensionVersion{2, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zicsr") == (RISCVISAUtils::ExtensionVersion{2, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zicsr") ==
+              (RISCVISAUtils::ExtensionVersion{2, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("zifencei") ==
               (RISCVISAUtils::ExtensionVersion{2, 0}));
   EXPECT_TRUE(ExtsRV64G.at("zmmul") == (RISCVISAUtils::ExtensionVersion{1, 0}));
@@ -308,14 +309,22 @@ TEST(ParseArchString, AcceptsSupportedBaseISAsAndSetsXLenAndFLen) {
   EXPECT_TRUE(ExtsRV64G.at("zalrsc") ==
               (RISCVISAUtils::ExtensionVersion{1, 0}));
   EXPECT_TRUE(ExtsRV64GCV.at("v") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zve32x") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zve32f") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zve64x") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zve64f") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zve64d") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zvl32b") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zvl64b") == (RISCVISAUtils::ExtensionVersion{1, 0}));
-  EXPECT_TRUE(ExtsRV64GCV.at("zvl128b") == (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zve32x") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zve32f") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zve64x") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zve64f") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zve64d") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zvl32b") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zvl64b") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
+  EXPECT_TRUE(ExtsRV64GCV.at("zvl128b") ==
+              (RISCVISAUtils::ExtensionVersion{1, 0}));
   EXPECT_EQ(InfoRV64GCV.getXLen(), 64U);
   EXPECT_EQ(InfoRV64GCV.getFLen(), 64U);
   EXPECT_EQ(InfoRV64GCV.getMinVLen(), 128U);
@@ -813,7 +822,7 @@ TEST(OrderedExtensionMap, ExtensionsAreCorrectlyOrdered) {
   // FIXME: 'l' and 'y' should be ordered after 'i', 'm', 'c'.
   EXPECT_THAT(ExtNames,
               ElementsAre("i", "m", "l", "c", "y", "zicsr", "zmfoo", "zfinx",
-                           "zzfoo", "sbar", "sfoo", "xbar", "xfoo"));
+                          "zzfoo", "sbar", "sfoo", "xbar", "xfoo"));
 }
 
 TEST(ParseArchString, ZceImplication) {
@@ -1159,8 +1168,8 @@ For example, clang -march=rv32i_v1p0)";
 
   std::string CapturedOutput = testing::internal::GetCapturedStdout();
   EXPECT_TRUE([](std::string &Captured, std::string &Expected) {
-                return Captured.find(Expected) != std::string::npos;
-              }(CapturedOutput, ExpectedOutput));
+    return Captured.find(Expected) != std::string::npos;
+  }(CapturedOutput, ExpectedOutput));
 }
 
 TEST(TargetParserTest, RISCVPrintEnabledExtensions) {

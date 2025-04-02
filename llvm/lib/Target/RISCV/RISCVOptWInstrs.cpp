@@ -565,7 +565,7 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
         B = 4;
         E = 7;
         break;
-       }
+      }
 
       for (unsigned I = B; I != E; I += D) {
         if (!MI->getOperand(I).isReg())
@@ -697,10 +697,18 @@ bool RISCVOptWInstrs::stripWSuffixes(MachineFunction &MF,
       switch (MI.getOpcode()) {
       default:
         continue;
-      case RISCV::ADDW:  Opc = RISCV::ADD;  break;
-      case RISCV::ADDIW: Opc = RISCV::ADDI; break;
-      case RISCV::MULW:  Opc = RISCV::MUL;  break;
-      case RISCV::SLLIW: Opc = RISCV::SLLI; break;
+      case RISCV::ADDW:
+        Opc = RISCV::ADD;
+        break;
+      case RISCV::ADDIW:
+        Opc = RISCV::ADDI;
+        break;
+      case RISCV::MULW:
+        Opc = RISCV::MUL;
+        break;
+      case RISCV::SLLIW:
+        Opc = RISCV::SLLI;
+        break;
       }
 
       if (hasAllWUsers(MI, ST, MRI)) {

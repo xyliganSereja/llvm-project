@@ -23,8 +23,8 @@
 using namespace llvm;
 
 static cl::opt<bool>
-ViewEdgeBundles("view-edge-bundles", cl::Hidden,
-                cl::desc("Pop up a window to show edge bundle graphs"));
+    ViewEdgeBundles("view-edge-bundles", cl::Hidden,
+                    cl::desc("Pop up a window to show edge bundle graphs"));
 
 char EdgeBundlesWrapperLegacy::ID = 0;
 
@@ -84,9 +84,8 @@ void EdgeBundles::init() {
 namespace llvm {
 
 /// Specialize WriteGraph, the standard implementation won't work.
-template<>
-raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G,
-                          bool ShortNames,
+template <>
+raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G, bool ShortNames,
                           const Twine &Title) {
   const MachineFunction *MF = G.getMachineFunction();
 
@@ -110,9 +109,7 @@ raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G,
 } // end namespace llvm
 
 /// view - Visualize the annotated bipartite CFG with Graphviz.
-void EdgeBundles::view() const {
-  ViewGraph(*this, "EdgeBundles");
-}
+void EdgeBundles::view() const { ViewGraph(*this, "EdgeBundles"); }
 
 bool EdgeBundles::invalidate(MachineFunction &MF, const PreservedAnalyses &PA,
                              MachineFunctionAnalysisManager::Invalidator &Inv) {

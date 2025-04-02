@@ -208,8 +208,8 @@ TEST(LinkGraphTest, ContentAccessAndUpdate) {
   // Expect that attempting to get already-mutable content fails if the
   // content is not yet mutable (debug builds only).
 #ifndef NDEBUG
-  EXPECT_DEATH({ (void)B.getAlreadyMutableContent(); },
-               "Content is not mutable")
+  EXPECT_DEATH(
+      { (void)B.getAlreadyMutableContent(); }, "Content is not mutable")
       << "Unexpected mutable access allowed to immutable data";
 #endif
 

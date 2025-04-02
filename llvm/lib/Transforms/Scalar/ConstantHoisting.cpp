@@ -82,12 +82,12 @@ static cl::opt<bool> ConstHoistWithBlockFrequency(
              "chance to execute const materialization more frequently than "
              "without hoisting."));
 
-static cl::opt<bool> ConstHoistGEP(
-    "consthoist-gep", cl::init(false), cl::Hidden,
-    cl::desc("Try hoisting constant gep expressions"));
+static cl::opt<bool>
+    ConstHoistGEP("consthoist-gep", cl::init(false), cl::Hidden,
+                  cl::desc("Try hoisting constant gep expressions"));
 
-static cl::opt<unsigned>
-MinNumOfDependentToRebase("consthoist-min-num-to-rebase",
+static cl::opt<unsigned> MinNumOfDependentToRebase(
+    "consthoist-min-num-to-rebase",
     cl::desc("Do not rebase if number of dependent constants of a Base is less "
              "than this number."),
     cl::init(0), cl::Hidden);
@@ -265,8 +265,7 @@ static void findBestInsertionSet(DominatorTree &DT, BlockFrequencyInfo &BFI,
   }
 
   // Visit Orders in bottom-up order.
-  using InsertPtsCostPair =
-      std::pair<SetVector<BasicBlock *>, BlockFrequency>;
+  using InsertPtsCostPair = std::pair<SetVector<BasicBlock *>, BlockFrequency>;
 
   // InsertPtsMap is a map from a BB to the best insertion points for the
   // subtree of BB (subtree not including the BB itself).
@@ -554,13 +553,12 @@ void ConstantHoistingPass::collectConstantCandidates(Function &Fn) {
 // function only when we're optimising for size and there are less than 100
 // constants, we fall back to the straightforward algorithm otherwise
 // which does not do all the offset calculations.
-unsigned
-ConstantHoistingPass::maximizeConstantsInRange(ConstCandVecType::iterator S,
-                                           ConstCandVecType::iterator E,
-                                           ConstCandVecType::iterator &MaxCostItr) {
+unsigned ConstantHoistingPass::maximizeConstantsInRange(
+    ConstCandVecType::iterator S, ConstCandVecType::iterator E,
+    ConstCandVecType::iterator &MaxCostItr) {
   unsigned NumUses = 0;
 
-  if (!OptForSize || std::distance(S,E) > 100) {
+  if (!OptForSize || std::distance(S, E) > 100) {
     for (auto ConstCand = S; ConstCand != E; ++ConstCand) {
       NumUses += ConstCand->Uses.size();
       if (ConstCand->CumulativeCost > MaxCostItr->CumulativeCost)
@@ -633,7 +631,7 @@ void ConstantHoistingPass::findAndMakeBaseConstant(
     Type *ConstTy =
         ConstCand->ConstExpr ? ConstCand->ConstExpr->getType() : nullptr;
     ConstInfo.RebasedConstants.push_back(
-      RebasedConstantInfo(std::move(ConstCand->Uses), Offset, ConstTy));
+        RebasedConstantInfo(std::move(ConstCand->Uses), Offset, ConstTy));
   }
   ConstInfoVec.push_back(std::move(ConstInfo));
 }
@@ -643,10 +641,10 @@ void ConstantHoistingPass::findAndMakeBaseConstant(
 void ConstantHoistingPass::findBaseConstants(GlobalVariable *BaseGV) {
   // If BaseGV is nullptr, find base among candidate constant integers;
   // Otherwise find base among constant GEPs that share the same BaseGV.
-  ConstCandVecType &ConstCandVec = BaseGV ?
-      ConstGEPCandMap[BaseGV] : ConstIntCandVec;
-  ConstInfoVecType &ConstInfoVec = BaseGV ?
-      ConstGEPInfoMap[BaseGV] : ConstIntInfoVec;
+  ConstCandVecType &ConstCandVec =
+      BaseGV ? ConstGEPCandMap[BaseGV] : ConstIntCandVec;
+  ConstInfoVecType &ConstInfoVec =
+      BaseGV ? ConstGEPInfoMap[BaseGV] : ConstIntInfoVec;
 
   // Sort the constants by value and type. This invalidates the mapping!
   llvm::stable_sort(ConstCandVec, [](const ConstantCandidate &LHS,
@@ -683,9 +681,11 @@ void ConstantHoistingPass::findBaseConstants(GlobalVariable *BaseGV) {
           TTI->isLegalAddImmediate(Diff.getSExtValue()) &&
           // Check if Diff can be used as offset in addressing mode of the user
           // memory instruction.
-          (!MemUseValTy || TTI->isLegalAddressingMode(MemUseValTy,
-           /*BaseGV*/nullptr, /*BaseOffset*/Diff.getSExtValue(),
-           /*HasBaseReg*/true, /*Scale*/0)))
+          (!MemUseValTy ||
+           TTI->isLegalAddressingMode(MemUseValTy,
+                                      /*BaseGV*/ nullptr,
+                                      /*BaseOffset*/ Diff.getSExtValue(),
+                                      /*HasBaseReg*/ true, /*Scale*/ 0)))
         continue;
     }
     // We either have now a different constant type or the constant is not in
@@ -951,7 +951,6 @@ bool ConstantHoistingPass::runImpl(Function &Fn, TargetTransformInfo &TTI,
   for (const auto &MapEntry : ConstGEPInfoMap)
     if (!MapEntry.second.empty())
       MadeChange |= emitBaseConstants(MapEntry.first);
-
 
   // Cleanup dead instructions.
   deleteDeadCastInst();

@@ -46,8 +46,10 @@ TEST(Unicode, columnWidthUTF8) {
   EXPECT_EQ(3, columnWidthUTF8("\314\200\340\270\201\344\270\200"));
 
   EXPECT_EQ(2, columnWidthUTF8("\342\214\232")); // U+231A WATCH (emoji)
-  EXPECT_EQ(2, columnWidthUTF8("\360\237\253\233")); // U+1FADB PEA POD (Unicode 15 emoji)
-  EXPECT_EQ(2, columnWidthUTF8("\360\233\204\262")); // U+1B132 HIRAGANA LETTER SMALL KO
+  EXPECT_EQ(2, columnWidthUTF8(
+                   "\360\237\253\233")); // U+1FADB PEA POD (Unicode 15 emoji)
+  EXPECT_EQ(2, columnWidthUTF8(
+                   "\360\233\204\262")); // U+1B132 HIRAGANA LETTER SMALL KO
   EXPECT_EQ(2, columnWidthUTF8("\360\227\201\202")); // U+17042 TANGUT IDEOGRAPH
 
   // Invalid UTF-8 strings, columnWidthUTF8 should error out.
@@ -168,7 +170,7 @@ TEST(Unicode, nameToCodepointStrict) {
   EXPECT_EQ(0x0FBF9u, map("ARABIC LIGATURE UIGHUR KIRGHIZ YEH WITH HAMZA "
                           "ABOVE WITH ALEF MAKSURA ISOLATED FORM"));
   EXPECT_EQ(0x11F04u, map("KAWI LETTER A")); // Unicode 15.0
-  EXPECT_EQ(0x1FA77u, map("PINK HEART")); // Unicode 15.0
+  EXPECT_EQ(0x1FA77u, map("PINK HEART"));    // Unicode 15.0
   EXPECT_EQ(0x2FFFu,
             map("IDEOGRAPHIC DESCRIPTION CHARACTER ROTATION")); // Unicode 15.1
 

@@ -169,9 +169,9 @@ public:
 
   /// setDiagnosticHandlerCallBack - This method sets a handler call back
   /// that is invoked when the backend needs to report anything to the user.
-  /// The first argument is a function pointer and the second is a context pointer
-  /// that gets passed into the DiagHandler.  The third argument should be set to
-  /// true if the handler only expects enabled diagnostics.
+  /// The first argument is a function pointer and the second is a context
+  /// pointer that gets passed into the DiagHandler.  The third argument should
+  /// be set to true if the handler only expects enabled diagnostics.
   ///
   /// LLVMContext doesn't take ownership or interpret either of these
   /// pointers.
@@ -189,8 +189,8 @@ public:
   void setDiagnosticHandler(std::unique_ptr<DiagnosticHandler> &&DH,
                             bool RespectFilters = false);
 
-  /// getDiagnosticHandlerCallBack - Return the diagnostic handler call back set by
-  /// setDiagnosticHandlerCallBack.
+  /// getDiagnosticHandlerCallBack - Return the diagnostic handler call back set
+  /// by setDiagnosticHandlerCallBack.
   DiagnosticHandler::DiagnosticHandlerTy getDiagnosticHandlerCallBack() const;
 
   /// getDiagnosticContext - Return the diagnostic context set by
@@ -317,7 +317,7 @@ public:
   ///
   /// The lifetime of the object must be guaranteed to extend as long as the
   /// LLVMContext is used by compilation.
-  void setOptPassGate(OptPassGate&);
+  void setOptPassGate(OptPassGate &);
 
   /// Get or set the current "default" target CPU (target-cpu function
   /// attribute). The intent is that compiler frontends will set this to a value
@@ -341,7 +341,7 @@ private:
 
   /// addModule - Register a module as being instantiated in this context.  If
   /// the context is deleted, the module will be deleted as well.
-  void addModule(Module*);
+  void addModule(Module *);
 
   /// removeModule - Unregister a module from this context.
   void removeModule(Module *);
@@ -352,12 +352,12 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(LLVMContext, LLVMContextRef)
 
 /* Specialized opaque context conversions.
  */
-inline LLVMContext **unwrap(LLVMContextRef* Tys) {
-  return reinterpret_cast<LLVMContext**>(Tys);
+inline LLVMContext **unwrap(LLVMContextRef *Tys) {
+  return reinterpret_cast<LLVMContext **>(Tys);
 }
 
 inline LLVMContextRef *wrap(const LLVMContext **Tys) {
-  return reinterpret_cast<LLVMContextRef*>(const_cast<LLVMContext**>(Tys));
+  return reinterpret_cast<LLVMContextRef *>(const_cast<LLVMContext **>(Tys));
 }
 
 } // end namespace llvm

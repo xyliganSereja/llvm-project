@@ -94,9 +94,8 @@ protected:
   std::optional<SmallVector<SUnit *, 4>> Cache;
 
 public:
-  virtual bool
-  apply(const SUnit *, const ArrayRef<SUnit *>,
-        SmallVectorImpl<SchedGroup> &) {
+  virtual bool apply(const SUnit *, const ArrayRef<SUnit *>,
+                     SmallVectorImpl<SchedGroup> &) {
     return true;
   };
 

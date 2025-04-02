@@ -25,8 +25,8 @@ class PPCTargetMachine;
 
 inline static unsigned getCRFromCRBit(unsigned SrcReg) {
   unsigned Reg = 0;
-  if (SrcReg == PPC::CR0LT || SrcReg == PPC::CR0GT ||
-      SrcReg == PPC::CR0EQ || SrcReg == PPC::CR0UN)
+  if (SrcReg == PPC::CR0LT || SrcReg == PPC::CR0GT || SrcReg == PPC::CR0EQ ||
+      SrcReg == PPC::CR0UN)
     Reg = PPC::CR0;
   else if (SrcReg == PPC::CR1LT || SrcReg == PPC::CR1GT ||
            SrcReg == PPC::CR1EQ || SrcReg == PPC::CR1UN)
@@ -73,7 +73,8 @@ public:
   /// getPointerRegClass - Return the register class to use to hold pointers.
   /// This is used for addressing modes.
   const TargetRegisterClass *
-  getPointerRegClass(const MachineFunction &MF, unsigned Kind=0) const override;
+  getPointerRegClass(const MachineFunction &MF,
+                     unsigned Kind = 0) const override;
 
   unsigned getRegPressureLimit(const TargetRegisterClass *RC,
                                MachineFunction &MF) const override;

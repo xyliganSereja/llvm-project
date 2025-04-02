@@ -73,9 +73,10 @@ using namespace llvm;
 
 static std::atomic<unsigned> GlobalUniqueCallSite;
 
-static cl::opt<bool> sched4reg(
-    "nvptx-sched4reg",
-    cl::desc("NVPTX Specific: schedule for register pressue"), cl::init(false));
+static cl::opt<bool>
+    sched4reg("nvptx-sched4reg",
+              cl::desc("NVPTX Specific: schedule for register pressue"),
+              cl::init(false));
 
 static cl::opt<unsigned> FMAContractLevelOpt(
     "nvptx-fma-level", cl::Hidden,
@@ -224,7 +225,7 @@ getVectorLoweringShape(EVT VectorVT) {
     unsigned NPerWord = 32 / EltVT.getSizeInBits();
 
     return std::pair(NumElts / NPerWord,
-                      MVT::getVectorVT(EltVT.getSimpleVT(), NPerWord));
+                     MVT::getVectorVT(EltVT.getSimpleVT(), NPerWord));
   }
 
   llvm_unreachable("All cases in switch should return.");
@@ -256,11 +257,12 @@ static void ComputePTXValueVTs(const TargetLowering &TLI, const DataLayout &DL,
     return;
   }
 
-  // Given a struct type, recursively traverse the elements with custom ComputePTXValueVTs.
+  // Given a struct type, recursively traverse the elements with custom
+  // ComputePTXValueVTs.
   if (StructType *STy = dyn_cast<StructType>(Ty)) {
     auto const *SL = DL.getStructLayout(STy);
     auto ElementNum = 0;
-    for(auto *EI : STy->elements()) {
+    for (auto *EI : STy->elements()) {
       ComputePTXValueVTs(TLI, DL, EI, ValueVTs, Offsets,
                          StartingOffset + SL->getElementOffset(ElementNum));
       ++ElementNum;
@@ -268,12 +270,14 @@ static void ComputePTXValueVTs(const TargetLowering &TLI, const DataLayout &DL,
     return;
   }
 
-  // Given an array type, recursively traverse the elements with custom ComputePTXValueVTs.
+  // Given an array type, recursively traverse the elements with custom
+  // ComputePTXValueVTs.
   if (ArrayType *ATy = dyn_cast<ArrayType>(Ty)) {
     Type *EltTy = ATy->getElementType();
     uint64_t EltSize = DL.getTypeAllocSize(EltTy);
     for (int I : llvm::seq<int>(ATy->getNumElements()))
-      ComputePTXValueVTs(TLI, DL, EltTy, ValueVTs, Offsets, StartingOffset + I * EltSize);
+      ComputePTXValueVTs(TLI, DL, EltTy, ValueVTs, Offsets,
+                         StartingOffset + I * EltSize);
     return;
   }
 
@@ -503,8 +507,8 @@ NVPTXTargetLowering::NVPTXTargetLowering(const NVPTXTargetMachine &TM,
   // instructions, rather
   // then generating calls to memset, mempcy or memmove.
   MaxStoresPerMemset = MaxStoresPerMemsetOptSize = (unsigned)0xFFFFFFFF;
-  MaxStoresPerMemcpy = MaxStoresPerMemcpyOptSize = (unsigned) 0xFFFFFFFF;
-  MaxStoresPerMemmove = MaxStoresPerMemmoveOptSize = (unsigned) 0xFFFFFFFF;
+  MaxStoresPerMemcpy = MaxStoresPerMemcpyOptSize = (unsigned)0xFFFFFFFF;
+  MaxStoresPerMemmove = MaxStoresPerMemmoveOptSize = (unsigned)0xFFFFFFFF;
 
   setBooleanContents(ZeroOrNegativeOneBooleanContent);
   setBooleanVectorContents(ZeroOrNegativeOneBooleanContent);
@@ -546,8 +550,7 @@ NVPTXTargetLowering::NVPTXTargetLowering(const NVPTXTargetMachine &TM,
   auto setBF16OperationAction = [&](unsigned Op, MVT VT, LegalizeAction Action,
                                     LegalizeAction NoBF16Action) {
     bool IsOpSupported = STI.hasNativeBF16Support(Op);
-    setOperationAction(
-        Op, VT, IsOpSupported ? Action : NoBF16Action);
+    setOperationAction(Op, VT, IsOpSupported ? Action : NoBF16Action);
   };
 
   auto setI16x2OperationAction = [&](unsigned Op, MVT VT, LegalizeAction Action,
@@ -650,16 +653,16 @@ NVPTXTargetLowering::NVPTXTargetLowering(const NVPTXTargetMachine &TM,
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i64, Legal);
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i32, Legal);
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i16, Legal);
-  setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i8 , Legal);
+  setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i8, Legal);
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i1, Expand);
   setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::v2i16, Expand);
 
-  setOperationAction(ISD::SHL_PARTS, MVT::i32  , Custom);
-  setOperationAction(ISD::SRA_PARTS, MVT::i32  , Custom);
-  setOperationAction(ISD::SRL_PARTS, MVT::i32  , Custom);
-  setOperationAction(ISD::SHL_PARTS, MVT::i64  , Custom);
-  setOperationAction(ISD::SRA_PARTS, MVT::i64  , Custom);
-  setOperationAction(ISD::SRL_PARTS, MVT::i64  , Custom);
+  setOperationAction(ISD::SHL_PARTS, MVT::i32, Custom);
+  setOperationAction(ISD::SRA_PARTS, MVT::i32, Custom);
+  setOperationAction(ISD::SRL_PARTS, MVT::i32, Custom);
+  setOperationAction(ISD::SHL_PARTS, MVT::i64, Custom);
+  setOperationAction(ISD::SRA_PARTS, MVT::i64, Custom);
+  setOperationAction(ISD::SRL_PARTS, MVT::i64, Custom);
 
   setOperationAction(ISD::BITREVERSE, MVT::i32, Legal);
   setOperationAction(ISD::BITREVERSE, MVT::i64, Legal);
@@ -764,8 +767,8 @@ NVPTXTargetLowering::NVPTXTargetLowering(const NVPTXTargetMachine &TM,
   // Custom handling for i8 intrinsics
   setOperationAction(ISD::INTRINSIC_W_CHAIN, MVT::i8, Custom);
 
-  for (const auto& Ty : {MVT::i16, MVT::i32, MVT::i64}) {
-    setOperationAction(ISD::ABS,  Ty, Legal);
+  for (const auto &Ty : {MVT::i16, MVT::i32, MVT::i64}) {
+    setOperationAction(ISD::ABS, Ty, Legal);
     setOperationAction(ISD::SMIN, Ty, Legal);
     setOperationAction(ISD::SMAX, Ty, Legal);
     setOperationAction(ISD::UMIN, Ty, Legal);
@@ -1135,8 +1138,8 @@ SDValue NVPTXTargetLowering::getSqrtEstimate(SDValue Operand, SelectionDAG &DAG,
   }
 }
 
-SDValue
-NVPTXTargetLowering::LowerGlobalAddress(SDValue Op, SelectionDAG &DAG) const {
+SDValue NVPTXTargetLowering::LowerGlobalAddress(SDValue Op,
+                                                SelectionDAG &DAG) const {
   SDLoc dl(Op);
   const GlobalAddressSDNode *GAN = cast<GlobalAddressSDNode>(Op);
   auto PtrVT = getPointerTy(DAG.getDataLayout(), GAN->getAddressSpace());
@@ -1690,11 +1693,11 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
     if (!IsTypePassedAsArray(RetTy)) {
       resultsz = promoteScalarArgumentSize(resultsz);
       SDVTList DeclareRetVTs = DAG.getVTList(MVT::Other, MVT::Glue);
-      SDValue DeclareRetOps[] = { Chain, DAG.getConstant(1, dl, MVT::i32),
-                                  DAG.getConstant(resultsz, dl, MVT::i32),
-                                  DAG.getConstant(0, dl, MVT::i32), InGlue };
-      Chain = DAG.getNode(NVPTXISD::DeclareRet, dl, DeclareRetVTs,
-                          DeclareRetOps);
+      SDValue DeclareRetOps[] = {Chain, DAG.getConstant(1, dl, MVT::i32),
+                                 DAG.getConstant(resultsz, dl, MVT::i32),
+                                 DAG.getConstant(0, dl, MVT::i32), InGlue};
+      Chain =
+          DAG.getNode(NVPTXISD::DeclareRet, dl, DeclareRetVTs, DeclareRetOps);
       InGlue = Chain.getValue(1);
     } else {
       retAlignment = getArgumentAlignment(CB, RetTy, 0, DL);
@@ -1732,7 +1735,7 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   bool isIndirectCall = (!Func && CB) || ConvertToIndirectCall;
 
   if (isa<ExternalSymbolSDNode>(Callee)) {
-    Function* CalleeFunc = nullptr;
+    Function *CalleeFunc = nullptr;
 
     // Try to find the callee in the current module.
     Callee = DAG.getSymbolFunctionGlobalAddress(Callee, &CalleeFunc);
@@ -1771,10 +1774,10 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   // Op to just print "call"
   SDVTList PrintCallVTs = DAG.getVTList(MVT::Other, MVT::Glue);
   SDValue PrintCallOps[] = {
-    Chain, DAG.getConstant((Ins.size() == 0) ? 0 : 1, dl, MVT::i32), InGlue
-  };
+      Chain, DAG.getConstant((Ins.size() == 0) ? 0 : 1, dl, MVT::i32), InGlue};
   // We model convergent calls as separate opcodes.
-  unsigned Opcode = isIndirectCall ? NVPTXISD::PrintCall : NVPTXISD::PrintCallUni;
+  unsigned Opcode =
+      isIndirectCall ? NVPTXISD::PrintCall : NVPTXISD::PrintCallUni;
   if (CLI.IsConvergent)
     Opcode = Opcode == NVPTXISD::PrintCallUni ? NVPTXISD::PrintConvergentCallUni
                                               : NVPTXISD::PrintConvergentCall;
@@ -1795,15 +1798,15 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
 
   // Ops to print out the function name
   SDVTList CallVoidVTs = DAG.getVTList(MVT::Other, MVT::Glue);
-  SDValue CallVoidOps[] = { Chain, Callee, InGlue };
+  SDValue CallVoidOps[] = {Chain, Callee, InGlue};
   Chain = DAG.getNode(NVPTXISD::CallVoid, dl, CallVoidVTs, CallVoidOps);
   InGlue = Chain.getValue(1);
 
   // Ops to print out the param list
   SDVTList CallArgBeginVTs = DAG.getVTList(MVT::Other, MVT::Glue);
-  SDValue CallArgBeginOps[] = { Chain, InGlue };
-  Chain = DAG.getNode(NVPTXISD::CallArgBegin, dl, CallArgBeginVTs,
-                      CallArgBeginOps);
+  SDValue CallArgBeginOps[] = {Chain, InGlue};
+  Chain =
+      DAG.getNode(NVPTXISD::CallArgBegin, dl, CallArgBeginVTs, CallArgBeginOps);
   InGlue = Chain.getValue(1);
 
   for (unsigned i = 0, e = std::min(CLI.NumFixedArgs + 1, ParamCount); i != e;
@@ -1814,15 +1817,14 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
     else
       opcode = NVPTXISD::CallArg;
     SDVTList CallArgVTs = DAG.getVTList(MVT::Other, MVT::Glue);
-    SDValue CallArgOps[] = { Chain, DAG.getConstant(1, dl, MVT::i32),
-                             DAG.getConstant(i, dl, MVT::i32), InGlue };
+    SDValue CallArgOps[] = {Chain, DAG.getConstant(1, dl, MVT::i32),
+                            DAG.getConstant(i, dl, MVT::i32), InGlue};
     Chain = DAG.getNode(opcode, dl, CallArgVTs, CallArgOps);
     InGlue = Chain.getValue(1);
   }
   SDVTList CallArgEndVTs = DAG.getVTList(MVT::Other, MVT::Glue);
-  SDValue CallArgEndOps[] = { Chain,
-                              DAG.getConstant(isIndirectCall ? 0 : 1, dl, MVT::i32),
-                              InGlue };
+  SDValue CallArgEndOps[] = {
+      Chain, DAG.getConstant(isIndirectCall ? 0 : 1, dl, MVT::i32), InGlue};
   Chain = DAG.getNode(NVPTXISD::CallArgEnd, dl, CallArgEndVTs, CallArgEndOps);
   InGlue = Chain.getValue(1);
 
@@ -1935,8 +1937,7 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
             DAG.getConstant(Offsets[VecIdx], dl, MVT::i32), InGlue};
         SDValue RetVal = DAG.getMemIntrinsicNode(
             Op, dl, DAG.getVTList(LoadVTs), LoadOperands, TheLoadType,
-            MachinePointerInfo(), EltAlign,
-            MachineMemOperand::MOLoad);
+            MachinePointerInfo(), EltAlign, MachineMemOperand::MOLoad);
 
         for (unsigned j = 0; j < NumElts; ++j) {
           ProxyRegOps.push_back(RetVal.getValue(j));
@@ -1962,19 +1963,18 @@ SDValue NVPTXTargetLowering::LowerCall(TargetLowering::CallLoweringInfo &CLI,
   InGlue = Chain.getValue(1);
 
   // Append ProxyReg instructions to the chain to make sure that `callseq_end`
-  // will not get lost. Otherwise, during libcalls expansion, the nodes can become
-  // dangling.
+  // will not get lost. Otherwise, during libcalls expansion, the nodes can
+  // become dangling.
   for (unsigned i = 0; i < ProxyRegOps.size(); ++i) {
     if (i < RetElts.size() && RetElts[i]) {
       InVals.push_back(RetElts[i]);
       continue;
     }
 
-    SDValue Ret = DAG.getNode(
-      NVPTXISD::ProxyReg, dl,
-      DAG.getVTList(ProxyRegOps[i].getSimpleValueType(), MVT::Other, MVT::Glue),
-      { Chain, ProxyRegOps[i], InGlue }
-    );
+    SDValue Ret = DAG.getNode(NVPTXISD::ProxyReg, dl,
+                              DAG.getVTList(ProxyRegOps[i].getSimpleValueType(),
+                                            MVT::Other, MVT::Glue),
+                              {Chain, ProxyRegOps[i], InGlue});
 
     Chain = Ret.getValue(1);
     InGlue = Ret.getValue(2);
@@ -2086,8 +2086,8 @@ SDValue NVPTXTargetLowering::LowerSTACKSAVE(SDValue Op,
 // By default CONCAT_VECTORS is lowered by ExpandVectorBuildThroughStack()
 // (see LegalizeDAG.cpp). This is slow and uses local memory.
 // We use extract/insert/build vector just as what LegalizeOp() does in llvm 2.5
-SDValue
-NVPTXTargetLowering::LowerCONCAT_VECTORS(SDValue Op, SelectionDAG &DAG) const {
+SDValue NVPTXTargetLowering::LowerCONCAT_VECTORS(SDValue Op,
+                                                 SelectionDAG &DAG) const {
   SDNode *Node = Op.getNode();
   SDLoc dl(Node);
   SmallVector<SDValue, 8> Ops;
@@ -2294,7 +2294,7 @@ SDValue NVPTXTargetLowering::LowerShiftRightParts(SDValue Op,
   SDLoc dl(Op);
   SDValue ShOpLo = Op.getOperand(0);
   SDValue ShOpHi = Op.getOperand(1);
-  SDValue ShAmt  = Op.getOperand(2);
+  SDValue ShAmt = Op.getOperand(2);
   unsigned Opc = (Op.getOpcode() == ISD::SRA_PARTS) ? ISD::SRA : ISD::SRL;
 
   if (VTBits == 32 && STI.getSmVersion() >= 35) {
@@ -2307,10 +2307,9 @@ SDValue NVPTXTargetLowering::LowerShiftRightParts(SDValue Op,
     SDValue Lo =
         DAG.getNode(NVPTXISD::FSHR_CLAMP, dl, VT, ShOpHi, ShOpLo, ShAmt);
 
-    SDValue Ops[2] = { Lo, Hi };
+    SDValue Ops[2] = {Lo, Hi};
     return DAG.getMergeValues(Ops, dl);
-  }
-  else {
+  } else {
     // {dHi, dLo} = {aHi, aLo} >> Amt
     // - if (Amt>=size) then
     //      dLo = aHi >> (Amt-size)
@@ -2319,9 +2318,8 @@ SDValue NVPTXTargetLowering::LowerShiftRightParts(SDValue Op,
     //      dLo = (aLo >>logic Amt) | (aHi << (size-Amt))
     //      dHi = aHi >> Amt
 
-    SDValue RevShAmt = DAG.getNode(ISD::SUB, dl, MVT::i32,
-                                   DAG.getConstant(VTBits, dl, MVT::i32),
-                                   ShAmt);
+    SDValue RevShAmt = DAG.getNode(
+        ISD::SUB, dl, MVT::i32, DAG.getConstant(VTBits, dl, MVT::i32), ShAmt);
     SDValue Tmp1 = DAG.getNode(ISD::SRL, dl, VT, ShOpLo, ShAmt);
     SDValue ExtraShAmt = DAG.getNode(ISD::SUB, dl, MVT::i32, ShAmt,
                                      DAG.getConstant(VTBits, dl, MVT::i32));
@@ -2329,13 +2327,12 @@ SDValue NVPTXTargetLowering::LowerShiftRightParts(SDValue Op,
     SDValue FalseVal = DAG.getNode(ISD::OR, dl, VT, Tmp1, Tmp2);
     SDValue TrueVal = DAG.getNode(Opc, dl, VT, ShOpHi, ExtraShAmt);
 
-    SDValue Cmp = DAG.getSetCC(dl, MVT::i1, ShAmt,
-                               DAG.getConstant(VTBits, dl, MVT::i32),
-                               ISD::SETGE);
+    SDValue Cmp = DAG.getSetCC(
+        dl, MVT::i1, ShAmt, DAG.getConstant(VTBits, dl, MVT::i32), ISD::SETGE);
     SDValue Hi = DAG.getNode(Opc, dl, VT, ShOpHi, ShAmt);
     SDValue Lo = DAG.getNode(ISD::SELECT, dl, VT, Cmp, TrueVal, FalseVal);
 
-    SDValue Ops[2] = { Lo, Hi };
+    SDValue Ops[2] = {Lo, Hi};
     return DAG.getMergeValues(Ops, dl);
   }
 }
@@ -2355,7 +2352,7 @@ SDValue NVPTXTargetLowering::LowerShiftLeftParts(SDValue Op,
   SDLoc dl(Op);
   SDValue ShOpLo = Op.getOperand(0);
   SDValue ShOpHi = Op.getOperand(1);
-  SDValue ShAmt  = Op.getOperand(2);
+  SDValue ShAmt = Op.getOperand(2);
 
   if (VTBits == 32 && STI.getSmVersion() >= 35) {
     // For 32bit and sm35, we can use the funnel shift 'shf' instruction.
@@ -2367,10 +2364,9 @@ SDValue NVPTXTargetLowering::LowerShiftLeftParts(SDValue Op,
         DAG.getNode(NVPTXISD::FSHL_CLAMP, dl, VT, ShOpHi, ShOpLo, ShAmt);
     SDValue Lo = DAG.getNode(ISD::SHL, dl, VT, ShOpLo, ShAmt);
 
-    SDValue Ops[2] = { Lo, Hi };
+    SDValue Ops[2] = {Lo, Hi};
     return DAG.getMergeValues(Ops, dl);
-  }
-  else {
+  } else {
     // {dHi, dLo} = {aHi, aLo} << Amt
     // - if (Amt>=size) then
     //      dLo = aLo << Amt (all 0)
@@ -2379,9 +2375,8 @@ SDValue NVPTXTargetLowering::LowerShiftLeftParts(SDValue Op,
     //      dLo = aLo << Amt
     //      dHi = (aHi << Amt) | (aLo >> (size-Amt))
 
-    SDValue RevShAmt = DAG.getNode(ISD::SUB, dl, MVT::i32,
-                                   DAG.getConstant(VTBits, dl, MVT::i32),
-                                   ShAmt);
+    SDValue RevShAmt = DAG.getNode(
+        ISD::SUB, dl, MVT::i32, DAG.getConstant(VTBits, dl, MVT::i32), ShAmt);
     SDValue Tmp1 = DAG.getNode(ISD::SHL, dl, VT, ShOpHi, ShAmt);
     SDValue ExtraShAmt = DAG.getNode(ISD::SUB, dl, MVT::i32, ShAmt,
                                      DAG.getConstant(VTBits, dl, MVT::i32));
@@ -2389,13 +2384,12 @@ SDValue NVPTXTargetLowering::LowerShiftLeftParts(SDValue Op,
     SDValue FalseVal = DAG.getNode(ISD::OR, dl, VT, Tmp1, Tmp2);
     SDValue TrueVal = DAG.getNode(ISD::SHL, dl, VT, ShOpLo, ExtraShAmt);
 
-    SDValue Cmp = DAG.getSetCC(dl, MVT::i1, ShAmt,
-                               DAG.getConstant(VTBits, dl, MVT::i32),
-                               ISD::SETGE);
+    SDValue Cmp = DAG.getSetCC(
+        dl, MVT::i1, ShAmt, DAG.getConstant(VTBits, dl, MVT::i32), ISD::SETGE);
     SDValue Lo = DAG.getNode(ISD::SHL, dl, VT, ShOpLo, ShAmt);
     SDValue Hi = DAG.getNode(ISD::SELECT, dl, VT, Cmp, TrueVal, FalseVal);
 
-    SDValue Ops[2] = { Lo, Hi };
+    SDValue Ops[2] = {Lo, Hi};
     return DAG.getMergeValues(Ops, dl);
   }
 }
@@ -2445,7 +2439,7 @@ SDValue NVPTXTargetLowering::LowerFROUND32(SDValue Op,
   SDValue AbsA = DAG.getNode(ISD::FABS, SL, VT, A);
 
   // RoundedA = (float) (int) ( A > 0 ? (A + 0.5f) : (A - 0.5f))
-  SDValue Bitcast  = DAG.getNode(ISD::BITCAST, SL, MVT::i32, A);
+  SDValue Bitcast = DAG.getNode(ISD::BITCAST, SL, MVT::i32, A);
   const unsigned SignBitMask = 0x80000000;
   SDValue Sign = DAG.getNode(ISD::AND, SL, MVT::i32, Bitcast,
                              DAG.getConstant(SignBitMask, SL, MVT::i32));
@@ -2466,8 +2460,8 @@ SDValue NVPTXTargetLowering::LowerFROUND32(SDValue Op,
   RoundedA = DAG.getNode(ISD::SELECT, SL, VT, IsLarge, A, RoundedA);
 
   // return abs(A) < 0.5 ? (float)(int)A : RoundedA;
-  SDValue IsSmall =DAG.getSetCC(SL, SetCCVT, AbsA,
-                                DAG.getConstantFP(0.5, SL, VT), ISD::SETOLT);
+  SDValue IsSmall = DAG.getSetCC(SL, SetCCVT, AbsA,
+                                 DAG.getConstantFP(0.5, SL, VT), ISD::SETOLT);
   SDValue RoundedAForSmallA = DAG.getNode(ISD::FTRUNC, SL, VT, A);
   return DAG.getNode(ISD::SELECT, SL, VT, IsSmall, RoundedAForSmallA, RoundedA);
 }
@@ -2486,17 +2480,16 @@ SDValue NVPTXTargetLowering::LowerFROUND64(SDValue Op,
   SDValue AbsA = DAG.getNode(ISD::FABS, SL, VT, A);
 
   // double RoundedA = (double) (int) (abs(A) + 0.5f);
-  SDValue AdjustedA = DAG.getNode(ISD::FADD, SL, VT, AbsA,
-                                  DAG.getConstantFP(0.5, SL, VT));
+  SDValue AdjustedA =
+      DAG.getNode(ISD::FADD, SL, VT, AbsA, DAG.getConstantFP(0.5, SL, VT));
   SDValue RoundedA = DAG.getNode(ISD::FTRUNC, SL, VT, AdjustedA);
 
   // RoundedA = abs(A) < 0.5 ? (double)0 : RoundedA;
   EVT SetCCVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
-  SDValue IsSmall =DAG.getSetCC(SL, SetCCVT, AbsA,
-                                DAG.getConstantFP(0.5, SL, VT), ISD::SETOLT);
+  SDValue IsSmall = DAG.getSetCC(SL, SetCCVT, AbsA,
+                                 DAG.getConstantFP(0.5, SL, VT), ISD::SETOLT);
   RoundedA = DAG.getNode(ISD::SELECT, SL, VT, IsSmall,
-                         DAG.getConstantFP(0, SL, VT),
-                         RoundedA);
+                         DAG.getConstantFP(0, SL, VT), RoundedA);
 
   // Add sign to rounded_A
   RoundedA = DAG.getNode(ISD::FCOPYSIGN, SL, VT, RoundedA, A);
@@ -2645,8 +2638,8 @@ static SDValue LowerVectorArith(SDValue Op, SelectionDAG &DAG) {
   return V;
 }
 
-SDValue
-NVPTXTargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+SDValue NVPTXTargetLowering::LowerOperation(SDValue Op,
+                                            SelectionDAG &DAG) const {
   switch (Op.getOpcode()) {
   case ISD::RETURNADDR:
     return SDValue();
@@ -2873,15 +2866,15 @@ SDValue NVPTXTargetLowering::LowerLOADi1(SDValue Op, SelectionDAG &DAG) const {
   assert(LD->getExtensionType() == ISD::NON_EXTLOAD);
   assert(Node->getValueType(0) == MVT::i1 &&
          "Custom lowering for i1 load only");
-  SDValue newLD = DAG.getExtLoad(ISD::ZEXTLOAD, dl, MVT::i16, LD->getChain(),
-                                 LD->getBasePtr(), LD->getPointerInfo(),
-                                 MVT::i8, LD->getAlign(),
-                                 LD->getMemOperand()->getFlags());
+  SDValue newLD =
+      DAG.getExtLoad(ISD::ZEXTLOAD, dl, MVT::i16, LD->getChain(),
+                     LD->getBasePtr(), LD->getPointerInfo(), MVT::i8,
+                     LD->getAlign(), LD->getMemOperand()->getFlags());
   SDValue result = DAG.getNode(ISD::TRUNCATE, dl, MVT::i1, newLD);
   // The legalizer (the caller) is expecting two values from the legalized
   // load, so we build a MergeValues node for it. See ExpandUnalignedLoad()
   // in LegalizeDAG.cpp which also uses MergeValues.
-  SDValue Ops[] = { result, LD->getChain() };
+  SDValue Ops[] = {result, LD->getChain()};
   return DAG.getMergeValues(Ops, dl);
 }
 
@@ -2909,8 +2902,8 @@ SDValue NVPTXTargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
   return SDValue();
 }
 
-SDValue
-NVPTXTargetLowering::LowerSTOREVector(SDValue Op, SelectionDAG &DAG) const {
+SDValue NVPTXTargetLowering::LowerSTOREVector(SDValue Op,
+                                              SelectionDAG &DAG) const {
   SDNode *N = Op.getNode();
   SDValue Val = N->getOperand(1);
   SDLoc DL(N);
@@ -3436,9 +3429,10 @@ void NVPTXTargetLowering::LowerAsmOperandForConstraint(
 // because we need the information that is only available in the "Value" type
 // of destination
 // pointer. In particular, the address space information.
-bool NVPTXTargetLowering::getTgtMemIntrinsic(
-    IntrinsicInfo &Info, const CallInst &I,
-    MachineFunction &MF, unsigned Intrinsic) const {
+bool NVPTXTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
+                                             const CallInst &I,
+                                             MachineFunction &MF,
+                                             unsigned Intrinsic) const {
   switch (Intrinsic) {
   default:
     return false;
@@ -3868,7 +3862,7 @@ bool NVPTXTargetLowering::getTgtMemIntrinsic(
     Info.opc = ISD::INTRINSIC_W_CHAIN;
     if (Intrinsic == Intrinsic::nvvm_ldu_global_i)
       Info.memVT = getValueType(DL, I.getType());
-    else if(Intrinsic == Intrinsic::nvvm_ldu_global_p)
+    else if (Intrinsic == Intrinsic::nvvm_ldu_global_p)
       Info.memVT = getPointerTy(DL);
     else
       Info.memVT = getValueType(DL, I.getType());
@@ -4344,7 +4338,8 @@ std::string NVPTXTargetLowering::getParamName(const Function *F,
 /// (CodeGenPrepare.cpp)
 bool NVPTXTargetLowering::isLegalAddressingMode(const DataLayout &DL,
                                                 const AddrMode &AM, Type *Ty,
-                                                unsigned AS, Instruction *I) const {
+                                                unsigned AS,
+                                                Instruction *I) const {
   // AddrMode - This represents an addressing mode of:
   //    BaseGV + BaseOffs + BaseReg + Scale*ScaleReg
   //
@@ -4642,8 +4637,8 @@ static SDValue PerformADDCombine(SDNode *N,
 /// PerformFADDCombine - Target-specific dag combine xforms for ISD::FADD.
 ///
 static SDValue PerformFADDCombine(SDNode *N,
-                                 TargetLowering::DAGCombinerInfo &DCI,
-                                 CodeGenOptLevel OptLevel) {
+                                  TargetLowering::DAGCombinerInfo &DCI,
+                                  CodeGenOptLevel OptLevel) {
   SDValue N0 = N->getOperand(0);
   SDValue N1 = N->getOperand(1);
 
@@ -4742,8 +4737,8 @@ static SDValue PerformANDCombine(SDNode *N,
     bool AddTo = false;
     if (AExt.getNode() != nullptr) {
       // Re-insert the ext as a zext.
-      Val = DCI.DAG.getNode(ISD::ZERO_EXTEND, SDLoc(N),
-                            AExt.getValueType(), Val);
+      Val =
+          DCI.DAG.getNode(ISD::ZERO_EXTEND, SDLoc(N), AExt.getValueType(), Val);
       AddTo = true;
     }
 
@@ -4785,17 +4780,12 @@ static SDValue PerformREMCombine(SDNode *N,
   return SDValue();
 }
 
-enum OperandSignedness {
-  Signed = 0,
-  Unsigned,
-  Unknown
-};
+enum OperandSignedness { Signed = 0, Unsigned, Unknown };
 
 /// IsMulWideOperandDemotable - Checks if the provided DAG node is an operand
 /// that can be demoted to \p OptSize bits without loss of information. The
 /// signedness of the operand, if determinable, is placed in \p S.
-static bool IsMulWideOperandDemotable(SDValue Op,
-                                      unsigned OptSize,
+static bool IsMulWideOperandDemotable(SDValue Op, unsigned OptSize,
                                       OperandSignedness &S) {
   S = Unknown;
 
@@ -4822,8 +4812,7 @@ static bool IsMulWideOperandDemotable(SDValue Op,
 /// contain a constant, it should appear as the RHS operand. The signedness of
 /// the operands is placed in \p IsSigned.
 static bool AreMulWideOperandsDemotable(SDValue LHS, SDValue RHS,
-                                        unsigned OptSize,
-                                        bool &IsSigned) {
+                                        unsigned OptSize, bool &IsSigned) {
   OperandSignedness LHSSign;
 
   // The LHS operand must be a demotable op
@@ -4908,10 +4897,8 @@ static SDValue TryMULWIDECombine(SDNode *N,
 
   // Truncate the operands to the correct size. Note that these are just for
   // type consistency and will (likely) be eliminated in later phases.
-  SDValue TruncLHS =
-    DCI.DAG.getNode(ISD::TRUNCATE, DL, DemotedVT, LHS);
-  SDValue TruncRHS =
-    DCI.DAG.getNode(ISD::TRUNCATE, DL, DemotedVT, RHS);
+  SDValue TruncLHS = DCI.DAG.getNode(ISD::TRUNCATE, DL, DemotedVT, LHS);
+  SDValue TruncRHS = DCI.DAG.getNode(ISD::TRUNCATE, DL, DemotedVT, RHS);
 
   unsigned Opc;
   if (Signed) {
@@ -5212,36 +5199,37 @@ SDValue NVPTXTargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
   CodeGenOptLevel OptLevel = getTargetMachine().getOptLevel();
   switch (N->getOpcode()) {
-    default: break;
-    case ISD::ADD:
-      return PerformADDCombine(N, DCI, OptLevel);
-    case ISD::FADD:
-      return PerformFADDCombine(N, DCI, OptLevel);
-    case ISD::MUL:
-      return PerformMULCombine(N, DCI, OptLevel);
-    case ISD::SHL:
-      return PerformSHLCombine(N, DCI, OptLevel);
-    case ISD::AND:
-      return PerformANDCombine(N, DCI);
-    case ISD::UREM:
-    case ISD::SREM:
-      return PerformREMCombine(N, DCI, OptLevel);
-    case ISD::SETCC:
-      return PerformSETCCCombine(N, DCI, STI.getSmVersion());
-    case NVPTXISD::StoreRetval:
-    case NVPTXISD::StoreRetvalV2:
-    case NVPTXISD::StoreRetvalV4:
-      return PerformStoreRetvalCombine(N);
-    case NVPTXISD::StoreParam:
-    case NVPTXISD::StoreParamV2:
-    case NVPTXISD::StoreParamV4:
-      return PerformStoreParamCombine(N);
-    case ISD::EXTRACT_VECTOR_ELT:
-      return PerformEXTRACTCombine(N, DCI);
-    case ISD::VSELECT:
-      return PerformVSELECTCombine(N, DCI);
-    case ISD::BUILD_VECTOR:
-      return PerformBUILD_VECTORCombine(N, DCI);
+  default:
+    break;
+  case ISD::ADD:
+    return PerformADDCombine(N, DCI, OptLevel);
+  case ISD::FADD:
+    return PerformFADDCombine(N, DCI, OptLevel);
+  case ISD::MUL:
+    return PerformMULCombine(N, DCI, OptLevel);
+  case ISD::SHL:
+    return PerformSHLCombine(N, DCI, OptLevel);
+  case ISD::AND:
+    return PerformANDCombine(N, DCI);
+  case ISD::UREM:
+  case ISD::SREM:
+    return PerformREMCombine(N, DCI, OptLevel);
+  case ISD::SETCC:
+    return PerformSETCCCombine(N, DCI, STI.getSmVersion());
+  case NVPTXISD::StoreRetval:
+  case NVPTXISD::StoreRetvalV2:
+  case NVPTXISD::StoreRetvalV4:
+    return PerformStoreRetvalCombine(N);
+  case NVPTXISD::StoreParam:
+  case NVPTXISD::StoreParamV2:
+  case NVPTXISD::StoreParamV4:
+    return PerformStoreParamCombine(N);
+  case ISD::EXTRACT_VECTOR_ELT:
+    return PerformEXTRACTCombine(N, DCI);
+  case ISD::VSELECT:
+    return PerformVSELECTCombine(N, DCI);
+  case ISD::BUILD_VECTOR:
+    return PerformBUILD_VECTORCombine(N, DCI);
   }
   return SDValue();
 }
@@ -5317,7 +5305,7 @@ static void ReplaceLoadVector(SDNode *N, SelectionDAG &DAG,
     break;
   case 4: {
     Opcode = NVPTXISD::LoadV4;
-    EVT ListVTs[] = { EltVT, EltVT, EltVT, EltVT, MVT::Other };
+    EVT ListVTs[] = {EltVT, EltVT, EltVT, EltVT, MVT::Other};
     LdResVTs = DAG.getVTList(ListVTs);
     break;
   }
@@ -5330,9 +5318,8 @@ static void ReplaceLoadVector(SDNode *N, SelectionDAG &DAG,
   // pass along the extension information
   OtherOps.push_back(DAG.getIntPtrConstant(LD->getExtensionType(), DL));
 
-  SDValue NewLD = DAG.getMemIntrinsicNode(Opcode, DL, LdResVTs, OtherOps,
-                                          LD->getMemoryVT(),
-                                          LD->getMemOperand());
+  SDValue NewLD = DAG.getMemIntrinsicNode(
+      Opcode, DL, LdResVTs, OtherOps, LD->getMemoryVT(), LD->getMemOperand());
 
   SmallVector<SDValue> ScalarRes;
   assert(NumElts <= ResVT.getVectorNumElements() &&
@@ -5409,7 +5396,7 @@ static void ReplaceINTRINSIC_W_CHAIN(SDNode *N, SelectionDAG &DAG,
         break;
       case 4: {
         Opcode = NVPTXISD::LDUV4;
-        EVT ListVTs[] = { EltVT, EltVT, EltVT, EltVT, MVT::Other };
+        EVT ListVTs[] = {EltVT, EltVT, EltVT, EltVT, MVT::Other};
         LdResVTs = DAG.getVTList(ListVTs);
         break;
       }
@@ -5426,9 +5413,9 @@ static void ReplaceINTRINSIC_W_CHAIN(SDNode *N, SelectionDAG &DAG,
 
       MemIntrinsicSDNode *MemSD = cast<MemIntrinsicSDNode>(N);
 
-      SDValue NewLD = DAG.getMemIntrinsicNode(Opcode, DL, LdResVTs, OtherOps,
-                                              MemSD->getMemoryVT(),
-                                              MemSD->getMemOperand());
+      SDValue NewLD =
+          DAG.getMemIntrinsicNode(Opcode, DL, LdResVTs, OtherOps,
+                                  MemSD->getMemoryVT(), MemSD->getMemOperand());
 
       SmallVector<SDValue, 4> ScalarRes;
 
@@ -5442,8 +5429,7 @@ static void ReplaceINTRINSIC_W_CHAIN(SDNode *N, SelectionDAG &DAG,
 
       SDValue LoadChain = NewLD.getValue(NumElts);
 
-      SDValue BuildVec =
-          DAG.getBuildVector(ResVT, DL, ScalarRes);
+      SDValue BuildVec = DAG.getBuildVector(ResVT, DL, ScalarRes);
 
       Results.push_back(BuildVec);
       Results.push_back(LoadChain);
@@ -5466,8 +5452,8 @@ static void ReplaceINTRINSIC_W_CHAIN(SDNode *N, SelectionDAG &DAG,
           DAG.getMemIntrinsicNode(ISD::INTRINSIC_W_CHAIN, DL, LdResVTs, Ops,
                                   MVT::i8, MemSD->getMemOperand());
 
-      Results.push_back(DAG.getNode(ISD::TRUNCATE, DL, MVT::i8,
-                                    NewLD.getValue(0)));
+      Results.push_back(
+          DAG.getNode(ISD::TRUNCATE, DL, MVT::i8, NewLD.getValue(0)));
       Results.push_back(NewLD.getValue(1));
     }
   }
@@ -5498,8 +5484,9 @@ static void ReplaceCopyFromReg_128(SDNode *N, SelectionDAG &DAG,
   Results.push_back(NewValue.getValue(3));
 }
 
-void NVPTXTargetLowering::ReplaceNodeResults(
-    SDNode *N, SmallVectorImpl<SDValue> &Results, SelectionDAG &DAG) const {
+void NVPTXTargetLowering::ReplaceNodeResults(SDNode *N,
+                                             SmallVectorImpl<SDValue> &Results,
+                                             SelectionDAG &DAG) const {
   switch (N->getOpcode()) {
   default:
     report_fatal_error("Unhandled custom legalization");

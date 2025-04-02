@@ -547,7 +547,8 @@ static int dumpSymtab(int argc, char **argv) {
       }
 
       if (TT.isOSBinFormatCOFF() && Sym.isWeak() && Sym.isIndirect())
-        outs() << "         fallback " << Sym.getCOFFWeakExternalFallback() << '\n';
+        outs() << "         fallback " << Sym.getCOFFWeakExternalFallback()
+               << '\n';
 
       if (!Sym.getSectionName().empty())
         outs() << "         section " << Sym.getSectionName() << "\n";

@@ -178,9 +178,7 @@ public:
   }
 
   LLVM_DUMP_METHOD
-  void dump() {
-    print(dbgs());
-  }
+  void dump() { print(dbgs()); }
 
   Use *getCheckUse() const { return CheckUse; }
 
@@ -910,10 +908,10 @@ PreservedAnalyses IRCEPass::run(Function &F, FunctionAnalysisManager &AM) {
 
   // Get BFI analysis result on demand. Please note that modification of
   // CFG invalidates this analysis and we should handle it.
-  auto getBFI = [&F, &AM ]()->BlockFrequencyInfo & {
+  auto getBFI = [&F, &AM]() -> BlockFrequencyInfo & {
     return AM.getResult<BlockFrequencyAnalysis>(F);
   };
-  InductiveRangeCheckElimination IRCE(SE, &BPI, DT, LI, { getBFI });
+  InductiveRangeCheckElimination IRCE(SE, &BPI, DT, LI, {getBFI});
 
   bool Changed = false;
   {
@@ -1021,7 +1019,8 @@ bool InductiveRangeCheckElimination::run(
     return Changed;
 
   auto PrintRecognizedRangeChecks = [&](raw_ostream &OS) {
-    OS << "irce: looking at loop "; L->print(OS);
+    OS << "irce: looking at loop ";
+    L->print(OS);
     OS << "irce: loop has " << RangeChecks.size()
        << " inductive range checks: \n";
     for (InductiveRangeCheck &IRC : RangeChecks)
@@ -1043,8 +1042,8 @@ bool InductiveRangeCheckElimination::run(
     return Changed;
   }
   LoopStructure LS = *MaybeLoopStructure;
-  const SCEVAddRecExpr *IndVar =
-      cast<SCEVAddRecExpr>(SE.getMinusSCEV(SE.getSCEV(LS.IndVarBase), SE.getSCEV(LS.IndVarStep)));
+  const SCEVAddRecExpr *IndVar = cast<SCEVAddRecExpr>(
+      SE.getMinusSCEV(SE.getSCEV(LS.IndVarBase), SE.getSCEV(LS.IndVarStep)));
 
   std::optional<InductiveRangeCheck::Range> SafeIterRange;
 
@@ -1057,8 +1056,8 @@ bool InductiveRangeCheckElimination::run(
       LS.IsSignedPredicate ? IntersectSignedRange : IntersectUnsignedRange;
 
   for (InductiveRangeCheck &IRC : RangeChecks) {
-    auto Result = IRC.computeSafeIterationSpace(SE, IndVar,
-                                                LS.IsSignedPredicate);
+    auto Result =
+        IRC.computeSafeIterationSpace(SE, IndVar, LS.IsSignedPredicate);
     if (Result) {
       auto MaybeSafeIterRange = IntersectRange(SE, SafeIterRange, *Result);
       if (MaybeSafeIterRange) {

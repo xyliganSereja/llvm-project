@@ -25,4 +25,3 @@ static_assert(std::is_trivially_copyable_v<SlotIndex>, "trivially copyable");
 static_assert(std::is_trivially_copyable_v<IdentifyingPassPtr>,
               "trivially copyable");
 #endif
-

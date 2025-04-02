@@ -254,7 +254,8 @@ void alignAndPadAlloca(memtag::AllocaInfo &Info, llvm::Align Alignment) {
 
   // TODO: Remove when typed pointers dropped
   if (Info.AI->getType() != NewAI->getType())
-    NewPtr = new BitCastInst(NewAI, Info.AI->getType(), "", Info.AI->getIterator());
+    NewPtr =
+        new BitCastInst(NewAI, Info.AI->getType(), "", Info.AI->getIterator());
 
   Info.AI->replaceAllUsesWith(NewPtr);
   Info.AI->eraseFromParent();

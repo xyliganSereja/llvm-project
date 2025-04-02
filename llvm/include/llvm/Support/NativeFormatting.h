@@ -41,7 +41,6 @@ void write_hex(raw_ostream &S, uint64_t N, HexPrintStyle Style,
                std::optional<size_t> Width = std::nullopt);
 void write_double(raw_ostream &S, double D, FloatStyle Style,
                   std::optional<size_t> Precision = std::nullopt);
-}
+} // namespace llvm
 
 #endif
-

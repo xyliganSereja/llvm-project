@@ -24,7 +24,7 @@ using testing::UnorderedElementsAreArray;
 
 static const auto HasPoints = [](const std::vector<int> &Indices) {
   return Field(&BenchmarkClustering::Cluster::PointIndices,
-                 UnorderedElementsAreArray(Indices));
+               UnorderedElementsAreArray(Indices));
 };
 
 TEST(ClusteringTest, Clusters3D) {
@@ -56,12 +56,12 @@ TEST(ClusteringTest, Clusters3D) {
   ASSERT_TRUE((bool)Clustering);
   EXPECT_THAT(Clustering.get().getValidClusters(),
               UnorderedElementsAre(HasPoints({0, 3}), HasPoints({1, 4})));
-  EXPECT_THAT(Clustering.get().getCluster(
-                  BenchmarkClustering::ClusterId::noise()),
-              HasPoints({5}));
-  EXPECT_THAT(Clustering.get().getCluster(
-                  BenchmarkClustering::ClusterId::error()),
-              HasPoints({2}));
+  EXPECT_THAT(
+      Clustering.get().getCluster(BenchmarkClustering::ClusterId::noise()),
+      HasPoints({5}));
+  EXPECT_THAT(
+      Clustering.get().getCluster(BenchmarkClustering::ClusterId::error()),
+      HasPoints({2}));
 
   EXPECT_EQ(Clustering.get().getClusterIdForPoint(2),
             BenchmarkClustering::ClusterId::error());
@@ -80,10 +80,9 @@ TEST(ClusteringTest, Clusters3D_InvalidSize) {
                             BenchmarkMeasure::Create("z", 1.98, {})};
   Points[1].Measurements = {BenchmarkMeasure::Create("y", 1.02, {}),
                             BenchmarkMeasure::Create("z", 1.98, {})};
-  auto Error =
-      BenchmarkClustering::create(
-          Points, BenchmarkClustering::ModeE::Dbscan, 2, 0.25)
-          .takeError();
+  auto Error = BenchmarkClustering::create(
+                   Points, BenchmarkClustering::ModeE::Dbscan, 2, 0.25)
+                   .takeError();
   ASSERT_TRUE((bool)Error);
   consumeError(std::move(Error));
 }
@@ -94,10 +93,9 @@ TEST(ClusteringTest, Clusters3D_InvalidOrder) {
                             BenchmarkMeasure::Create("y", 1.02, {})};
   Points[1].Measurements = {BenchmarkMeasure::Create("y", 1.02, {}),
                             BenchmarkMeasure::Create("x", 1.98, {})};
-  auto Error =
-      BenchmarkClustering::create(
-          Points, BenchmarkClustering::ModeE::Dbscan, 2, 0.25)
-          .takeError();
+  auto Error = BenchmarkClustering::create(
+                   Points, BenchmarkClustering::ModeE::Dbscan, 2, 0.25)
+                   .takeError();
   ASSERT_TRUE((bool)Error);
   consumeError(std::move(Error));
 }

@@ -119,8 +119,8 @@ public:
     return order() < Other.order();
   }
 
-    // Subclasses should implement:
-    // static uint32_t hash(StringRef Name);
+  // Subclasses should implement:
+  // static uint32_t hash(StringRef Name);
 
 #ifndef NDEBUG
   virtual void print(raw_ostream &OS) const = 0;
@@ -204,7 +204,7 @@ public:
   AccelTable() : AccelTableBase(DataT::hash) {}
 
   template <typename... Types>
-  void addName(DwarfStringPoolEntryRef Name, Types &&... Args);
+  void addName(DwarfStringPoolEntryRef Name, Types &&...Args);
   void clear() { Entries.clear(); }
   void addEntries(AccelTable<DataT> &Table);
   const StringEntries getEntries() const { return Entries; }
@@ -213,7 +213,7 @@ public:
 template <typename AccelTableDataT>
 template <typename... Types>
 void AccelTable<AccelTableDataT>::addName(DwarfStringPoolEntryRef Name,
-                                          Types &&... Args) {
+                                          Types &&...Args) {
   assert(Buckets.empty() && "Already finalized!");
   // If the string is in the list already then add this die to the list
   // otherwise add a new one.

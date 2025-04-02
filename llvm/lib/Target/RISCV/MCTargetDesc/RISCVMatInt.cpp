@@ -188,8 +188,7 @@ static void generateInstSeqLeadingZeros(int64_t Val, const MCSubtargetInfo &STI,
   generateInstSeqImpl(ShiftedVal, STI, TmpSeq);
 
   // Keep the new sequence if it is an improvement or the original is empty.
-  if ((TmpSeq.size() + 1) < Res.size() ||
-      (Res.empty() && TmpSeq.size() < 8)) {
+  if ((TmpSeq.size() + 1) < Res.size() || (Res.empty() && TmpSeq.size() < 8)) {
     TmpSeq.emplace_back(RISCV::SRLI, LeadingZeros);
     Res = TmpSeq;
   }
@@ -200,8 +199,7 @@ static void generateInstSeqLeadingZeros(int64_t Val, const MCSubtargetInfo &STI,
   generateInstSeqImpl(ShiftedVal, STI, TmpSeq);
 
   // Keep the new sequence if it is an improvement or the original is empty.
-  if ((TmpSeq.size() + 1) < Res.size() ||
-      (Res.empty() && TmpSeq.size() < 8)) {
+  if ((TmpSeq.size() + 1) < Res.size() || (Res.empty() && TmpSeq.size() < 8)) {
     TmpSeq.emplace_back(RISCV::SRLI, LeadingZeros);
     Res = TmpSeq;
   }

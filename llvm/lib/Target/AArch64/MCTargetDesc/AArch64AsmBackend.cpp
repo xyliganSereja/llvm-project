@@ -32,6 +32,7 @@ namespace {
 class AArch64AsmBackend : public MCAsmBackend {
   static const unsigned PCRelFlagVal =
       MCFixupKindInfo::FKF_IsAlignedDownTo32Bits | MCFixupKindInfo::FKF_IsPCRel;
+
 protected:
   Triple TheTriple;
 
@@ -63,7 +64,7 @@ public:
         {"fixup_aarch64_ldst_imm12_scale16", 10, 12, 0},
         {"fixup_aarch64_ldr_pcrel_imm19", 5, 19, PCRelFlagVal},
         {"fixup_aarch64_movw", 5, 16, 0},
-        {"fixup_aarch64_pcrel_branch9", 5, 9,  PCRelFlagVal},
+        {"fixup_aarch64_pcrel_branch9", 5, 9, PCRelFlagVal},
         {"fixup_aarch64_pcrel_branch14", 5, 14, PCRelFlagVal},
         {"fixup_aarch64_pcrel_branch16", 5, 16, PCRelFlagVal},
         {"fixup_aarch64_pcrel_branch19", 5, 19, PCRelFlagVal},
@@ -291,8 +292,7 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, const MCValue &Target,
 
     if (RefKind & AArch64MCExpr::VK_NC) {
       Value &= 0xFFFF;
-    }
-    else if (AArch64MCExpr::getSymbolLoc(RefKind) == AArch64MCExpr::VK_SABS) {
+    } else if (AArch64MCExpr::getSymbolLoc(RefKind) == AArch64MCExpr::VK_SABS) {
       if (SignedValue > 0xFFFF || SignedValue < -0xFFFF)
         Ctx.reportError(Fixup.getLoc(), "fixup value out of range");
 
@@ -300,8 +300,7 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, const MCValue &Target,
       if (SignedValue < 0)
         SignedValue = ~SignedValue;
       Value = static_cast<uint64_t>(SignedValue);
-    }
-    else if (Value > 0xFFFF) {
+    } else if (Value > 0xFFFF) {
       Ctx.reportError(Fixup.getLoc(), "fixup value out of range");
     }
     return Value;
@@ -365,7 +364,7 @@ AArch64AsmBackend::getFixupKind(StringRef Name) const {
     return std::nullopt;
 
   unsigned Type = llvm::StringSwitch<unsigned>(Name)
-#define ELF_RELOC(X, Y)  .Case(#X, Y)
+#define ELF_RELOC(X, Y) .Case(#X, Y)
 #include "llvm/BinaryFormat/ELFRelocs/AArch64.def"
 #undef ELF_RELOC
                       .Case("BFD_RELOC_NONE", ELF::R_AARCH64_NONE)
@@ -380,7 +379,8 @@ AArch64AsmBackend::getFixupKind(StringRef Name) const {
 
 /// getFixupKindContainereSizeInBytes - The number of bytes of the
 /// container involved in big endian or 0 if the item is little endian
-unsigned AArch64AsmBackend::getFixupKindContainereSizeInBytes(unsigned Kind) const {
+unsigned
+AArch64AsmBackend::getFixupKindContainereSizeInBytes(unsigned Kind) const {
   if (Endian == llvm::endianness::little)
     return 0;
 
@@ -455,7 +455,8 @@ void AArch64AsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
   assert(Offset + NumBytes <= Data.size() && "Invalid fixup offset!");
 
   // Used to point to big endian bytes.
-  unsigned FulleSizeInBytes = getFixupKindContainereSizeInBytes(Fixup.getKind());
+  unsigned FulleSizeInBytes =
+      getFixupKindContainereSizeInBytes(Fixup.getKind());
 
   // For each byte of the fragment that the fixup touches, mask in the
   // bits from the fixup value.
@@ -581,7 +582,7 @@ enum CompactUnwindEncodings {
   UNWIND_ARM64_FRAME_D14_D15_PAIR = 0x00000800
 };
 
-} // end CU namespace
+} // namespace CU
 
 // FIXME: This should be in a separate file.
 class DarwinAArch64AsmBackend : public AArch64AsmBackend {
@@ -784,7 +785,7 @@ public:
   }
 };
 
-}
+} // namespace
 
 namespace {
 class COFFAArch64AsmBackend : public AArch64AsmBackend {
@@ -797,7 +798,7 @@ public:
     return createAArch64WinCOFFObjectWriter(TheTriple);
   }
 };
-}
+} // namespace
 
 MCAsmBackend *llvm::createAArch64leAsmBackend(const Target &T,
                                               const MCSubtargetInfo &STI,

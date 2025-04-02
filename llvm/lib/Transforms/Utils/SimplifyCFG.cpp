@@ -627,8 +627,7 @@ private:
                ((x & ~mask = y) <=> (x = y OR x = (y |  mask)))
         );
       */
-      if (match(ICI->getOperand(0),
-                m_And(m_Value(RHSVal), m_APInt(RHSC)))) {
+      if (match(ICI->getOperand(0), m_And(m_Value(RHSVal), m_APInt(RHSC)))) {
         APInt Mask = ~*RHSC;
         if (Mask.isPowerOf2() && (C->getValue() & ~Mask) == C->getValue()) {
           // If we already have a value for the switch, it has to match!
@@ -637,8 +636,7 @@ private:
 
           Vals.push_back(C);
           Vals.push_back(
-              ConstantInt::get(C->getContext(),
-                               C->getValue() | Mask));
+              ConstantInt::get(C->getContext(), C->getValue() | Mask));
           UsedICmps++;
           return true;
         }
@@ -650,8 +648,7 @@ private:
                ((x |  mask = y) <=> (x = y OR x = (y & ~mask)))
         );
       */
-      if (match(ICI->getOperand(0),
-                m_Or(m_Value(RHSVal), m_APInt(RHSC)))) {
+      if (match(ICI->getOperand(0), m_Or(m_Value(RHSVal), m_APInt(RHSC)))) {
         APInt Mask = *RHSC;
         if (Mask.isPowerOf2() && (C->getValue() | Mask) == C->getValue()) {
           // If we already have a value for the switch, it has to match!
@@ -659,8 +656,8 @@ private:
             return false;
 
           Vals.push_back(C);
-          Vals.push_back(ConstantInt::get(C->getContext(),
-                                          C->getValue() & ~Mask));
+          Vals.push_back(
+              ConstantInt::get(C->getContext(), C->getValue() & ~Mask));
           UsedICmps++;
           return true;
         }
@@ -1504,7 +1501,8 @@ static bool isSafeToHoistInstr(Instruction *I, unsigned Flags) {
   return true;
 }
 
-static bool passingValueIsAlwaysUndefined(Value *V, Instruction *I, bool PtrValueMayBeModified = false);
+static bool passingValueIsAlwaysUndefined(Value *V, Instruction *I,
+                                          bool PtrValueMayBeModified = false);
 
 /// Helper function for hoistCommonCodeFromSuccessors. Return true if identical
 /// instructions \p I1 and \p I2 can and should be hoisted.
@@ -2342,12 +2340,12 @@ static bool canSinkInstructions(
 // Assuming canSinkInstructions(Blocks) has returned true, sink the last
 // instruction of every block in Blocks to their common successor, commoning
 // into one instruction.
-static void sinkLastInstruction(ArrayRef<BasicBlock*> Blocks) {
+static void sinkLastInstruction(ArrayRef<BasicBlock *> Blocks) {
   auto *BBEnd = Blocks[0]->getTerminator()->getSuccessor(0);
 
   // canSinkInstructions returning true guarantees that every block has at
   // least one non-terminator instruction.
-  SmallVector<Instruction*,4> Insts;
+  SmallVector<Instruction *, 4> Insts;
   for (auto *BB : Blocks) {
     Instruction *I = BB->getTerminator();
     do {
@@ -2359,7 +2357,7 @@ static void sinkLastInstruction(ArrayRef<BasicBlock*> Blocks) {
 
   // We don't need to do any more checking here; canSinkInstructions should
   // have done it all for us.
-  SmallVector<Value*, 4> NewOperands;
+  SmallVector<Value *, 4> NewOperands;
   Instruction *I0 = Insts.front();
   for (unsigned O = 0, E = I0->getNumOperands(); O != E; ++O) {
     // This check is different to that in canSinkInstructions. There, we
@@ -2482,7 +2480,7 @@ static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
   //         \     /
   //         [ end ]
   //
-  SmallVector<BasicBlock*,4> UnconditionalPreds;
+  SmallVector<BasicBlock *, 4> UnconditionalPreds;
   bool HaveNonUnconditionalPredecessors = false;
   for (auto *PredBB : predecessors(BB)) {
     auto *PredBr = dyn_cast<BranchInst>(PredBB->getTerminator());
@@ -2495,8 +2493,8 @@ static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
     return false;
 
   // We take a two-step approach to tail sinking. First we scan from the end of
-  // each block upwards in lockstep. If the n'th instruction from the end of each
-  // block can be sunk, those instructions are added to ValuesToSink and we
+  // each block upwards in lockstep. If the n'th instruction from the end of
+  // each block can be sunk, those instructions are added to ValuesToSink and we
   // carry on. If we can sink an instruction but need to PHI-merge some operands
   // (because they're not identical in each instruction) we add these to
   // PHIOperands.
@@ -2512,10 +2510,9 @@ static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
   }
 
   int ScanIdx = 0;
-  SmallPtrSet<Value*,4> InstructionsToSink;
+  SmallPtrSet<Value *, 4> InstructionsToSink;
   LockstepReverseIterator LRI(UnconditionalPreds);
-  while (LRI.isValid() &&
-         canSinkInstructions(*LRI, PHIOperands)) {
+  while (LRI.isValid() && canSinkInstructions(*LRI, PHIOperands)) {
     LLVM_DEBUG(dbgs() << "SINK: instruction can be sunk: " << *(*LRI)[0]
                       << "\n");
     InstructionsToSink.insert((*LRI).begin(), (*LRI).end());
@@ -2672,8 +2669,8 @@ static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
   // many PHI instructions to be generated (currently only one PHI is allowed
   // per sunk instruction).
   //
-  // We can use InstructionsToSink to discount values needing PHI-merging that will
-  // actually be sunk in a later iteration. This allows us to be more
+  // We can use InstructionsToSink to discount values needing PHI-merging that
+  // will actually be sunk in a later iteration. This allows us to be more
   // aggressive in what we sink. This does allow a false positive where we
   // sink presuming a later value will also be sunk, but stop half way through
   // and never actually sink it which means we produce more PHIs than intended.
@@ -2923,8 +2920,9 @@ static void mergeCompatibleInvokesImpl(ArrayRef<InvokeInst *> Invokes,
       continue;
 
     // Form a PHI out of all the data ops under this index.
-    PHINode *PN = PHINode::Create(
-        U->getType(), /*NumReservedValues=*/Invokes.size(), "", MergedInvoke->getIterator());
+    PHINode *PN =
+        PHINode::Create(U->getType(), /*NumReservedValues=*/Invokes.size(), "",
+                        MergedInvoke->getIterator());
     for (InvokeInst *II : Invokes)
       PN->addIncoming(II->getOperand(U.getOperandNo()), II->getParent());
 
@@ -3144,9 +3142,8 @@ static bool validateAndCostRequiredSelects(BasicBlock *BB, BasicBlock *ThenBB,
                                            InstructionCost &Cost,
                                            const TargetTransformInfo &TTI) {
   TargetTransformInfo::TargetCostKind CostKind =
-    BB->getParent()->hasMinSize()
-    ? TargetTransformInfo::TCK_CodeSize
-    : TargetTransformInfo::TCK_SizeAndLatency;
+      BB->getParent()->hasMinSize() ? TargetTransformInfo::TCK_CodeSize
+                                    : TargetTransformInfo::TCK_SizeAndLatency;
 
   bool HaveRewritablePHIs = false;
   for (PHINode &PN : EndBB->phis()) {
@@ -3391,8 +3388,8 @@ bool SimplifyCFGOpt::speculativelyExecuteBB(BranchInst *BI,
     Value *FalseV = SpeculatedStoreValue;
     if (Invert)
       std::swap(TrueV, FalseV);
-    Value *S = Builder.CreateSelect(
-        BrCond, TrueV, FalseV, "spec.store.select", BI);
+    Value *S =
+        Builder.CreateSelect(BrCond, TrueV, FalseV, "spec.store.select", BI);
     SpeculatedStore->setOperand(0, S);
     SpeculatedStore->applyMergedLocation(BI->getDebugLoc(),
                                          SpeculatedStore->getDebugLoc());
@@ -3892,7 +3889,7 @@ static bool foldTwoEntryPHINode(PHINode *PN, const TargetTransformInfo &TTI,
   // Move all 'aggressive' instructions, which are defined in the
   // conditional parts of the if's up to the dominating block.
   for (BasicBlock *IfBlock : IfBlocks)
-      hoistAllInstructionsInto(DomBlock, DomBI, IfBlock);
+    hoistAllInstructionsInto(DomBlock, DomBI, IfBlock);
 
   IRBuilder<NoFolder> Builder(DomBI);
   // Propagate fast-math-flags from phi nodes to replacement selects.
@@ -4141,8 +4138,8 @@ bool llvm::foldBranchToCommonDest(BranchInst *BI, DomTreeUpdater *DTU,
 
   BasicBlock *BB = BI->getParent();
   TargetTransformInfo::TargetCostKind CostKind =
-    BB->getParent()->hasMinSize() ? TargetTransformInfo::TCK_CodeSize
-                                  : TargetTransformInfo::TCK_SizeAndLatency;
+      BB->getParent()->hasMinSize() ? TargetTransformInfo::TCK_CodeSize
+                                    : TargetTransformInfo::TCK_SizeAndLatency;
 
   Instruction *Cond = dyn_cast<Instruction>(BI->getCondition());
 
@@ -4607,10 +4604,10 @@ static bool tryWidenCondBranchToCondBranch(BranchInst *PBI, BranchInst *BI,
   // Use lambda to lazily compute expensive condition after cheap ones.
   auto NoSideEffects = [](BasicBlock &BB) {
     return llvm::none_of(BB, [](const Instruction &I) {
-        return I.mayWriteToMemory() || I.mayHaveSideEffects();
-      });
+      return I.mayWriteToMemory() || I.mayHaveSideEffects();
+    });
   };
-  if (BI->getSuccessor(1) != IfFalseBB && // no inf looping
+  if (BI->getSuccessor(1) != IfFalseBB &&                    // no inf looping
       BI->getSuccessor(1)->getTerminatingDeoptimizeCall() && // profitability
       NoSideEffects(*BI->getParent())) {
     auto *OldSuccessor = BI->getSuccessor(1);
@@ -4622,7 +4619,7 @@ static bool tryWidenCondBranchToCondBranch(BranchInst *PBI, BranchInst *BI,
            {DominatorTree::Delete, BI->getParent(), OldSuccessor}});
     return true;
   }
-  if (BI->getSuccessor(0) != IfFalseBB && // no inf looping
+  if (BI->getSuccessor(0) != IfFalseBB &&                    // no inf looping
       BI->getSuccessor(0)->getTerminatingDeoptimizeCall() && // profitability
       NoSideEffects(*BI->getParent())) {
     auto *OldSuccessor = BI->getSuccessor(0);
@@ -5611,7 +5608,7 @@ bool SimplifyCFGOpt::simplifyUnreachable(UnreachableInst *UI) {
         Changed = true;
       } else {
         assert(BI->isConditional() && "Can't get here with an uncond branch.");
-        Value* Cond = BI->getCondition();
+        Value *Cond = BI->getCondition();
         assert(BI->getSuccessor(0) != BI->getSuccessor(1) &&
                "The destinations are guaranteed to be different here.");
         CallInst *Assumption;
@@ -5802,7 +5799,8 @@ bool SimplifyCFGOpt::turnSwitchRangeIntoICmp(SwitchInst *SI,
     return false; // More than two destinations.
   }
   if (!DestB)
-    return false; // All destinations are the same and the default is unreachable
+    return false; // All destinations are the same and the default is
+                  // unreachable
 
   assert(DestA && DestB &&
          "Single-destination switch should have been folded.");
@@ -6077,7 +6075,8 @@ static bool forwardSwitchConditionToPHI(SwitchInst *SI) {
     PHINode *Phi = ForwardingNode.first;
     SmallVectorImpl<int> &Indexes = ForwardingNode.second;
     // Check if it helps to fold PHI.
-    if (Indexes.size() < 2 && !llvm::is_contained(Phi->incoming_values(), SI->getCondition()))
+    if (Indexes.size() < 2 &&
+        !llvm::is_contained(Phi->incoming_values(), SI->getCondition()))
       continue;
 
     for (int Index : Indexes)
@@ -6090,7 +6089,8 @@ static bool forwardSwitchConditionToPHI(SwitchInst *SI) {
 
 /// Return true if the backend will be able to handle
 /// initializing an array of constants like C.
-static bool validLookupTableConstant(Constant *C, const TargetTransformInfo &TTI) {
+static bool validLookupTableConstant(Constant *C,
+                                     const TargetTransformInfo &TTI) {
   if (C->isThreadDependent())
     return false;
   if (C->isDLLImportDependent())
@@ -6677,7 +6677,7 @@ Value *SwitchLookupTable::buildLookup(Value *Index, IRBuilder<> &Builder) {
     // BitMap's bit width.
     ShiftAmt = Builder.CreateMul(
         ShiftAmt, ConstantInt::get(MapTy, BitMapElementTy->getBitWidth()),
-        "switch.shiftamt",/*HasNUW =*/true,/*HasNSW =*/true);
+        "switch.shiftamt", /*HasNUW =*/true, /*HasNSW =*/true);
 
     // Shift down.
     Value *DownShifted =
@@ -7060,7 +7060,8 @@ static bool switchToLookupTable(SwitchInst *SI, IRBuilder<> &Builder,
     // we can try to attach nsw.
     bool MayWrap = true;
     if (!DefaultIsReachable) {
-      APInt Res = MaxCaseVal->getValue().ssub_ov(MinCaseVal->getValue(), MayWrap);
+      APInt Res =
+          MaxCaseVal->getValue().ssub_ov(MinCaseVal->getValue(), MayWrap);
       (void)Res;
     }
 
@@ -7129,8 +7130,9 @@ static bool switchToLookupTable(SwitchInst *SI, IRBuilder<> &Builder,
     // Build bitmask; fill in a 1 bit for every case.
     const ResultListTy &ResultList = ResultLists[PHIs[0]];
     for (size_t I = 0, E = ResultList.size(); I != E; ++I) {
-      uint64_t Idx = (ResultList[I].first->getValue() - TableIndexOffset->getValue())
-                         .getLimitedValue();
+      uint64_t Idx =
+          (ResultList[I].first->getValue() - TableIndexOffset->getValue())
+              .getLimitedValue();
       MaskInt |= One << Idx;
     }
     ConstantInt *TableMask = ConstantInt::get(Mod.getContext(), MaskInt);
@@ -7235,11 +7237,11 @@ static bool reduceSwitchRange(SwitchInst *SI, IRBuilder<> &Builder,
   if (SI->getNumCases() < 4)
     return false;
 
-  // This transform is agnostic to the signedness of the input or case values. We
-  // can treat the case values as signed or unsigned. We can optimize more common
-  // cases such as a sequence crossing zero {-4,0,4,8} if we interpret case values
-  // as signed.
-  SmallVector<int64_t,4> Values;
+  // This transform is agnostic to the signedness of the input or case values.
+  // We can treat the case values as signed or unsigned. We can optimize more
+  // common cases such as a sequence crossing zero {-4,0,4,8} if we interpret
+  // case values as signed.
+  SmallVector<int64_t, 4> Values;
   for (const auto &C : SI->cases())
     Values.push_back(C.getCaseValue()->getValue().getSExtValue());
   llvm::sort(Values);
@@ -8164,7 +8166,8 @@ bool SimplifyCFGOpt::simplifyCondBranch(BranchInst *BI, IRBuilder<> &Builder) {
 }
 
 /// Check if passing a value to an instruction will cause undefined behavior.
-static bool passingValueIsAlwaysUndefined(Value *V, Instruction *I, bool PtrValueMayBeModified) {
+static bool passingValueIsAlwaysUndefined(Value *V, Instruction *I,
+                                          bool PtrValueMayBeModified) {
   Constant *C = dyn_cast<Constant>(V);
   if (!C)
     return false;
@@ -8359,8 +8362,8 @@ static bool removeUndefIntroducingPredecessor(BasicBlock *BB,
 
           if (DTU)
             DTU->applyUpdates(
-                { { DominatorTree::Insert, Predecessor, Unreachable },
-                  { DominatorTree::Delete, Predecessor, BB } });
+                {{DominatorTree::Insert, Predecessor, Unreachable},
+                 {DominatorTree::Delete, Predecessor, BB}});
           return true;
         }
       }
@@ -8469,7 +8472,6 @@ bool SimplifyCFGOpt::run(BasicBlock *BB) {
 bool llvm::simplifyCFG(BasicBlock *BB, const TargetTransformInfo &TTI,
                        DomTreeUpdater *DTU, const SimplifyCFGOptions &Options,
                        ArrayRef<WeakVH> LoopHeaders) {
-  return SimplifyCFGOpt(TTI, DTU, BB->getDataLayout(), LoopHeaders,
-                        Options)
+  return SimplifyCFGOpt(TTI, DTU, BB->getDataLayout(), LoopHeaders, Options)
       .run(BB);
 }

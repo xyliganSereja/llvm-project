@@ -256,8 +256,8 @@ class UnwindRow {
   /// The address will be valid when parsing the instructions in a FDE. If
   /// invalid, this object represents the initial instructions of a CIE.
   std::optional<uint64_t> Address; ///< Address for row in FDE, invalid for CIE.
-  UnwindLocation CFAValue;    ///< How to unwind the Call Frame Address (CFA).
-  RegisterLocations RegLocs;  ///< How to unwind all registers in this list.
+  UnwindLocation CFAValue;   ///< How to unwind the Call Frame Address (CFA).
+  RegisterLocations RegLocs; ///< How to unwind all registers in this list.
 
 public:
   UnwindRow() : CFAValue(UnwindLocation::createUnspecified()) {}
@@ -445,8 +445,7 @@ public:
   CFIProgram(uint64_t CodeAlignmentFactor, int64_t DataAlignmentFactor,
              Triple::ArchType Arch)
       : CodeAlignmentFactor(CodeAlignmentFactor),
-        DataAlignmentFactor(DataAlignmentFactor),
-        Arch(Arch) {}
+        DataAlignmentFactor(DataAlignmentFactor), Arch(Arch) {}
 
   /// Parse and store a sequence of CFI instructions from Data,
   /// starting at *Offset and ending at EndOffset. *Offset is updated
@@ -682,8 +681,8 @@ public:
   // it is a .debug_frame section. EHFrameAddress should be different
   // than zero for correct parsing of .eh_frame addresses when they
   // use a PC-relative encoding.
-  DWARFDebugFrame(Triple::ArchType Arch,
-                  bool IsEH = false, uint64_t EHFrameAddress = 0);
+  DWARFDebugFrame(Triple::ArchType Arch, bool IsEH = false,
+                  uint64_t EHFrameAddress = 0);
   ~DWARFDebugFrame();
 
   /// Dump the section data into the given stream.

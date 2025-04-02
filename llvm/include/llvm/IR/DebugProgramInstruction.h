@@ -359,8 +359,8 @@ public:
                    const DILocation *DI, DbgVariableRecord &InsertBefore);
 
   /// Iterator for ValueAsMetadata that internally uses direct pointer iteration
-  /// over either a ValueAsMetadata* or a ValueAsMetadata**, dereferencing to the
-  /// ValueAsMetadata .
+  /// over either a ValueAsMetadata* or a ValueAsMetadata**, dereferencing to
+  /// the ValueAsMetadata .
   class location_op_iterator
       : public iterator_facade_base<location_op_iterator,
                                     std::bidirectional_iterator_tag, Value *> {
@@ -698,8 +698,8 @@ public:
 };
 
 template <typename T>
-ScopedDbgInfoFormatSetter(T &Obj,
-                          bool NewState) -> ScopedDbgInfoFormatSetter<T>;
+ScopedDbgInfoFormatSetter(T &Obj, bool NewState)
+    -> ScopedDbgInfoFormatSetter<T>;
 
 } // namespace llvm
 

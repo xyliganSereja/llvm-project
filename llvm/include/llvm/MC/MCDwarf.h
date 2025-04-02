@@ -252,9 +252,7 @@ private:
 
 public:
   // Returns the collection of MCDwarfLineEntry for a given Compile Unit ID.
-  const MCLineDivisionMap &getMCLineEntries() const {
-    return MCLineDivisions;
-  }
+  const MCLineDivisionMap &getMCLineEntries() const { return MCLineDivisions; }
 };
 
 struct MCDwarfLineTableParams {
@@ -352,8 +350,8 @@ public:
                    std::optional<MD5::MD5Result> Checksum,
                    uint16_t DwarfVersion, std::optional<StringRef> Source) {
     HasSplitLineTable = true;
-    return cantFail(Header.tryGetFile(Directory, FileName, Checksum, Source,
-                                      DwarfVersion));
+    return cantFail(
+        Header.tryGetFile(Directory, FileName, Checksum, Source, DwarfVersion));
   }
 
   void Emit(MCStreamer &MCOS, MCDwarfLineTableParams Params,
@@ -414,21 +412,15 @@ public:
   // Report whether MD5 usage has been consistent (all-or-none).
   bool isMD5UsageConsistent() const { return Header.isMD5UsageConsistent(); }
 
-  MCSymbol *getLabel() const {
-    return Header.Label;
-  }
+  MCSymbol *getLabel() const { return Header.Label; }
 
-  void setLabel(MCSymbol *Label) {
-    Header.Label = Label;
-  }
+  void setLabel(MCSymbol *Label) { Header.Label = Label; }
 
   const SmallVectorImpl<std::string> &getMCDwarfDirs() const {
     return Header.MCDwarfDirs;
   }
 
-  SmallVectorImpl<std::string> &getMCDwarfDirs() {
-    return Header.MCDwarfDirs;
-  }
+  SmallVectorImpl<std::string> &getMCDwarfDirs() { return Header.MCDwarfDirs; }
 
   const SmallVectorImpl<MCDwarfFile> &getMCDwarfFiles() const {
     return Header.MCDwarfFiles;
@@ -438,19 +430,16 @@ public:
     return Header.MCDwarfFiles;
   }
 
-  const MCLineSection &getMCLineSections() const {
-    return MCLineSections;
-  }
-  MCLineSection &getMCLineSections() {
-    return MCLineSections;
-  }
+  const MCLineSection &getMCLineSections() const { return MCLineSections; }
+  MCLineSection &getMCLineSections() { return MCLineSections; }
 };
 
 class MCDwarfLineAddr {
 public:
   /// Utility function to encode a Dwarf pair of LineDelta and AddrDeltas.
   static void encode(MCContext &Context, MCDwarfLineTableParams Params,
-                     int64_t LineDelta, uint64_t AddrDelta, SmallVectorImpl<char> &OS);
+                     int64_t LineDelta, uint64_t AddrDelta,
+                     SmallVectorImpl<char> &OS);
 
   /// Utility function to emit the encoding to a streamer.
   static void Emit(MCStreamer *MCOS, MCDwarfLineTableParams Params,

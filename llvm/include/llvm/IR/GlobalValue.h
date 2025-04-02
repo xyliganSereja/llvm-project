@@ -49,7 +49,7 @@ class GlobalValue : public Constant {
 public:
   /// An enumeration for the kinds of linkage for global values.
   enum LinkageTypes {
-    ExternalLinkage = 0,///< Externally visible function
+    ExternalLinkage = 0,        ///< Externally visible function
     AvailableExternallyLinkage, ///< Available for inspection, not emission.
     LinkOnceAnyLinkage, ///< Keep one copy of function when linking (inline)
     LinkOnceODRLinkage, ///< Same, but only replaced by something equivalent.
@@ -58,20 +58,20 @@ public:
     AppendingLinkage,   ///< Special purpose, only applies to global arrays
     InternalLinkage,    ///< Rename collisions when linking (static functions).
     PrivateLinkage,     ///< Like Internal, but omit from symbol table.
-    ExternalWeakLinkage,///< ExternalWeak linkage description.
-    CommonLinkage       ///< Tentative definitions.
+    ExternalWeakLinkage, ///< ExternalWeak linkage description.
+    CommonLinkage        ///< Tentative definitions.
   };
 
   /// An enumeration for the kinds of visibility of global values.
   enum VisibilityTypes {
-    DefaultVisibility = 0,  ///< The GV is visible
-    HiddenVisibility,       ///< The GV is hidden
-    ProtectedVisibility     ///< The GV is protected
+    DefaultVisibility = 0, ///< The GV is visible
+    HiddenVisibility,      ///< The GV is hidden
+    ProtectedVisibility    ///< The GV is protected
   };
 
   /// Storage classes of global values for PE targets.
   enum DLLStorageClassTypes {
-    DefaultStorageClass   = 0,
+    DefaultStorageClass = 0,
     DLLImportStorageClass = 1, ///< Function to be imported from DLL
     DLLExportStorageClass = 2  ///< Function to be accessible from DLL.
   };
@@ -96,9 +96,9 @@ protected:
 
   // All bitfields use unsigned as the underlying type so that MSVC will pack
   // them.
-  unsigned Linkage : 4;       // The linkage of this global
-  unsigned Visibility : 2;    // The visibility style of this global
-  unsigned UnnamedAddrVal : 2; // This value's address is not significant
+  unsigned Linkage : 4;         // The linkage of this global
+  unsigned Visibility : 2;      // The visibility style of this global
+  unsigned UnnamedAddrVal : 2;  // This value's address is not significant
   unsigned DllStorageClass : 2; // DLL storage class
 
   unsigned ThreadLocal : 3; // Is this symbol "Thread Local", if so, what is
@@ -173,9 +173,7 @@ protected:
   /// This is stored here to save space in Function on 64-bit hosts.
   Intrinsic::ID IntID = (Intrinsic::ID)0U;
 
-  unsigned getGlobalValueSubClassData() const {
-    return SubClassData;
-  }
+  unsigned getGlobalValueSubClassData() const { return SubClassData; }
   void setGlobalValueSubClassData(unsigned V) {
     assert(V < (1 << GlobalValueSubClassDataBits) && "It will not fit");
     SubClassData = V;
@@ -184,12 +182,10 @@ protected:
   Module *Parent = nullptr; // The containing module.
 
   // Used by SymbolTableListTraits.
-  void setParent(Module *parent) {
-    Parent = parent;
-  }
+  void setParent(Module *parent) { Parent = parent; }
 
   ~GlobalValue() {
-    removeDeadConstantUsers();   // remove any dead constants using this.
+    removeDeadConstantUsers(); // remove any dead constants using this.
   }
 
 public:
@@ -203,9 +199,7 @@ public:
 
   GlobalValue(const GlobalValue &) = delete;
 
-  unsigned getAddressSpace() const {
-    return getType()->getAddressSpace();
-  }
+  unsigned getAddressSpace() const { return getType()->getAddressSpace(); }
 
   enum class UnnamedAddr {
     None,
@@ -226,9 +220,7 @@ public:
     return getUnnamedAddr() != UnnamedAddr::None;
   }
 
-  UnnamedAddr getUnnamedAddr() const {
-    return UnnamedAddr(UnnamedAddrVal);
-  }
+  UnnamedAddr getUnnamedAddr() const { return UnnamedAddr(UnnamedAddrVal); }
   void setUnnamedAddr(UnnamedAddr Val) { UnnamedAddrVal = unsigned(Val); }
 
   static UnnamedAddr getMinUnnamedAddr(UnnamedAddr A, UnnamedAddr B) {
@@ -243,7 +235,7 @@ public:
   const Comdat *getComdat() const;
   Comdat *getComdat() {
     return const_cast<Comdat *>(
-                           static_cast<const GlobalValue *>(this)->getComdat());
+        static_cast<const GlobalValue *>(this)->getComdat());
   }
 
   VisibilityTypes getVisibility() const { return VisibilityTypes(Visibility); }
@@ -303,13 +295,9 @@ public:
 
   void setDSOLocal(bool Local) { IsDSOLocal = Local; }
 
-  bool isDSOLocal() const {
-    return IsDSOLocal;
-  }
+  bool isDSOLocal() const { return IsDSOLocal; }
 
-  bool hasPartition() const {
-    return HasPartition;
-  }
+  bool hasPartition() const { return HasPartition; }
   StringRef getPartition() const;
   void setPartition(StringRef Part);
 
@@ -317,8 +305,8 @@ public:
   // specifically to global variables.
   struct SanitizerMetadata {
     SanitizerMetadata()
-        : NoAddress(false), NoHWAddress(false),
-          Memtag(false), IsDynInit(false) {}
+        : NoAddress(false), NoHWAddress(false), Memtag(false),
+          IsDynInit(false) {}
     // For ASan and HWASan, this instrumentation is implicitly applied to all
     // global variables when built with -fsanitize=*. What we need is a way to
     // persist the information that a certain global variable should *not* have
@@ -434,7 +422,7 @@ public:
     case AvailableExternallyLinkage:
     case LinkOnceODRLinkage:
     case WeakODRLinkage:
-    // The above three cannot be overridden but can be de-refined.
+      // The above three cannot be overridden but can be de-refined.
 
     case ExternalLinkage:
     case AppendingLinkage:
@@ -456,7 +444,7 @@ public:
   /// Using this method outside of the code generators is almost always a
   /// mistake: when working at the IR level use isInterposable instead as it
   /// knows about ODR semantics.
-  static bool isWeakForLinker(LinkageTypes Linkage)  {
+  static bool isWeakForLinker(LinkageTypes Linkage) {
     return Linkage == WeakAnyLinkage || Linkage == WeakODRLinkage ||
            Linkage == LinkOnceAnyLinkage || Linkage == LinkOnceODRLinkage ||
            Linkage == CommonLinkage || Linkage == ExternalWeakLinkage;
@@ -488,9 +476,7 @@ public:
   /// interposable (see \c isInterposable), since in such cases the currently
   /// visible variant is *a* correct implementation of the original source
   /// function; it just isn't the *only* correct implementation.
-  bool isDefinitionExact() const {
-    return !mayBeDerefined();
-  }
+  bool isDefinitionExact() const { return !mayBeDerefined(); }
 
   /// Return true if this global has an exact defintion.
   bool hasExactDefinition() const {
@@ -610,7 +596,7 @@ public:
   /// Make sure this GlobalValue is fully read.
   Error materialize();
 
-/// @}
+  /// @}
 
   /// Return true if the primary definition of this global value is outside of
   /// the current translation unit.

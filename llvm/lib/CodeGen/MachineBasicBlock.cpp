@@ -213,8 +213,8 @@ MachineBasicBlock::SkipPHIsAndLabels(MachineBasicBlock::iterator I) {
   const TargetInstrInfo *TII = getParent()->getSubtarget().getInstrInfo();
 
   iterator E = end();
-  while (I != E && (I->isPHI() || I->isPosition() ||
-                    TII->isBasicBlockPrologue(*I)))
+  while (I != E &&
+         (I->isPHI() || I->isPosition() || TII->isBasicBlockPrologue(*I)))
     ++I;
   // FIXME: This needs to change if we wish to bundle labels
   // inside the bundle.
@@ -298,9 +298,7 @@ bool MachineBasicBlock::isEntryBlock() const {
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-LLVM_DUMP_METHOD void MachineBasicBlock::dump() const {
-  print(dbgs());
-}
+LLVM_DUMP_METHOD void MachineBasicBlock::dump() const { print(dbgs()); }
 #endif
 
 bool MachineBasicBlock::mayHaveInlineAsmBr() const {
@@ -380,7 +378,8 @@ void MachineBasicBlock::print(raw_ostream &OS, ModuleSlotTracker &MST,
 
   // Print the preds of this block according to the CFG.
   if (!pred_empty() && IsStandalone) {
-    if (Indexes) OS << '\t';
+    if (Indexes)
+      OS << '\t';
     // Don't indent(2), align with previous line attributes.
     OS << "; predecessors: ";
     ListSeparator LS;
@@ -391,7 +390,8 @@ void MachineBasicBlock::print(raw_ostream &OS, ModuleSlotTracker &MST,
   }
 
   if (!succ_empty()) {
-    if (Indexes) OS << '\t';
+    if (Indexes)
+      OS << '\t';
     // Print the successors
     OS.indent(2) << "successors: ";
     ListSeparator LS;
@@ -422,7 +422,8 @@ void MachineBasicBlock::print(raw_ostream &OS, ModuleSlotTracker &MST,
   }
 
   if (!livein_empty() && MRI.tracksLiveness()) {
-    if (Indexes) OS << '\t';
+    if (Indexes)
+      OS << '\t';
     OS.indent(2) << "liveins: ";
 
     ListSeparator LS;
@@ -465,7 +466,8 @@ void MachineBasicBlock::print(raw_ostream &OS, ModuleSlotTracker &MST,
     OS.indent(2) << "}\n";
 
   if (IrrLoopHeaderWeight && IsStandalone) {
-    if (Indexes) OS << '\t';
+    if (Indexes)
+      OS << '\t';
     OS.indent(2) << "; Irreducible loop header weight: " << *IrrLoopHeaderWeight
                  << '\n';
   }
@@ -641,8 +643,8 @@ void MachineBasicBlock::sortUniqueLiveIns() {
   LiveIns.erase(Out, LiveIns.end());
 }
 
-Register
-MachineBasicBlock::addLiveIn(MCRegister PhysReg, const TargetRegisterClass *RC) {
+Register MachineBasicBlock::addLiveIn(MCRegister PhysReg,
+                                      const TargetRegisterClass *RC) {
   assert(getParent() && "MBB must be inserted in function");
   assert(PhysReg.isPhysical() && "Expected physreg");
   assert(RC && "Register class is required");
@@ -656,7 +658,7 @@ MachineBasicBlock::addLiveIn(MCRegister PhysReg, const TargetRegisterClass *RC) 
 
   // Look for an existing copy.
   if (LiveIn)
-    for (;I != E && I->isCopy(); ++I)
+    for (; I != E && I->isCopy(); ++I)
       if (I->getOperand(1).getReg() == PhysReg) {
         Register VirtReg = I->getOperand(0).getReg();
         if (!MRI.constrainRegClass(VirtReg, RC))
@@ -667,7 +669,7 @@ MachineBasicBlock::addLiveIn(MCRegister PhysReg, const TargetRegisterClass *RC) 
   // No luck, create a virtual register.
   Register VirtReg = MRI.createVirtualRegister(RC);
   BuildMI(*this, I, DebugLoc(), TII.get(TargetOpcode::COPY), VirtReg)
-    .addReg(PhysReg, RegState::Kill);
+      .addReg(PhysReg, RegState::Kill);
   if (!LiveIn)
     addLiveIn(PhysReg);
   return VirtReg;
@@ -704,7 +706,7 @@ void MachineBasicBlock::updateTerminator(
   SmallVector<MachineOperand, 4> Cond;
   DebugLoc DL = findBranchDebugLoc();
   bool B = TII->analyzeBranch(*this, TBB, FBB, Cond);
-  (void) B;
+  (void)B;
   assert(!B && "UpdateTerminators requires analyzable predecessors!");
   if (Cond.empty()) {
     if (TBB) {
@@ -933,8 +935,8 @@ void MachineBasicBlock::transferSuccessors(MachineBasicBlock *FromMBB) {
   }
 }
 
-void
-MachineBasicBlock::transferSuccessorsAndUpdatePHIs(MachineBasicBlock *FromMBB) {
+void MachineBasicBlock::transferSuccessorsAndUpdatePHIs(
+    MachineBasicBlock *FromMBB) {
   if (this == FromMBB)
     return;
 
@@ -1001,7 +1003,8 @@ MachineBasicBlock *MachineBasicBlock::getFallThrough(bool JumpToFallThrough) {
   }
 
   // If there is no branch, control always falls through.
-  if (!TBB) return &*Fallthrough;
+  if (!TBB)
+    return &*Fallthrough;
 
   // If there is some explicit branch to the fallthrough block, it can obviously
   // reach, even though the branch should get folded to fall through implicitly.
@@ -1011,16 +1014,15 @@ MachineBasicBlock *MachineBasicBlock::getFallThrough(bool JumpToFallThrough) {
 
   // If it's an unconditional branch to some block not the fall through, it
   // doesn't fall through.
-  if (Cond.empty()) return nullptr;
+  if (Cond.empty())
+    return nullptr;
 
   // Otherwise, if it is conditional and has no explicit false block, it falls
   // through.
   return (FBB == nullptr) ? &*Fallthrough : nullptr;
 }
 
-bool MachineBasicBlock::canFallThrough() {
-  return getFallThrough() != nullptr;
-}
+bool MachineBasicBlock::canFallThrough() { return getFallThrough() != nullptr; }
 
 MachineBasicBlock *MachineBasicBlock::splitAt(MachineInstr &MI,
                                               bool UpdateLiveIns,
@@ -1285,7 +1287,7 @@ MachineBasicBlock *MachineBasicBlock::SplitCriticalEdge(
     // will extend to the end of the new split block.
 
     bool isLastMBB =
-      std::next(MachineFunction::iterator(NMBB)) == getParent()->end();
+        std::next(MachineFunction::iterator(NMBB)) == getParent()->end();
 
     SlotIndex StartIndex = Indexes->getMBBEndIdx(this);
     SlotIndex PrevIndex = StartIndex.getPrevSlot();
@@ -1293,11 +1295,11 @@ MachineBasicBlock *MachineBasicBlock::SplitCriticalEdge(
 
     // Find the registers used from NMBB in PHIs in Succ.
     SmallSet<Register, 8> PHISrcRegs;
-    for (MachineBasicBlock::instr_iterator
-         I = Succ->instr_begin(), E = Succ->instr_end();
+    for (MachineBasicBlock::instr_iterator I = Succ->instr_begin(),
+                                           E = Succ->instr_end();
          I != E && I->isPHI(); ++I) {
       for (unsigned ni = 1, ne = I->getNumOperands(); ni != ne; ni += 2) {
-        if (I->getOperand(ni+1).getMBB() == NMBB) {
+        if (I->getOperand(ni + 1).getMBB() == NMBB) {
           MachineOperand &MO = I->getOperand(ni);
           Register Reg = MO.getReg();
           PHISrcRegs.insert(Reg);
@@ -1452,8 +1454,8 @@ MachineInstr *MachineBasicBlock::remove_instr(MachineInstr *MI) {
   return Insts.remove(MI);
 }
 
-MachineBasicBlock::instr_iterator
-MachineBasicBlock::insert(instr_iterator I, MachineInstr *MI) {
+MachineBasicBlock::instr_iterator MachineBasicBlock::insert(instr_iterator I,
+                                                            MachineInstr *MI) {
   assert(!MI->isBundledWithPred() && !MI->isBundledWithSucc() &&
          "Cannot insert instruction with bundle flags");
   // Set the bundle flags when inserting inside a bundle.
@@ -1487,7 +1489,8 @@ void MachineBasicBlock::ReplaceUsesOfBlockWith(MachineBasicBlock *Old,
   MachineBasicBlock::instr_iterator I = instr_end();
   while (I != instr_begin()) {
     --I;
-    if (!I->isTerminator()) break;
+    if (!I->isTerminator())
+      break;
 
     // Scan the operands of this machine instruction, replacing any uses of Old
     // with New.
@@ -1512,8 +1515,7 @@ void MachineBasicBlock::replacePhiUsesWith(MachineBasicBlock *Old,
 
 /// Find the next valid DebugLoc starting at MBBI, skipping any debug
 /// instructions.  Return UnknownLoc if there is none.
-DebugLoc
-MachineBasicBlock::findDebugLoc(instr_iterator MBBI) {
+DebugLoc MachineBasicBlock::findDebugLoc(instr_iterator MBBI) {
   // Skip debug declarations, we don't want a DebugLoc from them.
   MBBI = skipDebugInstructionsForward(MBBI, instr_end());
   if (MBBI != instr_end())
@@ -1555,8 +1557,7 @@ DebugLoc MachineBasicBlock::rfindPrevDebugLoc(reverse_instr_iterator MBBI) {
 
 /// Find and return the merged DebugLoc of the branch instructions of the block.
 /// Return UnknownLoc if there is none.
-DebugLoc
-MachineBasicBlock::findBranchDebugLoc() {
+DebugLoc MachineBasicBlock::findBranchDebugLoc() {
   DebugLoc DL;
   auto TI = getFirstTerminator();
   while (TI != end() && !TI->isBranch())
@@ -1564,7 +1565,7 @@ MachineBasicBlock::findBranchDebugLoc() {
 
   if (TI != end()) {
     DL = TI->getDebugLoc();
-    for (++TI ; TI != end() ; ++TI)
+    for (++TI; TI != end(); ++TI)
       if (TI->isBranch())
         DL = DILocation::getMergedLocation(DL, TI->getDebugLoc());
   }
@@ -1630,7 +1631,8 @@ MachineBasicBlock::getProbabilityIterator(MachineBasicBlock::succ_iterator I) {
 /// instructions after (searching just for defs) MI.
 MachineBasicBlock::LivenessQueryResult
 MachineBasicBlock::computeRegisterLiveness(const TargetRegisterInfo *TRI,
-                                           MCRegister Reg, const_iterator Before,
+                                           MCRegister Reg,
+                                           const_iterator Before,
                                            unsigned Neighborhood) const {
   unsigned N = Neighborhood;
 
@@ -1664,7 +1666,6 @@ MachineBasicBlock::computeRegisterLiveness(const TargetRegisterInfo *TRI,
 
     return LQR_Dead;
   }
-
 
   N = Neighborhood;
 
@@ -1740,9 +1741,7 @@ MachineBasicBlock::getEndClobberMask(const TargetRegisterInfo *TRI) const {
   return isReturnBlock() && !succ_empty() ? TRI->getNoPreservedMask() : nullptr;
 }
 
-void MachineBasicBlock::clearLiveIns() {
-  LiveIns.clear();
-}
+void MachineBasicBlock::clearLiveIns() { LiveIns.clear(); }
 
 void MachineBasicBlock::clearLiveIns(
     std::vector<RegisterMaskPair> &OldLiveIns) {
@@ -1752,16 +1751,16 @@ void MachineBasicBlock::clearLiveIns(
 
 MachineBasicBlock::livein_iterator MachineBasicBlock::livein_begin() const {
   assert(getParent()->getProperties().hasProperty(
-      MachineFunctionProperties::Property::TracksLiveness) &&
-      "Liveness information is accurate");
+             MachineFunctionProperties::Property::TracksLiveness) &&
+         "Liveness information is accurate");
   return LiveIns.begin();
 }
 
 MachineBasicBlock::liveout_iterator MachineBasicBlock::liveout_begin() const {
   const MachineFunction &MF = *getParent();
   assert(MF.getProperties().hasProperty(
-      MachineFunctionProperties::Property::TracksLiveness) &&
-      "Liveness information is accurate");
+             MachineFunctionProperties::Property::TracksLiveness) &&
+         "Liveness information is accurate");
 
   const TargetLowering &TLI = *MF.getSubtarget().getTargetLowering();
   MCPhysReg ExceptionPointer = 0, ExceptionSelector = 0;

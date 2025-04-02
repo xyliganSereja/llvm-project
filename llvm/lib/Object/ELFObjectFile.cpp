@@ -53,8 +53,7 @@ const EnumEntry<unsigned> llvm::object::ElfSymbolTypes[NumElfSymbolTypes] = {
     {"OS Specific", "<OS specific>: 12", 12},
     {"Proc Specific", "<processor specific>: 13", 13},
     {"Proc Specific", "<processor specific>: 14", 14},
-    {"Proc Specific", "<processor specific>: 15", 15}
-};
+    {"Proc Specific", "<processor specific>: 15", 15}};
 
 ELFObjectFileBase::ELFObjectFileBase(unsigned int Type, MemoryBufferRef Source)
     : ObjectFile(Type, Source) {}
@@ -790,20 +789,20 @@ std::vector<ELFPltEntry> ELFObjectFileBase::getPltEntries() const {
     return {};
   uint32_t JumpSlotReloc = 0, GlobDatReloc = 0;
   switch (Triple.getArch()) {
-    case Triple::x86:
-      JumpSlotReloc = ELF::R_386_JUMP_SLOT;
-      GlobDatReloc = ELF::R_386_GLOB_DAT;
-      break;
-    case Triple::x86_64:
-      JumpSlotReloc = ELF::R_X86_64_JUMP_SLOT;
-      GlobDatReloc = ELF::R_X86_64_GLOB_DAT;
-      break;
-    case Triple::aarch64:
-    case Triple::aarch64_be:
-      JumpSlotReloc = ELF::R_AARCH64_JUMP_SLOT;
-      break;
-    default:
-      return {};
+  case Triple::x86:
+    JumpSlotReloc = ELF::R_386_JUMP_SLOT;
+    GlobDatReloc = ELF::R_386_GLOB_DAT;
+    break;
+  case Triple::x86_64:
+    JumpSlotReloc = ELF::R_X86_64_JUMP_SLOT;
+    GlobDatReloc = ELF::R_X86_64_GLOB_DAT;
+    break;
+  case Triple::aarch64:
+  case Triple::aarch64_be:
+    JumpSlotReloc = ELF::R_AARCH64_JUMP_SLOT;
+    break;
+  default:
+    return {};
   }
   std::unique_ptr<const MCInstrInfo> MII(T->createMCInstrInfo());
   std::unique_ptr<const MCInstrAnalysis> MIA(

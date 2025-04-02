@@ -35,7 +35,7 @@
 
 namespace llvm {
 
-namespace DOT {  // Private functions...
+namespace DOT { // Private functions...
 
 std::string EscapeString(const std::string &Label);
 
@@ -47,21 +47,14 @@ StringRef getColorString(unsigned NodeNumber);
 
 namespace GraphProgram {
 
-enum Name {
-  DOT,
-  FDP,
-  NEATO,
-  TWOPI,
-  CIRCO
-};
+enum Name { DOT, FDP, NEATO, TWOPI, CIRCO };
 
 } // end namespace GraphProgram
 
 bool DisplayGraph(StringRef Filename, bool wait = true,
                   GraphProgram::Name program = GraphProgram::DOT);
 
-template<typename GraphType>
-class GraphWriter {
+template <typename GraphType> class GraphWriter {
   raw_ostream &O;
   const GraphType &G;
   bool RenderUsingHTML = false;
@@ -180,7 +173,8 @@ public:
     else
       O << "record,";
 
-    if (!NodeAttributes.empty()) O << NodeAttributes << ",";
+    if (!NodeAttributes.empty())
+      O << NodeAttributes << ",";
     O << "label=";
 
     if (RenderUsingHTML) {
@@ -258,7 +252,8 @@ public:
 
       unsigned i = 0, e = DTraits.numEdgeDestLabels(Node);
       for (; i != e && i != 64; ++i) {
-        if (i) O << "|";
+        if (i)
+          O << "|";
         O << "<d" << i << ">"
           << DOT::EscapeString(DTraits.getEdgeDestLabel(Node, i));
       }
@@ -293,36 +288,40 @@ public:
 
         // Figure out which edge this targets...
         unsigned Offset =
-          (unsigned)std::distance(GTraits::child_begin(TargetNode), TargetIt);
+            (unsigned)std::distance(GTraits::child_begin(TargetNode), TargetIt);
         DestPort = static_cast<int>(Offset);
       }
 
       if (DTraits.getEdgeSourceLabel(Node, EI).empty())
         edgeidx = -1;
 
-      emitEdge(static_cast<const void*>(Node), edgeidx,
-               static_cast<const void*>(TargetNode), DestPort,
+      emitEdge(static_cast<const void *>(Node), edgeidx,
+               static_cast<const void *>(TargetNode), DestPort,
                DTraits.getEdgeAttributes(Node, EI, G));
     }
   }
 
   /// emitSimpleNode - Outputs a simple (non-record) node
-  void emitSimpleNode(const void *ID, const std::string &Attr,
-                   const std::string &Label, unsigned NumEdgeSources = 0,
-                   const std::vector<std::string> *EdgeSourceLabels = nullptr) {
+  void
+  emitSimpleNode(const void *ID, const std::string &Attr,
+                 const std::string &Label, unsigned NumEdgeSources = 0,
+                 const std::vector<std::string> *EdgeSourceLabels = nullptr) {
     O << "\tNode" << ID << "[ ";
     if (!Attr.empty())
       O << Attr << ",";
     O << " label =\"";
-    if (NumEdgeSources) O << "{";
+    if (NumEdgeSources)
+      O << "{";
     O << DOT::EscapeString(Label);
     if (NumEdgeSources) {
       O << "|{";
 
       for (unsigned i = 0; i != NumEdgeSources; ++i) {
-        if (i) O << "|";
+        if (i)
+          O << "|";
         O << "<s" << i << ">";
-        if (EdgeSourceLabels) O << DOT::EscapeString((*EdgeSourceLabels)[i]);
+        if (EdgeSourceLabels)
+          O << DOT::EscapeString((*EdgeSourceLabels)[i]);
       }
       O << "}}";
     }
@@ -330,11 +329,12 @@ public:
   }
 
   /// emitEdge - Output an edge from a simple node into the graph...
-  void emitEdge(const void *SrcNodeID, int SrcNodePort,
-                const void *DestNodeID, int DestNodePort,
-                const std::string &Attrs) {
-    if (SrcNodePort  > 64) return;             // Eminating from truncated part?
-    if (DestNodePort > 64) DestNodePort = 64;  // Targeting the truncated part?
+  void emitEdge(const void *SrcNodeID, int SrcNodePort, const void *DestNodeID,
+                int DestNodePort, const std::string &Attrs) {
+    if (SrcNodePort > 64)
+      return; // Eminating from truncated part?
+    if (DestNodePort > 64)
+      DestNodePort = 64; // Targeting the truncated part?
 
     O << "\tNode" << SrcNodeID;
     if (SrcNodePort >= 0)
@@ -350,15 +350,12 @@ public:
 
   /// getOStream - Get the raw output stream into the graph file. Useful to
   /// write fancy things using addCustomGraphFeatures().
-  raw_ostream &getOStream() {
-    return O;
-  }
+  raw_ostream &getOStream() { return O; }
 };
 
-template<typename GraphType>
+template <typename GraphType>
 raw_ostream &WriteGraph(raw_ostream &O, const GraphType &G,
-                        bool ShortNames = false,
-                        const Twine &Title = "") {
+                        bool ShortNames = false, const Twine &Title = "") {
   // Start the graph emission process...
   GraphWriter<GraphType> W(O, G, ShortNames);
 
@@ -376,8 +373,7 @@ std::string createGraphFilename(const Twine &Name, int &FD);
 /// failed.
 template <typename GraphType>
 std::string WriteGraph(const GraphType &G, const Twine &Name,
-                       bool ShortNames = false,
-                       const Twine &Title = "",
+                       bool ShortNames = false, const Twine &Title = "",
                        std::string Filename = "") {
   int FD;
   if (Filename.empty()) {
@@ -396,7 +392,7 @@ std::string WriteGraph(const GraphType &G, const Twine &Name,
       errs() << "writing to the newly created file " << Filename << "\n";
     }
   }
-  raw_fd_ostream O(FD, /*shouldClose=*/ true);
+  raw_fd_ostream O(FD, /*shouldClose=*/true);
 
   if (FD == -1) {
     errs() << "error opening file '" << Filename << "' for writing!\n";
@@ -423,9 +419,9 @@ dumpDotGraphToFile(const GraphType &G, const Twine &FileName,
 /// ViewGraph - Emit a dot graph, run 'dot', run gv on the postscript file,
 /// then cleanup.  For use from the debugger.
 ///
-template<typename GraphType>
-void ViewGraph(const GraphType &G, const Twine &Name,
-               bool ShortNames = false, const Twine &Title = "",
+template <typename GraphType>
+void ViewGraph(const GraphType &G, const Twine &Name, bool ShortNames = false,
+               const Twine &Title = "",
                GraphProgram::Name Program = GraphProgram::DOT) {
   std::string Filename = llvm::WriteGraph(G, Name, ShortNames, Title);
 

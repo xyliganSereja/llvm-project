@@ -25,12 +25,12 @@ static cl::alias OutputA("o", cl::desc("Alias for --output"),
 
 static cl::opt<SampleProfileFormat> OutputFormat(
     "format", cl::desc("Format of output profile"), cl::init(SPF_Ext_Binary),
-    cl::values(
-        clEnumValN(SPF_Binary, "binary", "Binary encoding (default)"),
-        clEnumValN(SPF_Ext_Binary, "extbinary", "Extensible binary encoding"),
-        clEnumValN(SPF_Text, "text", "Text encoding"),
-        clEnumValN(SPF_GCC, "gcc",
-                   "GCC encoding (only meaningful for -sample)")));
+    cl::values(clEnumValN(SPF_Binary, "binary", "Binary encoding (default)"),
+               clEnumValN(SPF_Ext_Binary, "extbinary",
+                          "Extensible binary encoding"),
+               clEnumValN(SPF_Text, "text", "Text encoding"),
+               clEnumValN(SPF_GCC, "gcc",
+                          "GCC encoding (only meaningful for -sample)")));
 
 static cl::opt<bool> UseMD5(
     "use-md5", cl::Hidden,
@@ -607,8 +607,8 @@ void ProfileGenerator::populateBoundarySamplesWithProbesForAllFunctions(
           getLeafProfileAndAddTotalSamples(FrameVec, 0);
       FunctionProfile.addCalledTargetSamples(
           FrameVec.back().Location.LineOffset,
-          FrameVec.back().Location.Discriminator,
-          FunctionId(CalleeName), Count);
+          FrameVec.back().Location.Discriminator, FunctionId(CalleeName),
+          Count);
     }
   }
 }
@@ -631,8 +631,7 @@ FunctionSamples &ProfileGenerator::getLeafProfileAndAddTotalSamples(
         getBaseDiscriminator(FrameVec[I - 1].Location.Discriminator));
     FunctionSamplesMap &SamplesMap =
         FunctionProfile->functionSamplesAt(Callsite);
-    auto Ret =
-        SamplesMap.emplace(FrameVec[I].Func, FunctionSamples());
+    auto Ret = SamplesMap.emplace(FrameVec[I].Func, FunctionSamples());
     if (Ret.second) {
       SampleContext Context(FrameVec[I].Func);
       Ret.first->second.setContext(Context);
@@ -1009,16 +1008,14 @@ void CSProfileGenerator::populateBoundarySamplesForFunction(
         CallerNode->getFunctionSamples()->addCalledTargetSamples(
             LeafLoc->Location.LineOffset,
             getBaseDiscriminator(LeafLoc->Location.Discriminator),
-            FunctionId(CalleeName),
-            Count);
+            FunctionId(CalleeName), Count);
         // Record head sample for called target(callee)
         CalleeCallSite = LeafLoc->Location;
       }
     }
 
-    ContextTrieNode *CalleeNode =
-        CallerNode->getOrCreateChildContext(CalleeCallSite,
-                                            FunctionId(CalleeName));
+    ContextTrieNode *CalleeNode = CallerNode->getOrCreateChildContext(
+        CalleeCallSite, FunctionId(CalleeName));
     FunctionSamples *CalleeProfile = getOrCreateFunctionSamples(CalleeNode);
     CalleeProfile->addHeadSamples(Count);
   }
@@ -1270,7 +1267,8 @@ void CSProfileGenerator::populateBodySamplesWithProbes(
         // context id to infer caller's context id to ensure they share the
         // same context prefix.
         uint64_t CallerIndex = ContextNode->getCallSiteLoc().LineOffset;
-        uint64_t CallerDiscriminator = ContextNode->getCallSiteLoc().Discriminator;
+        uint64_t CallerDiscriminator =
+            ContextNode->getCallSiteLoc().Discriminator;
         assert(CallerIndex &&
                "Inferred caller's location index shouldn't be zero!");
         assert(!CallerDiscriminator &&

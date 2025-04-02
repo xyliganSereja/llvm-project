@@ -103,9 +103,10 @@ private:
   /// Tracks instructions visited by pointsToConstantMemory.
   SmallPtrSet<const Value *, 16> Visited;
 
-  static DecomposedGEP
-  DecomposeGEPExpression(const Value *V, const DataLayout &DL,
-                         AssumptionCache *AC, DominatorTree *DT);
+  static DecomposedGEP DecomposeGEPExpression(const Value *V,
+                                              const DataLayout &DL,
+                                              AssumptionCache *AC,
+                                              DominatorTree *DT);
 
   /// A Heuristic for aliasGEP that searches for a constant offset
   /// between the variables.
@@ -131,8 +132,8 @@ private:
                        const Value *UnderlyingV1, const Value *UnderlyingV2,
                        AAQueryInfo &AAQI);
 
-  AliasResult aliasPHI(const PHINode *PN, LocationSize PNSize,
-                       const Value *V2, LocationSize V2Size, AAQueryInfo &AAQI);
+  AliasResult aliasPHI(const PHINode *PN, LocationSize PNSize, const Value *V2,
+                       LocationSize V2Size, AAQueryInfo &AAQI);
 
   AliasResult aliasSelect(const SelectInst *SI, LocationSize SISize,
                           const Value *V2, LocationSize V2Size,

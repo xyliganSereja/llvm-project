@@ -28,7 +28,7 @@ class raw_ostream;
 class Mangler {
   /// We need to give global values the same name every time they are mangled.
   /// This keeps track of the number we give to anonymous ones.
-  mutable DenseMap<const GlobalValue*, unsigned> AnonGlobalIDs;
+  mutable DenseMap<const GlobalValue *, unsigned> AnonGlobalIDs;
 
 public:
   /// Print the appropriate prefix and the specified global variable's name.
@@ -67,6 +67,6 @@ bool inline isArm64ECMangledFunctionName(StringRef Name) {
          (Name[0] == '?' && Name.find("@$$h") != StringRef::npos);
 }
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

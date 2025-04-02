@@ -102,11 +102,10 @@ public:
   virtual ~LoopSafetyInfo() = default;
 };
 
-
 /// Simple and conservative implementation of LoopSafetyInfo that can give
 /// false-positive answers to its queries in order to avoid complicated
 /// analysis.
-class SimpleLoopSafetyInfo: public LoopSafetyInfo {
+class SimpleLoopSafetyInfo : public LoopSafetyInfo {
   bool MayThrow = false;       // The current loop contains an instruction which
                                // may throw.
   bool HeaderMayThrow = false; // Same as previous, but specific to loop header
@@ -118,8 +117,7 @@ public:
 
   void computeLoopSafetyInfo(const Loop *CurLoop) override;
 
-  bool isGuaranteedToExecute(const Instruction &Inst,
-                             const DominatorTree *DT,
+  bool isGuaranteedToExecute(const Instruction &Inst, const DominatorTree *DT,
                              const Loop *CurLoop) const override;
 };
 
@@ -128,9 +126,9 @@ public:
 /// that should be invalidated by calling the methods insertInstructionTo and
 /// removeInstruction whenever we modify a basic block's contents by adding or
 /// removing instructions.
-class ICFLoopSafetyInfo: public LoopSafetyInfo {
-  bool MayThrow = false;       // The current loop contains an instruction which
-                               // may throw.
+class ICFLoopSafetyInfo : public LoopSafetyInfo {
+  bool MayThrow = false; // The current loop contains an instruction which
+                         // may throw.
   // Contains information about implicit control flow in this loop's blocks.
   mutable ImplicitControlFlowTracking ICF;
   // Contains information about instruction that may possibly write memory.
@@ -143,19 +141,18 @@ public:
 
   void computeLoopSafetyInfo(const Loop *CurLoop) override;
 
-  bool isGuaranteedToExecute(const Instruction &Inst,
-                             const DominatorTree *DT,
+  bool isGuaranteedToExecute(const Instruction &Inst, const DominatorTree *DT,
                              const Loop *CurLoop) const override;
 
   /// Returns true if we could not execute a memory-modifying instruction before
   /// we enter \p BB under assumption that \p CurLoop is entered.
-  bool doesNotWriteMemoryBefore(const BasicBlock *BB, const Loop *CurLoop)
-      const;
+  bool doesNotWriteMemoryBefore(const BasicBlock *BB,
+                                const Loop *CurLoop) const;
 
   /// Returns true if we could not execute a memory-modifying instruction before
   /// we execute \p I under assumption that \p CurLoop is entered.
-  bool doesNotWriteMemoryBefore(const Instruction &I, const Loop *CurLoop)
-      const;
+  bool doesNotWriteMemoryBefore(const Instruction &I,
+                                const Loop *CurLoop) const;
 
   /// Inform the safety info that we are planning to insert a new instruction
   /// \p Inst into the basic block \p BB. It will make all cache updates to keep

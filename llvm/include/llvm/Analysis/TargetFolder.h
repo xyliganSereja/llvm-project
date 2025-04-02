@@ -35,9 +35,7 @@ class TargetFolder final : public IRBuilderFolder {
   const DataLayout &DL;
 
   /// Fold - Fold the constant using target specific information.
-  Constant *Fold(Constant *C) const {
-    return ConstantFoldConstant(C, DL);
-  }
+  Constant *Fold(Constant *C) const { return ConstantFoldConstant(C, DL); }
 
   virtual void anchor();
 
@@ -108,7 +106,7 @@ public:
   }
 
   Value *FoldUnOpFMF(Instruction::UnaryOps Opc, Value *V,
-                      FastMathFlags FMF) const override {
+                     FastMathFlags FMF) const override {
     if (Constant *C = dyn_cast<Constant>(V))
       return ConstantFoldUnaryOpOperand(Opc, C, DL);
     return nullptr;
@@ -215,6 +213,6 @@ public:
   }
 };
 
-}
+} // namespace llvm
 
 #endif

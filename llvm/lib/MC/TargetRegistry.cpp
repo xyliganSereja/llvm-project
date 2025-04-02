@@ -92,8 +92,8 @@ MCStreamer *Target::createAsmStreamer(MCContext &Ctx,
                                       std::unique_ptr<MCCodeEmitter> CE,
                                       std::unique_ptr<MCAsmBackend> TAB) const {
   formatted_raw_ostream &OSRef = *OS;
-  MCStreamer *S = llvm::createAsmStreamer(Ctx, std::move(OS), IP,
-                                          std::move(CE), std::move(TAB));
+  MCStreamer *S = llvm::createAsmStreamer(Ctx, std::move(OS), IP, std::move(CE),
+                                          std::move(TAB));
   createAsmTargetStreamer(*S, OSRef, IP);
   return S;
 }
@@ -206,7 +206,7 @@ static int TargetArraySortFn(const std::pair<StringRef, const Target *> *LHS,
 }
 
 void TargetRegistry::printRegisteredTargetsForVersion(raw_ostream &OS) {
-  std::vector<std::pair<StringRef, const Target*> > Targets;
+  std::vector<std::pair<StringRef, const Target *>> Targets;
   size_t Width = 0;
   for (const auto &T : TargetRegistry::targets()) {
     Targets.push_back(std::make_pair(T.getName(), &T));

@@ -55,7 +55,7 @@ MCAssembler *MCObjectStreamer::getAssemblerPtr() {
 // is known.
 void MCObjectStreamer::resolvePendingFixups() {
   for (PendingMCFixup &PendingFixup : PendingFixups) {
-    if (!PendingFixup.Sym || PendingFixup.Sym->isUndefined ()) {
+    if (!PendingFixup.Sym || PendingFixup.Sym->isUndefined()) {
       getContext().reportError(PendingFixup.Fixup.getLoc(),
                                "unresolved relocation offset");
       continue;
@@ -192,8 +192,8 @@ void MCObjectStreamer::emitValueImpl(const MCExpr *Value, unsigned Size,
   int64_t AbsValue;
   if (Value->evaluateAsAbsolute(AbsValue, getAssemblerPtr())) {
     if (!isUIntN(8 * Size, AbsValue) && !isIntN(8 * Size, AbsValue)) {
-      getContext().reportError(
-          Loc, "value evaluated as " + Twine(AbsValue) + " is out of range.");
+      getContext().reportError(Loc, "value evaluated as " + Twine(AbsValue) +
+                                        " is out of range.");
       return;
     }
     emitIntValue(AbsValue, Size);
@@ -399,7 +399,7 @@ void MCObjectStreamer::emitInstToFragment(const MCInst &Inst,
 
 #ifndef NDEBUG
 static const char *const BundlingNotImplementedMsg =
-  "Aligned bundling is not implemented for this object format";
+    "Aligned bundling is not implemented for this object format";
 #endif
 
 void MCObjectStreamer::emitBundleAlignMode(Align Alignment) {
@@ -576,40 +576,39 @@ void MCObjectStreamer::emitCodeAlignment(Align Alignment,
 }
 
 void MCObjectStreamer::emitValueToOffset(const MCExpr *Offset,
-                                         unsigned char Value,
-                                         SMLoc Loc) {
+                                         unsigned char Value, SMLoc Loc) {
   insert(getContext().allocFragment<MCOrgFragment>(*Offset, Value, Loc));
 }
 
 // Associate DTPRel32 fixup with data and resize data area
 void MCObjectStreamer::emitDTPRel32Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_DTPRel_4));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_DTPRel_4));
   DF->appendContents(4, 0);
 }
 
 // Associate DTPRel64 fixup with data and resize data area
 void MCObjectStreamer::emitDTPRel64Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_DTPRel_8));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_DTPRel_8));
   DF->appendContents(8, 0);
 }
 
 // Associate TPRel32 fixup with data and resize data area
 void MCObjectStreamer::emitTPRel32Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_TPRel_4));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_TPRel_4));
   DF->appendContents(4, 0);
 }
 
 // Associate TPRel64 fixup with data and resize data area
 void MCObjectStreamer::emitTPRel64Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_TPRel_8));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_TPRel_8));
   DF->appendContents(8, 0);
 }
 
@@ -635,27 +634,24 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
   if (Symbol.isVariable()) {
     const MCExpr *SymbolExpr = Symbol.getVariableValue();
     MCValue OffsetVal;
-    if(!SymbolExpr->evaluateAsRelocatable(OffsetVal, nullptr, nullptr))
-      return std::make_pair(false,
-                            std::string("symbol in .reloc offset is not "
-                                        "relocatable"));
+    if (!SymbolExpr->evaluateAsRelocatable(OffsetVal, nullptr, nullptr))
+      return std::make_pair(false, std::string("symbol in .reloc offset is not "
+                                               "relocatable"));
     if (OffsetVal.isAbsolute()) {
       RelocOffset = OffsetVal.getConstant();
       MCFragment *Fragment = Symbol.getFragment();
       // FIXME Support symbols with no DF. For example:
       // .reloc .data, ENUM_VALUE, <some expr>
       if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-        return std::make_pair(false,
-                              std::string("symbol in offset has no data "
-                                          "fragment"));
+        return std::make_pair(false, std::string("symbol in offset has no data "
+                                                 "fragment"));
       DF = cast<MCDataFragment>(Fragment);
       return std::nullopt;
     }
 
     if (OffsetVal.getSymB())
-      return std::make_pair(false,
-                            std::string(".reloc symbol offset is not "
-                                        "representable"));
+      return std::make_pair(false, std::string(".reloc symbol offset is not "
+                                               "representable"));
 
     const MCSymbolRefExpr &SRE = cast<MCSymbolRefExpr>(*OffsetVal.getSymA());
     if (!SRE.getSymbol().isDefined())
@@ -672,9 +668,8 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
     // FIXME Support symbols with no DF. For example:
     // .reloc .data, ENUM_VALUE, <some expr>
     if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-      return std::make_pair(false,
-                            std::string("symbol in offset has no data "
-                                        "fragment"));
+      return std::make_pair(false, std::string("symbol in offset has no data "
+                                               "fragment"));
     RelocOffset = SRE.getSymbol().getOffset() + OffsetVal.getConstant();
     DF = cast<MCDataFragment>(Fragment);
   } else {
@@ -683,9 +678,8 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
     // FIXME Support symbols with no DF. For example:
     // .reloc .data, ENUM_VALUE, <some expr>
     if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-      return std::make_pair(false,
-                            std::string("symbol in offset has no data "
-                                        "fragment"));
+      return std::make_pair(false, std::string("symbol in offset has no data "
+                                               "fragment"));
     DF = cast<MCDataFragment>(Fragment);
   }
   return std::nullopt;
@@ -733,9 +727,8 @@ MCObjectStreamer::emitRelocDirective(const MCExpr &Offset, StringRef Name,
     if (Error != std::nullopt)
       return Error;
 
-    DF->getFixups().push_back(
-        MCFixup::create(SymbolOffset + OffsetVal.getConstant(),
-                        Expr, Kind, Loc));
+    DF->getFixups().push_back(MCFixup::create(
+        SymbolOffset + OffsetVal.getConstant(), Expr, Kind, Loc));
     return std::nullopt;
   }
 

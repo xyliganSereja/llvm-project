@@ -692,7 +692,8 @@ private:
 AnalysisKey TestDoublyIndirectFunctionAnalysis::Key;
 
 struct LambdaPass : public PassInfoMixin<LambdaPass> {
-  using FuncT = std::function<PreservedAnalyses(Function &, FunctionAnalysisManager &)>;
+  using FuncT =
+      std::function<PreservedAnalyses(Function &, FunctionAnalysisManager &)>;
 
   LambdaPass(FuncT Func) : Func(std::move(Func)) {}
 
@@ -991,7 +992,8 @@ TEST_F(PassManagerTest, FunctionPassMissedFunctionAnalysisInvalidation) {
   FPM.addPass(WrongFunctionPass());
 
   auto *F = M->getFunction("foo");
-  EXPECT_DEATH(FPM.run(*F, FAM), "Function @foo changed by WrongFunctionPass without invalidating analyses");
+  EXPECT_DEATH(FPM.run(*F, FAM), "Function @foo changed by WrongFunctionPass "
+                                 "without invalidating analyses");
 }
 
 struct WrongModulePass : PassInfoMixin<WrongModulePass> {
@@ -1071,4 +1073,4 @@ TEST_F(PassManagerTest, ModulePassMissedModuleAnalysisInvalidation) {
 }
 
 #endif
-}
+} // namespace

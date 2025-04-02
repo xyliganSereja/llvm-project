@@ -33,7 +33,7 @@ struct ThreadSanitizerPass : public PassInfoMixin<ThreadSanitizerPass> {
 ///
 /// Create ctor and init functions.
 struct ModuleThreadSanitizerPass
-  : public PassInfoMixin<ModuleThreadSanitizerPass> {
+    : public PassInfoMixin<ModuleThreadSanitizerPass> {
   PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM);
   static bool isRequired() { return true; }
 };

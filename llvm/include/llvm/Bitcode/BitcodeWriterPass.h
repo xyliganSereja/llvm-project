@@ -57,7 +57,7 @@ public:
                              bool EmitSummaryIndex = false,
                              bool EmitModuleHash = false)
       : OS(OS), ShouldPreserveUseListOrder(ShouldPreserveUseListOrder),
-  EmitSummaryIndex(EmitSummaryIndex), EmitModuleHash(EmitModuleHash) {}
+        EmitSummaryIndex(EmitSummaryIndex), EmitModuleHash(EmitModuleHash) {}
 
   /// Run the bitcode writer pass, and output the module to the selected
   /// output stream.
@@ -66,6 +66,6 @@ public:
   static bool isRequired() { return true; }
 };
 
-}
+} // namespace llvm
 
 #endif

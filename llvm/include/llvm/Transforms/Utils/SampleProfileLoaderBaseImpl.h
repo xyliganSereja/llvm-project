@@ -148,8 +148,6 @@ public:
   }
 };
 
-
-
 extern cl::opt<bool> SampleProfileUseProfi;
 
 static inline bool skipProfileForFunction(const Function &F) {
@@ -491,11 +489,13 @@ SampleProfileLoaderBaseImpl<BT>::getProbeWeight(const InstructionT &Inst) {
         return Remark;
       });
     }
-    LLVM_DEBUG({dbgs() << "    " << Probe->Id;
+    LLVM_DEBUG({
+      dbgs() << "    " << Probe->Id;
       if (Probe->Discriminator)
         dbgs() << "." << Probe->Discriminator;
       dbgs() << ":" << Inst << " - weight: " << R.get()
-             << " - factor: " << format("%0.2f", Probe->Factor) << ")\n";});
+             << " - factor: " << format("%0.2f", Probe->Factor) << ")\n";
+    });
     return Samples;
   }
   return R;

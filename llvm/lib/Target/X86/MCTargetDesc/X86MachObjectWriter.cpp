@@ -27,23 +27,15 @@ class X86MachObjectWriter : public MCMachObjectTargetWriter {
   bool recordScatteredRelocation(MachObjectWriter *Writer,
                                  const MCAssembler &Asm,
                                  const MCFragment *Fragment,
-                                 const MCFixup &Fixup,
-                                 MCValue Target,
-                                 unsigned Log2Size,
-                                 uint64_t &FixedValue);
-  void recordTLVPRelocation(MachObjectWriter *Writer,
-                            const MCAssembler &Asm,
-                            const MCFragment *Fragment,
-                            const MCFixup &Fixup,
-                            MCValue Target,
-                            uint64_t &FixedValue);
+                                 const MCFixup &Fixup, MCValue Target,
+                                 unsigned Log2Size, uint64_t &FixedValue);
+  void recordTLVPRelocation(MachObjectWriter *Writer, const MCAssembler &Asm,
+                            const MCFragment *Fragment, const MCFixup &Fixup,
+                            MCValue Target, uint64_t &FixedValue);
 
-  void RecordX86Relocation(MachObjectWriter *Writer,
-                              const MCAssembler &Asm,
-                              const MCFragment *Fragment,
-                              const MCFixup &Fixup,
-                              MCValue Target,
-                              uint64_t &FixedValue);
+  void RecordX86Relocation(MachObjectWriter *Writer, const MCAssembler &Asm,
+                           const MCFragment *Fragment, const MCFixup &Fixup,
+                           MCValue Target, uint64_t &FixedValue);
   void RecordX86_64Relocation(MachObjectWriter *Writer, MCAssembler &Asm,
                               const MCFragment *Fragment, const MCFixup &Fixup,
                               MCValue Target, uint64_t &FixedValue);
@@ -78,9 +70,11 @@ static unsigned getFixupKindLog2Size(unsigned Kind) {
   default:
     llvm_unreachable("invalid fixup kind!");
   case FK_PCRel_1:
-  case FK_Data_1: return 0;
+  case FK_Data_1:
+    return 0;
   case FK_PCRel_2:
-  case FK_Data_2: return 1;
+  case FK_Data_2:
+    return 1;
   case FK_PCRel_4:
     // FIXME: Remove these!!!
   case X86::reloc_riprel_4byte:
@@ -93,8 +87,10 @@ static unsigned getFixupKindLog2Size(unsigned Kind) {
   case X86::reloc_signed_4byte_relax:
   case X86::reloc_branch_4byte_pcrel:
   case X86::reloc_riprel_4byte_relax_evex:
-  case FK_Data_4: return 2;
-  case FK_Data_8: return 3;
+  case FK_Data_4:
+    return 2;
+  case FK_Data_8:
+    return 3;
   }
 }
 
@@ -184,9 +180,10 @@ void X86MachObjectWriter::RecordX86_64Relocation(
     // non-relocatable expression.
     if (A->isUndefined() || B->isUndefined()) {
       StringRef Name = A->isUndefined() ? A->getName() : B->getName();
-      Asm.getContext().reportError(Fixup.getLoc(),
-        "unsupported relocation with subtraction expression, symbol '" +
-        Name + "' can not be undefined in a subtraction expression");
+      Asm.getContext().reportError(
+          Fixup.getLoc(),
+          "unsupported relocation with subtraction expression, symbol '" +
+              Name + "' can not be undefined in a subtraction expression");
       return;
     }
 
@@ -276,9 +273,9 @@ void X86MachObjectWriter::RecordX86_64Relocation(
             Type = MachO::X86_64_RELOC_GOT_LOAD;
           else
             Type = MachO::X86_64_RELOC_GOT;
-        }  else if (Modifier == MCSymbolRefExpr::VK_TLVP) {
+        } else if (Modifier == MCSymbolRefExpr::VK_TLVP) {
           Type = MachO::X86_64_RELOC_TLV;
-        }  else if (Modifier != MCSymbolRefExpr::VK_None) {
+        } else if (Modifier != MCSymbolRefExpr::VK_None) {
           Asm.getContext().reportError(
               Fixup.getLoc(), "unsupported symbol modifier in relocation");
           return;
@@ -300,9 +297,15 @@ void X86MachObjectWriter::RecordX86_64Relocation(
           // (the additional bias), but instead appear to just look at the final
           // offset.
           switch (-(Target.getConstant() + (1LL << Log2Size))) {
-          case 1: Type = MachO::X86_64_RELOC_SIGNED_1; break;
-          case 2: Type = MachO::X86_64_RELOC_SIGNED_2; break;
-          case 4: Type = MachO::X86_64_RELOC_SIGNED_4; break;
+          case 1:
+            Type = MachO::X86_64_RELOC_SIGNED_1;
+            break;
+          case 2:
+            Type = MachO::X86_64_RELOC_SIGNED_2;
+            break;
+          case 4:
+            Type = MachO::X86_64_RELOC_SIGNED_4;
+            break;
           }
         }
       } else {
@@ -356,13 +359,10 @@ void X86MachObjectWriter::RecordX86_64Relocation(
   Writer->addRelocation(RelSymbol, Fragment->getParent(), MRE);
 }
 
-bool X86MachObjectWriter::recordScatteredRelocation(MachObjectWriter *Writer,
-                                                    const MCAssembler &Asm,
-                                                    const MCFragment *Fragment,
-                                                    const MCFixup &Fixup,
-                                                    MCValue Target,
-                                                    unsigned Log2Size,
-                                                    uint64_t &FixedValue) {
+bool X86MachObjectWriter::recordScatteredRelocation(
+    MachObjectWriter *Writer, const MCAssembler &Asm,
+    const MCFragment *Fragment, const MCFixup &Fixup, MCValue Target,
+    unsigned Log2Size, uint64_t &FixedValue) {
   uint64_t OriginalFixedValue = FixedValue;
   uint32_t FixupOffset = Asm.getFragmentOffset(*Fragment) + Fixup.getOffset();
   unsigned IsPCRel = Writer->isFixupKindPCRel(Asm, Fixup.getKind());
@@ -415,19 +415,18 @@ bool X86MachObjectWriter::recordScatteredRelocation(MachObjectWriter *Writer,
       char Buffer[32];
       format("0x%x", FixupOffset).print(Buffer, sizeof(Buffer));
       Asm.getContext().reportError(Fixup.getLoc(),
-                         Twine("Section too large, can't encode "
-                                "r_address (") + Buffer +
-                         ") into 24 bits of scattered "
-                         "relocation entry.");
+                                   Twine("Section too large, can't encode "
+                                         "r_address (") +
+                                       Buffer +
+                                       ") into 24 bits of scattered "
+                                       "relocation entry.");
       return false;
     }
 
     MachO::any_relocation_info MRE;
-    MRE.r_word0 = ((0                         <<  0) | // r_address
+    MRE.r_word0 = ((0 << 0) |                          // r_address
                    (MachO::GENERIC_RELOC_PAIR << 24) | // r_type
-                   (Log2Size                  << 28) |
-                   (IsPCRel                   << 30) |
-                   MachO::R_SCATTERED);
+                   (Log2Size << 28) | (IsPCRel << 30) | MachO::R_SCATTERED);
     MRE.r_word1 = Value2;
     Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
   } else {
@@ -445,11 +444,8 @@ bool X86MachObjectWriter::recordScatteredRelocation(MachObjectWriter *Writer,
   }
 
   MachO::any_relocation_info MRE;
-  MRE.r_word0 = ((FixupOffset <<  0) |
-                 (Type        << 24) |
-                 (Log2Size    << 28) |
-                 (IsPCRel     << 30) |
-                 MachO::R_SCATTERED);
+  MRE.r_word0 = ((FixupOffset << 0) | (Type << 24) | (Log2Size << 28) |
+                 (IsPCRel << 30) | MachO::R_SCATTERED);
   MRE.r_word1 = Value;
   Writer->addRelocation(nullptr, Fragment->getParent(), MRE);
   return true;

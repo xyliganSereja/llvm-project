@@ -46,14 +46,10 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_CTOR
 #include "ARMGenSubtargetInfo.inc"
 
-static cl::opt<bool>
-UseFusedMulOps("arm-use-mulops",
-               cl::init(true), cl::Hidden);
+static cl::opt<bool> UseFusedMulOps("arm-use-mulops", cl::init(true),
+                                    cl::Hidden);
 
-enum ITMode {
-  DefaultIT,
-  RestrictedIT
-};
+enum ITMode { DefaultIT, RestrictedIT };
 
 static cl::opt<ITMode>
     IT(cl::desc("IT block support"), cl::Hidden, cl::init(DefaultIT),
@@ -64,9 +60,8 @@ static cl::opt<ITMode>
 
 /// ForceFastISel - Use the fast-isel, even for subtargets where it is not
 /// currently supported (for testing only).
-static cl::opt<bool>
-ForceFastISel("arm-force-fast-isel",
-               cl::init(false), cl::Hidden);
+static cl::opt<bool> ForceFastISel("arm-force-fast-isel", cl::init(false),
+                                   cl::Hidden);
 
 /// initializeSubtargetDependencies - Initializes using a CPU and feature string
 /// so that we can use initializer lists for subtarget initialization.
@@ -96,11 +91,9 @@ ARMSubtarget::ARMSubtarget(const Triple &TT, const std::string &CPU,
       FrameLowering(initializeFrameLowering(CPU, FS)),
       // At this point initializeSubtargetDependencies has been called so
       // we can query directly.
-      InstrInfo(isThumb1Only()
-                    ? (ARMBaseInstrInfo *)new Thumb1InstrInfo(*this)
-                    : !isThumb()
-                          ? (ARMBaseInstrInfo *)new ARMInstrInfo(*this)
-                          : (ARMBaseInstrInfo *)new Thumb2InstrInfo(*this)),
+      InstrInfo(isThumb1Only() ? (ARMBaseInstrInfo *)new Thumb1InstrInfo(*this)
+                : !isThumb()   ? (ARMBaseInstrInfo *)new ARMInstrInfo(*this)
+                             : (ARMBaseInstrInfo *)new Thumb2InstrInfo(*this)),
       TLInfo(TM, *this) {
 
   CallLoweringInfo.reset(new ARMCallLowering(*getTargetLowering()));
@@ -144,10 +137,10 @@ void ARMSubtarget::initializeEnvironment() {
   UseSjLjEH = (isTargetDarwin() && !isTargetWatchABI() &&
                Options.ExceptionModel == ExceptionHandling::None) ||
               Options.ExceptionModel == ExceptionHandling::SjLj;
-  assert((!TM.getMCAsmInfo() ||
-          (TM.getMCAsmInfo()->getExceptionHandlingType() ==
-           ExceptionHandling::SjLj) == UseSjLjEH) &&
-         "inconsistent sjlj choice between CodeGen and MC");
+  assert(
+      (!TM.getMCAsmInfo() || (TM.getMCAsmInfo()->getExceptionHandlingType() ==
+                              ExceptionHandling::SjLj) == UseSjLjEH) &&
+      "inconsistent sjlj choice between CodeGen and MC");
 }
 
 void ARMSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
@@ -247,7 +240,8 @@ void ARMSubtarget::initSubtargetFeatures(StringRef CPU, StringRef FS) {
   if (isRWPI())
     ReserveR9 = true;
 
-  // If MVEVectorCostFactor is still 0 (has not been set to anything else), default it to 2
+  // If MVEVectorCostFactor is still 0 (has not been set to anything else),
+  // default it to 2
   if (MVEVectorCostFactor == 0)
     MVEVectorCostFactor = 2;
 
@@ -419,8 +413,7 @@ bool ARMSubtarget::useStride4VFPs() const {
   // For general targets, the prologue can grow when VFPs are allocated with
   // stride 4 (more vpush instructions). But WatchOS uses a compact unwind
   // format which it's more important to get right.
-  return isTargetWatchABI() ||
-         (useWideStrideVFP() && !OptMinSize);
+  return isTargetWatchABI() || (useWideStrideVFP() && !OptMinSize);
 }
 
 bool ARMSubtarget::useMovt() const {

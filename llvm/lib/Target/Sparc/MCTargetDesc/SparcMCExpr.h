@@ -78,7 +78,7 @@ public:
   /// @{
 
   static const SparcMCExpr *create(VariantKind Kind, const MCExpr *Expr,
-                                 MCContext &Ctx);
+                                   MCContext &Ctx);
   /// @}
   /// @name Accessors
   /// @{

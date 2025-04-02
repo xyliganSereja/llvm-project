@@ -74,7 +74,8 @@ void identifyUninterestingMDNodes(Oracle &O, MDNodeList &MDs) {
       }
     }
     if (TN.size() != Tup->getNumOperands())
-      DbgNode->replaceOperandWith(OpIdx, DbgNode->get(DbgNode->getContext(), TN));
+      DbgNode->replaceOperandWith(OpIdx,
+                                  DbgNode->get(DbgNode->getContext(), TN));
   }
 }
 

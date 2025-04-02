@@ -387,13 +387,15 @@ bool InlineAsmLowering::lowerInlineAsm(
           InstFlagIdx += getNumOpRegs(*Inst, InstFlagIdx) + 1;
         assert(getNumOpRegs(*Inst, InstFlagIdx) == 1 && "Wrong flag");
 
-        const InlineAsm::Flag MatchedOperandFlag(Inst->getOperand(InstFlagIdx).getImm());
+        const InlineAsm::Flag MatchedOperandFlag(
+            Inst->getOperand(InstFlagIdx).getImm());
         if (MatchedOperandFlag.isMemKind()) {
           LLVM_DEBUG(dbgs() << "Matching input constraint to mem operand not "
                                "supported. This should be target specific.\n");
           return false;
         }
-        if (!MatchedOperandFlag.isRegDefKind() && !MatchedOperandFlag.isRegDefEarlyClobberKind()) {
+        if (!MatchedOperandFlag.isRegDefKind() &&
+            !MatchedOperandFlag.isRegDefEarlyClobberKind()) {
           LLVM_DEBUG(dbgs() << "Unknown matching constraint\n");
           return false;
         }

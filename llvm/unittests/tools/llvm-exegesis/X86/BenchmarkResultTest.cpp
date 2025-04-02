@@ -114,17 +114,15 @@ TEST(BenchmarkResultTest, WriteToAndReadFromDisk) {
     const auto TriplesAndCpus =
         ExitOnErr(Benchmark::readTriplesAndCpusFromYamls(*Buffer));
 
-    ASSERT_THAT(TriplesAndCpus,
-                testing::ElementsAre(
-                    AllOf(Field(&Benchmark::TripleAndCpu::LLVMTriple,
-                                Eq("llvm_triple")),
-                          Field(&Benchmark::TripleAndCpu::CpuName,
-                                Eq("cpu_name")))));
+    ASSERT_THAT(
+        TriplesAndCpus,
+        testing::ElementsAre(AllOf(
+            Field(&Benchmark::TripleAndCpu::LLVMTriple, Eq("llvm_triple")),
+            Field(&Benchmark::TripleAndCpu::CpuName, Eq("cpu_name")))));
   }
   {
     // One-element version.
-    const auto FromDisk =
-        ExitOnErr(Benchmark::readYaml(State, *Buffer));
+    const auto FromDisk = ExitOnErr(Benchmark::readYaml(State, *Buffer));
 
     EXPECT_THAT(FromDisk.Key.Instructions,
                 Pointwise(EqMCInst(), ToDisk.Key.Instructions));
@@ -141,8 +139,7 @@ TEST(BenchmarkResultTest, WriteToAndReadFromDisk) {
   }
   {
     // Vector version.
-    const auto FromDiskVector =
-        ExitOnErr(Benchmark::readYamls(State, *Buffer));
+    const auto FromDiskVector = ExitOnErr(Benchmark::readYamls(State, *Buffer));
     ASSERT_EQ(FromDiskVector.size(), size_t{1});
     const auto &FromDisk = FromDiskVector[0];
     EXPECT_THAT(FromDisk.Key.Instructions,

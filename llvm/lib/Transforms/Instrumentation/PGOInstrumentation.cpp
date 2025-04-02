@@ -2392,8 +2392,7 @@ void llvm::setProfMetadata(Module *M, Instruction *TI,
   for (const auto &ECI : EdgeCounts)
     Weights.push_back(scaleBranchCount(ECI, Scale));
 
-  LLVM_DEBUG(dbgs() << "Weight is: "; for (const auto &W
-                                           : Weights) {
+  LLVM_DEBUG(dbgs() << "Weight is: "; for (const auto &W : Weights) {
     dbgs() << W << " ";
   } dbgs() << "\n";);
 

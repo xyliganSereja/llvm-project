@@ -57,6 +57,6 @@ public:
                                             SDValue Src, SDValue Size,
                                             RTLIB::Libcall LC) const;
 };
-}
+} // namespace llvm
 
 #endif

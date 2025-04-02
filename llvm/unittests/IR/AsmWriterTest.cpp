@@ -27,7 +27,8 @@ TEST(AsmWriterTest, DebugPrintDetachedInstruction) {
   LLVMContext Ctx;
   auto Ty = Type::getInt32Ty(Ctx);
   auto Poison = PoisonValue::get(Ty);
-  std::unique_ptr<BinaryOperator> Add(BinaryOperator::CreateAdd(Poison, Poison));
+  std::unique_ptr<BinaryOperator> Add(
+      BinaryOperator::CreateAdd(Poison, Poison));
   Add->setMetadata(
       "", MDNode::get(Ctx, {ConstantAsMetadata::get(ConstantInt::get(Ty, 1))}));
   std::string S;
@@ -51,9 +52,10 @@ TEST(AsmWriterTest, DebugPrintDetachedArgument) {
 TEST(AsmWriterTest, DumpDIExpression) {
   LLVMContext Ctx;
   uint64_t Ops[] = {
-    dwarf::DW_OP_constu, 4,
-    dwarf::DW_OP_minus,
-    dwarf::DW_OP_deref,
+      dwarf::DW_OP_constu,
+      4,
+      dwarf::DW_OP_minus,
+      dwarf::DW_OP_deref,
   };
   DIExpression *Expr = DIExpression::get(Ctx, Ops);
   std::string S;
@@ -103,4 +105,4 @@ TEST(AsmWriterTest, PrintNullOperandBundle) {
   Invoke->print(OS);
   EXPECT_THAT(S, HasSubstr("<null operand bundle!>"));
 }
-}
+} // namespace

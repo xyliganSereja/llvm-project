@@ -40,7 +40,7 @@ private:
   // A complex method to determine if a certain instruction is deprecated or
   // not, and return the reason for deprecation.
   const ComplexDeprecationPredicate *ComplexDeprecationInfos;
-  unsigned NumOpcodes;              // Number of entries in the desc array
+  unsigned NumOpcodes; // Number of entries in the desc array
 
 public:
   /// Initialize MCInstrInfo, called by TableGen auto-generated routines.
@@ -78,6 +78,6 @@ public:
                          std::string &Info) const;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

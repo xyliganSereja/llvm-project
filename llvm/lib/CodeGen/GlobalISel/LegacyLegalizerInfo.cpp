@@ -244,7 +244,8 @@ LegacyLegalizerInfo::decreaseToSmallerTypesAndIncreaseToSmallest(
 }
 
 LegacyLegalizerInfo::SizeAndAction
-LegacyLegalizerInfo::findAction(const SizeAndActionsVec &Vec, const uint32_t Size) {
+LegacyLegalizerInfo::findAction(const SizeAndActionsVec &Vec,
+                                const uint32_t Size) {
   assert(Size >= 1);
   // Find the last element in Vec that has a bitsize equal to or smaller than
   // the requested bit size.
@@ -311,11 +312,10 @@ LegacyLegalizerInfo::findScalarLegalAction(const InstrAspect &Aspect) const {
     return {NotFound, LLT()};
   }
   const SmallVector<SizeAndActionsVec, 1> &Actions =
-      Aspect.Type.isPointer()
-          ? AddrSpace2PointerActions[OpcodeIdx]
-                .find(Aspect.Type.getAddressSpace())
-                ->second
-          : ScalarActions[OpcodeIdx];
+      Aspect.Type.isPointer() ? AddrSpace2PointerActions[OpcodeIdx]
+                                    .find(Aspect.Type.getAddressSpace())
+                                    ->second
+                              : ScalarActions[OpcodeIdx];
   if (Aspect.Idx >= Actions.size())
     return {NotFound, LLT()};
   const SizeAndActionsVec &Vec = Actions[Aspect.Idx];
@@ -368,7 +368,6 @@ unsigned LegacyLegalizerInfo::getOpcodeIdxForOpcode(unsigned Opcode) const {
   return Opcode - FirstOp;
 }
 
-
 LegacyLegalizeActionStep
 LegacyLegalizerInfo::getAction(const LegalityQuery &Query) const {
   for (unsigned i = 0; i < Query.Types.size(); ++i) {
@@ -383,4 +382,3 @@ LegacyLegalizerInfo::getAction(const LegalityQuery &Query) const {
   LLVM_DEBUG(dbgs() << ".. (legacy) Legal\n");
   return {Legal, 0, LLT{}};
 }
-

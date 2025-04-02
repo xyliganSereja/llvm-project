@@ -1812,9 +1812,7 @@ static void computeUberWeights(std::vector<UberRegSet> &UberSets,
     if (I->Weight != MaxWeight) {
       LLVM_DEBUG(dbgs() << "UberSet " << I - UberSets.begin() << " Weight "
                         << MaxWeight;
-                 for (auto &Unit
-                      : I->Regs) dbgs()
-                 << " " << Unit->getName();
+                 for (auto &Unit : I->Regs) dbgs() << " " << Unit->getName();
                  dbgs() << "\n");
       // Update the set weight.
       I->Weight = MaxWeight;
@@ -2081,8 +2079,7 @@ void CodeGenRegBank::computeRegUnitSets() {
       if (findRegUnitSet(RegUnitSets, RUSet) == RegUnitSets.end()) {
         LLVM_DEBUG(dbgs() << "UnitSet " << RegUnitSets.size() << " "
                           << RUSet.Name << ":";
-                   for (auto &U
-                        : RUSet.Units) printRegUnitName(U);
+                   for (auto &U : RUSet.Units) printRegUnitName(U);
                    dbgs() << "\n";);
         RegUnitSets.push_back(std::move(RUSet));
       }
@@ -2118,8 +2115,7 @@ void CodeGenRegBank::computeRegUnitSets() {
       continue;
 
     LLVM_DEBUG(dbgs() << "RC " << RC.getName() << " Units:\n";
-               for (auto U
-                    : RCRegUnits) printRegUnitName(U);
+               for (auto U : RCRegUnits) printRegUnitName(U);
                dbgs() << "\n  UnitSetIDs:");
 
     // Find all supersets.

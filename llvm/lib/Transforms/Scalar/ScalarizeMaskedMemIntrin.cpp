@@ -138,9 +138,9 @@ static unsigned adjustForEndian(const DataLayout &DL, unsigned VectorWidth,
 //  br label %else2
 //
 // else2:                                          ; preds = %else, %cond.load1
-//  %res.phi.else3 = phi <16 x i32> [ %9, %cond.load1 ], [ %res.phi.else, %else ]
-//  %10 = extractelement <16 x i1> %mask, i32 2
-//  br i1 %10, label %cond.load4, label %else5
+//  %res.phi.else3 = phi <16 x i32> [ %9, %cond.load1 ], [ %res.phi.else, %else
+//  ] %10 = extractelement <16 x i1> %mask, i32 2 br i1 %10, label %cond.load4,
+//  label %else5
 //
 static void scalarizeMaskedLoad(const DataLayout &DL, bool HasBranchDivergence,
                                 CallInst *CI, DomTreeUpdater *DTU,
@@ -1113,8 +1113,8 @@ static bool optimizeCallInst(CallInst *CI, bool &ModifiedDT,
       MaybeAlign MA =
           cast<ConstantInt>(CI->getArgOperand(1))->getMaybeAlignValue();
       Type *LoadTy = CI->getType();
-      Align Alignment = DL.getValueOrABITypeAlignment(MA,
-                                                      LoadTy->getScalarType());
+      Align Alignment =
+          DL.getValueOrABITypeAlignment(MA, LoadTy->getScalarType());
       if (TTI.isLegalMaskedGather(LoadTy, Alignment) &&
           !TTI.forceScalarizeMaskedGather(cast<VectorType>(LoadTy), Alignment))
         return false;
@@ -1125,8 +1125,8 @@ static bool optimizeCallInst(CallInst *CI, bool &ModifiedDT,
       MaybeAlign MA =
           cast<ConstantInt>(CI->getArgOperand(2))->getMaybeAlignValue();
       Type *StoreTy = CI->getArgOperand(0)->getType();
-      Align Alignment = DL.getValueOrABITypeAlignment(MA,
-                                                      StoreTy->getScalarType());
+      Align Alignment =
+          DL.getValueOrABITypeAlignment(MA, StoreTy->getScalarType());
       if (TTI.isLegalMaskedScatter(StoreTy, Alignment) &&
           !TTI.forceScalarizeMaskedScatter(cast<VectorType>(StoreTy),
                                            Alignment))

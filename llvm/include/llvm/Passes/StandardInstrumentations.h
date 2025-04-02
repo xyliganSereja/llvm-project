@@ -102,6 +102,7 @@ private:
 class OptPassGateInstrumentation {
   LLVMContext &Context;
   bool HasWrittenIR = false;
+
 public:
   OptPassGateInstrumentation(LLVMContext &Context) : Context(Context) {}
   bool shouldRun(StringRef PassName, Any IR);

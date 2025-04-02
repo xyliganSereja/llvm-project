@@ -1537,8 +1537,7 @@ bool HWAddressSanitizer::instrumentStack(memtag::StackInfo &SInfo,
     // function return. Work around this by always untagging at every return
     // statement if return_twice functions are called.
     bool StandardLifetime =
-        !SInfo.CallsReturnTwice &&
-        SInfo.UnrecognizedLifetimes.empty() &&
+        !SInfo.CallsReturnTwice && SInfo.UnrecognizedLifetimes.empty() &&
         memtag::isStandardLifetime(Info.LifetimeStart, Info.LifetimeEnd, &DT,
                                    &LI, ClMaxLifetimes);
     if (DetectUseAfterScope && StandardLifetime) {

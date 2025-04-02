@@ -22,20 +22,20 @@
 using namespace llvm;
 
 namespace {
-  class UnpackMachineBundles : public MachineFunctionPass {
-  public:
-    static char ID; // Pass identification
-    UnpackMachineBundles(
-        std::function<bool(const MachineFunction &)> Ftor = nullptr)
-        : MachineFunctionPass(ID), PredicateFtor(std::move(Ftor)) {
-      initializeUnpackMachineBundlesPass(*PassRegistry::getPassRegistry());
-    }
+class UnpackMachineBundles : public MachineFunctionPass {
+public:
+  static char ID; // Pass identification
+  UnpackMachineBundles(
+      std::function<bool(const MachineFunction &)> Ftor = nullptr)
+      : MachineFunctionPass(ID), PredicateFtor(std::move(Ftor)) {
+    initializeUnpackMachineBundlesPass(*PassRegistry::getPassRegistry());
+  }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-  private:
-    std::function<bool(const MachineFunction &)> PredicateFtor;
-  };
+private:
+  std::function<bool(const MachineFunction &)> PredicateFtor;
+};
 } // end anonymous namespace
 
 char UnpackMachineBundles::ID = 0;
@@ -50,7 +50,8 @@ bool UnpackMachineBundles::runOnMachineFunction(MachineFunction &MF) {
   bool Changed = false;
   for (MachineBasicBlock &MBB : MF) {
     for (MachineBasicBlock::instr_iterator MII = MBB.instr_begin(),
-           MIE = MBB.instr_end(); MII != MIE; ) {
+                                           MIE = MBB.instr_end();
+         MII != MIE;) {
       MachineInstr *MI = &*MII;
 
       // Remove BUNDLE instruction and the InsideBundle flags from bundled
@@ -58,7 +59,7 @@ bool UnpackMachineBundles::runOnMachineFunction(MachineFunction &MF) {
       if (MI->isBundle()) {
         while (++MII != MIE && MII->isBundledWithPred()) {
           MII->unbundleFromPred();
-          for (MachineOperand &MO  : MII->operands()) {
+          for (MachineOperand &MO : MII->operands()) {
             if (MO.isReg() && MO.isInternalRead())
               MO.setIsInternalRead(false);
           }
@@ -76,22 +77,21 @@ bool UnpackMachineBundles::runOnMachineFunction(MachineFunction &MF) {
   return Changed;
 }
 
-FunctionPass *
-llvm::createUnpackMachineBundles(
+FunctionPass *llvm::createUnpackMachineBundles(
     std::function<bool(const MachineFunction &)> Ftor) {
   return new UnpackMachineBundles(std::move(Ftor));
 }
 
 namespace {
-  class FinalizeMachineBundles : public MachineFunctionPass {
-  public:
-    static char ID; // Pass identification
-    FinalizeMachineBundles() : MachineFunctionPass(ID) {
-      initializeFinalizeMachineBundlesPass(*PassRegistry::getPassRegistry());
-    }
+class FinalizeMachineBundles : public MachineFunctionPass {
+public:
+  static char ID; // Pass identification
+  FinalizeMachineBundles() : MachineFunctionPass(ID) {
+    initializeFinalizeMachineBundlesPass(*PassRegistry::getPassRegistry());
+  }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
-  };
+  bool runOnMachineFunction(MachineFunction &MF) override;
+};
 } // end anonymous namespace
 
 char FinalizeMachineBundles::ID = 0;
@@ -142,7 +142,7 @@ void llvm::finalizeBundle(MachineBasicBlock &MBB,
   SmallSet<Register, 8> ExternUseSet;
   SmallSet<Register, 8> KilledUseSet;
   SmallSet<Register, 8> UndefUseSet;
-  SmallVector<MachineOperand*, 4> Defs;
+  SmallVector<MachineOperand *, 4> Defs;
   for (auto MII = FirstMI; MII != LastMI; ++MII) {
     // Debug instructions have no effects to track.
     if (MII->isDebugInstr())
@@ -212,7 +212,7 @@ void llvm::finalizeBundle(MachineBasicBlock &MBB,
       // If it's not live beyond end of the bundle, mark it dead.
       bool isDead = DeadDefSet.count(Reg) || KilledDefSet.count(Reg);
       MIB.addReg(Reg, getDefRegState(true) | getDeadRegState(isDead) |
-                 getImplRegState(true));
+                          getImplRegState(true));
     }
   }
 
@@ -220,7 +220,7 @@ void llvm::finalizeBundle(MachineBasicBlock &MBB,
     bool isKill = KilledUseSet.count(Reg);
     bool isUndef = UndefUseSet.count(Reg);
     MIB.addReg(Reg, getKillRegState(isKill) | getUndefRegState(isUndef) |
-               getImplRegState(true));
+                        getImplRegState(true));
   }
 
   // Set FrameSetup/FrameDestroy for the bundle. If any of the instructions got
@@ -261,7 +261,7 @@ bool llvm::finalizeBundles(MachineFunction &MF) {
     assert(!MII->isInsideBundle() &&
            "First instr cannot be inside bundle before finalization!");
 
-    for (++MII; MII != MIE; ) {
+    for (++MII; MII != MIE;) {
       if (!MII->isInsideBundle())
         ++MII;
       else {

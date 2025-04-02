@@ -273,7 +273,7 @@ static int readPrefixes(struct InternalInstruction *insn) {
     case 0xf0: // LOCK
       insn->hasLockPrefix = true;
       break;
-    case 0xf2: // REPNE/REPNZ
+    case 0xf2:   // REPNE/REPNZ
     case 0xf3: { // REP or REPE/REPZ
       uint8_t nextByte;
       if (peek(insn, nextByte))
@@ -1354,7 +1354,6 @@ static int getInstructionID(struct InternalInstruction *insn,
       attrMask |= ATTR_OPSIZE;
   }
 
-
   if (getInstructionIDWithAttrMask(&instructionID, insn, attrMask))
     return -1;
 
@@ -1814,21 +1813,20 @@ namespace llvm {
 // assigned; they are just filler to make an automatically-generated switch
 // statement work.
 namespace X86 {
-  enum {
-    BX_SI = 500,
-    BX_DI = 501,
-    BP_SI = 502,
-    BP_DI = 503,
-    sib   = 504,
-    sib64 = 505
-  };
+enum {
+  BX_SI = 500,
+  BX_DI = 501,
+  BP_SI = 502,
+  BP_DI = 503,
+  sib = 504,
+  sib64 = 505
+};
 } // namespace X86
 
 } // namespace llvm
 
-static bool translateInstruction(MCInst &target,
-                                InternalInstruction &source,
-                                const MCDisassembler *Dis);
+static bool translateInstruction(MCInst &target, InternalInstruction &source,
+                                 const MCDisassembler *Dis);
 
 namespace {
 
@@ -1837,25 +1835,26 @@ namespace {
 /// disassemblerMode value.
 class X86GenericDisassembler : public MCDisassembler {
   std::unique_ptr<const MCInstrInfo> MII;
+
 public:
   X86GenericDisassembler(const MCSubtargetInfo &STI, MCContext &Ctx,
                          std::unique_ptr<const MCInstrInfo> MII);
+
 public:
   DecodeStatus getInstruction(MCInst &instr, uint64_t &size,
                               ArrayRef<uint8_t> Bytes, uint64_t Address,
                               raw_ostream &cStream) const override;
 
 private:
-  DisassemblerMode              fMode;
+  DisassemblerMode fMode;
 };
 
 } // namespace
 
 X86GenericDisassembler::X86GenericDisassembler(
-                                         const MCSubtargetInfo &STI,
-                                         MCContext &Ctx,
-                                         std::unique_ptr<const MCInstrInfo> MII)
-  : MCDisassembler(STI, Ctx), MII(std::move(MII)) {
+    const MCSubtargetInfo &STI, MCContext &Ctx,
+    std::unique_ptr<const MCInstrInfo> MII)
+    : MCDisassembler(STI, Ctx), MII(std::move(MII)) {
   const FeatureBitset &FB = STI.getFeatureBits();
   if (FB[X86::Is16Bit]) {
     fMode = MODE_16BIT;
@@ -1937,14 +1936,8 @@ static void translateRegister(MCInst &mcInst, Reg reg) {
 }
 
 static const uint8_t segmentRegnums[SEG_OVERRIDE_max] = {
-  0,        // SEG_OVERRIDE_NONE
-  X86::CS,
-  X86::SS,
-  X86::DS,
-  X86::ES,
-  X86::FS,
-  X86::GS
-};
+    0, // SEG_OVERRIDE_NONE
+    X86::CS, X86::SS, X86::DS, X86::ES, X86::FS, X86::GS};
 
 /// translateSrcIndex   - Appends a source index operand to an MCInst.
 ///
@@ -2018,15 +2011,15 @@ static void translateImmediate(MCInst &mcInst, uint64_t immediate,
       default:
         break;
       case 1:
-        if(immediate & 0x80)
+        if (immediate & 0x80)
           immediate |= ~(0xffull);
         break;
       case 2:
-        if(immediate & 0x8000)
+        if (immediate & 0x8000)
           immediate |= ~(0xffffull);
         break;
       case 4:
-        if(immediate & 0x80000000)
+        if (immediate & 0x80000000)
           immediate |= ~(0xffffffffull);
         break;
       case 8:
@@ -2034,15 +2027,15 @@ static void translateImmediate(MCInst &mcInst, uint64_t immediate,
       }
       break;
     case ENCODING_IB:
-      if(immediate & 0x80)
+      if (immediate & 0x80)
         immediate |= ~(0xffull);
       break;
     case ENCODING_IW:
-      if(immediate & 0x8000)
+      if (immediate & 0x8000)
         immediate |= ~(0xffffull);
       break;
     case ENCODING_ID:
-      if(immediate & 0x80000000)
+      if (immediate & 0x80000000)
         immediate |= ~(0xffffffffull);
       break;
     }
@@ -2053,15 +2046,15 @@ static void translateImmediate(MCInst &mcInst, uint64_t immediate,
     default:
       break;
     case ENCODING_IB:
-      if(immediate & 0x80)
+      if (immediate & 0x80)
         immediate |= ~(0xffull);
       break;
     case ENCODING_IW:
-      if(immediate & 0x8000)
+      if (immediate & 0x8000)
         immediate |= ~(0xffffull);
       break;
     case ENCODING_ID:
-      if(immediate & 0x80000000)
+      if (immediate & 0x80000000)
         immediate |= ~(0xffffffffull);
       break;
     case ENCODING_IO:
@@ -2102,8 +2095,7 @@ static void translateImmediate(MCInst &mcInst, uint64_t immediate,
 /// @param insn         - The internal instruction to extract the R/M field
 ///                       from.
 /// @return             - 0 on success; -1 otherwise
-static bool translateRMRegister(MCInst &mcInst,
-                                InternalInstruction &insn) {
+static bool translateRMRegister(MCInst &mcInst, InternalInstruction &insn) {
   if (insn.eaBase == EA_BASE_sib || insn.eaBase == EA_BASE_sib64) {
     debug("A R/M register operand may not have a SIB byte");
     return true;
@@ -2117,15 +2109,16 @@ static bool translateRMRegister(MCInst &mcInst,
     debug("EA_BASE_NONE for ModR/M base");
     return true;
 #define ENTRY(x) case EA_BASE_##x:
-  ALL_EA_BASES
+    ALL_EA_BASES
 #undef ENTRY
     debug("A R/M register operand may not have a base; "
           "the operand must be a register.");
     return true;
-#define ENTRY(x)                                                      \
-  case EA_REG_##x:                                                    \
-    mcInst.addOperand(MCOperand::createReg(X86::x)); break;
-  ALL_REGS
+#define ENTRY(x)                                                               \
+  case EA_REG_##x:                                                             \
+    mcInst.addOperand(MCOperand::createReg(X86::x));                           \
+    break;
+    ALL_REGS
 #undef ENTRY
   }
 
@@ -2169,10 +2162,11 @@ static bool translateRMMemory(MCInst &mcInst, InternalInstruction &insn,
       default:
         debug("Unexpected sibBase");
         return true;
-#define ENTRY(x)                                          \
-      case SIB_BASE_##x:                                  \
-        baseReg = MCOperand::createReg(X86::x); break;
-      ALL_SIB_BASES
+#define ENTRY(x)                                                               \
+  case SIB_BASE_##x:                                                           \
+    baseReg = MCOperand::createReg(X86::x);                                    \
+    break;
+        ALL_SIB_BASES
 #undef ENTRY
       }
     } else {
@@ -2184,14 +2178,15 @@ static bool translateRMMemory(MCInst &mcInst, InternalInstruction &insn,
       default:
         debug("Unexpected sibIndex");
         return true;
-#define ENTRY(x)                                          \
-      case SIB_INDEX_##x:                                 \
-        indexReg = MCOperand::createReg(X86::x); break;
-      EA_BASES_32BIT
-      EA_BASES_64BIT
-      REGS_XMM
-      REGS_YMM
-      REGS_ZMM
+#define ENTRY(x)                                                               \
+  case SIB_INDEX_##x:                                                          \
+    indexReg = MCOperand::createReg(X86::x);                                   \
+    break;
+        EA_BASES_32BIT
+        EA_BASES_64BIT
+        REGS_XMM
+        REGS_YMM
+        REGS_ZMM
 #undef ENTRY
       }
     } else {
@@ -2205,11 +2200,11 @@ static bool translateRMMemory(MCInst &mcInst, InternalInstruction &insn,
       if (!ForceSIB &&
           (insn.sibScale != 1 ||
            (insn.sibBase == SIB_BASE_NONE && insn.mode != MODE_64BIT) ||
-           (insn.sibBase != SIB_BASE_NONE &&
-            insn.sibBase != SIB_BASE_ESP && insn.sibBase != SIB_BASE_RSP &&
-            insn.sibBase != SIB_BASE_R12D && insn.sibBase != SIB_BASE_R12))) {
-        indexReg = MCOperand::createReg(insn.addressSize == 4 ? X86::EIZ :
-                                                                X86::RIZ);
+           (insn.sibBase != SIB_BASE_NONE && insn.sibBase != SIB_BASE_ESP &&
+            insn.sibBase != SIB_BASE_RSP && insn.sibBase != SIB_BASE_R12D &&
+            insn.sibBase != SIB_BASE_R12))) {
+        indexReg =
+            MCOperand::createReg(insn.addressSize == 4 ? X86::EIZ : X86::RIZ);
       } else
         indexReg = MCOperand::createReg(X86::NoRegister);
     }
@@ -2222,16 +2217,15 @@ static bool translateRMMemory(MCInst &mcInst, InternalInstruction &insn,
         debug("EA_BASE_NONE and EA_DISP_NONE for ModR/M base");
         return true;
       }
-      if (insn.mode == MODE_64BIT){
+      if (insn.mode == MODE_64BIT) {
         pcrel = insn.startLocation + insn.length;
         Dis->tryAddingPcLoadReferenceComment(insn.displacement + pcrel,
                                              insn.startLocation +
                                                  insn.displacementOffset);
         // Section 2.2.1.6
-        baseReg = MCOperand::createReg(insn.addressSize == 4 ? X86::EIP :
-                                                               X86::RIP);
-      }
-      else
+        baseReg =
+            MCOperand::createReg(insn.addressSize == 4 ? X86::EIP : X86::RIP);
+      } else
         baseReg = MCOperand::createReg(X86::NoRegister);
 
       indexReg = MCOperand::createReg(X86::NoRegister);
@@ -2262,13 +2256,14 @@ static bool translateRMMemory(MCInst &mcInst, InternalInstruction &insn,
         //   BX_SI, BX_DI, BP_SI, and BP_DI are all handled above and
         //   sib and sib64 were handled in the top-level if, so they're only
         //   placeholders to keep the compiler happy.
-#define ENTRY(x)                                        \
-      case EA_BASE_##x:                                 \
-        baseReg = MCOperand::createReg(X86::x); break;
-      ALL_EA_BASES
+#define ENTRY(x)                                                               \
+  case EA_BASE_##x:                                                            \
+    baseReg = MCOperand::createReg(X86::x);                                    \
+    break;
+        ALL_EA_BASES
 #undef ENTRY
 #define ENTRY(x) case EA_REG_##x:
-      ALL_REGS
+        ALL_REGS
 #undef ENTRY
         debug("A R/M memory operand may not be a register; "
               "the base field must be a base.");
@@ -2344,8 +2339,7 @@ static bool translateRM(MCInst &mcInst, const OperandSpecifier &operand,
 ///
 /// @param mcInst       - The MCInst to append to.
 /// @param stackPos     - The stack position to translate.
-static void translateFPRegister(MCInst &mcInst,
-                                uint8_t stackPos) {
+static void translateFPRegister(MCInst &mcInst, uint8_t stackPos) {
   mcInst.addOperand(MCOperand::createReg(X86::ST0 + stackPos));
 }
 
@@ -2355,8 +2349,7 @@ static void translateFPRegister(MCInst &mcInst,
 /// @param mcInst       - The MCInst to append to.
 /// @param maskRegNum   - Number of mask register from 0 to 7.
 /// @return             - false on success; true otherwise.
-static bool translateMaskRegister(MCInst &mcInst,
-                                uint8_t maskRegNum) {
+static bool translateMaskRegister(MCInst &mcInst, uint8_t maskRegNum) {
   if (maskRegNum >= 8) {
     debug("Invalid mask register number");
     return true;
@@ -2395,11 +2388,8 @@ static bool translateOperand(MCInst &mcInst, const OperandSpecifier &operand,
   case ENCODING_IO:
   case ENCODING_Iv:
   case ENCODING_Ia:
-    translateImmediate(mcInst,
-                       insn.immediates[insn.numImmediatesTranslated++],
-                       operand,
-                       insn,
-                       Dis);
+    translateImmediate(mcInst, insn.immediates[insn.numImmediatesTranslated++],
+                       operand, insn, Dis);
     return false;
   case ENCODING_IRC:
     mcInst.addOperand(MCOperand::createImm(insn.RC));
@@ -2442,9 +2432,8 @@ static bool translateOperand(MCInst &mcInst, const OperandSpecifier &operand,
 /// @param mcInst       - The MCInst to populate with the instruction's data.
 /// @param insn         - The internal instruction.
 /// @return             - false on success; true otherwise.
-static bool translateInstruction(MCInst &mcInst,
-                                InternalInstruction &insn,
-                                const MCDisassembler *Dis) {
+static bool translateInstruction(MCInst &mcInst, InternalInstruction &insn,
+                                 const MCDisassembler *Dis) {
   if (!insn.spec) {
     debug("Instruction has no specification");
     return true;
@@ -2456,9 +2445,9 @@ static bool translateInstruction(MCInst &mcInst,
   // prefix bytes should be disassembled as xrelease and xacquire then set the
   // opcode to those instead of the rep and repne opcodes.
   if (insn.xAcquireRelease) {
-    if(mcInst.getOpcode() == X86::REP_PREFIX)
+    if (mcInst.getOpcode() == X86::REP_PREFIX)
       mcInst.setOpcode(X86::XRELEASE_PREFIX);
-    else if(mcInst.getOpcode() == X86::REPNE_PREFIX)
+    else if (mcInst.getOpcode() == X86::REPNE_PREFIX)
       mcInst.setOpcode(X86::XACQUIRE_PREFIX);
   }
 

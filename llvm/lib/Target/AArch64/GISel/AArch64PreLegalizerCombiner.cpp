@@ -182,8 +182,7 @@ bool matchFoldGlobalOffset(MachineInstr &MI, MachineRegisterInfo &MRI,
     return false;
 
   Type *T = GV->getValueType();
-  if (!T->isSized() ||
-      NewOffset > GV->getDataLayout().getTypeAllocSize(T))
+  if (!T->isSized() || NewOffset > GV->getDataLayout().getTypeAllocSize(T))
     return false;
   MatchInfo = std::make_pair(NewOffset, MinOffset);
   return true;

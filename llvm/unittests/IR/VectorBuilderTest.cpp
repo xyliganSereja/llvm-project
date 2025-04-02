@@ -65,7 +65,7 @@ TEST_F(VectorBuilderTest, TestCreateBinaryInstructions) {
     auto VPID = VPIntrinsic::getForOpcode(Instruction::OPCODE);                \
     bool IsFP = (#INSTCLASS)[0] == 'F';                                        \
     auto *ValueTy = IsFP ? FloatVecTy : IntVecTy;                              \
-    Value *Op = PoisonValue::get(ValueTy);                                      \
+    Value *Op = PoisonValue::get(ValueTy);                                     \
     auto *I = VBuild.createVectorInstruction(Instruction::OPCODE, ValueTy,     \
                                              {Op, Op});                        \
     ASSERT_TRUE(isa<VPIntrinsic>(I));                                          \
@@ -115,7 +115,7 @@ TEST_F(VectorBuilderTest, TestCreateBinaryInstructions_FixedVector_NoMask) {
     auto VPID = VPIntrinsic::getForOpcode(Instruction::OPCODE);                \
     bool IsFP = (#INSTCLASS)[0] == 'F';                                        \
     Type *ValueTy = IsFP ? FloatVecTy : IntVecTy;                              \
-    Value *Op = PoisonValue::get(ValueTy);                                      \
+    Value *Op = PoisonValue::get(ValueTy);                                     \
     auto *I = VBuild.createVectorInstruction(Instruction::OPCODE, ValueTy,     \
                                              {Op, Op});                        \
     ASSERT_TRUE(isa<VPIntrinsic>(I));                                          \
@@ -161,7 +161,7 @@ TEST_F(VectorBuilderTest, TestCreateBinaryInstructions_FixedVector_NoEVL) {
     auto VPID = VPIntrinsic::getForOpcode(Instruction::OPCODE);                \
     bool IsFP = (#INSTCLASS)[0] == 'F';                                        \
     Type *ValueTy = IsFP ? FloatVecTy : IntVecTy;                              \
-    Value *Op = PoisonValue::get(ValueTy);                                      \
+    Value *Op = PoisonValue::get(ValueTy);                                     \
     auto *I = VBuild.createVectorInstruction(Instruction::OPCODE, ValueTy,     \
                                              {Op, Op});                        \
     ASSERT_TRUE(isa<VPIntrinsic>(I));                                          \
@@ -196,7 +196,7 @@ TEST_F(VectorBuilderTest,
     auto VPID = VPIntrinsic::getForOpcode(Instruction::OPCODE);                \
     bool IsFP = (#INSTCLASS)[0] == 'F';                                        \
     Type *ValueTy = IsFP ? FloatVecTy : IntVecTy;                              \
-    Value *Op = PoisonValue::get(ValueTy);                                      \
+    Value *Op = PoisonValue::get(ValueTy);                                     \
     auto *I = VBuild.createVectorInstruction(Instruction::OPCODE, ValueTy,     \
                                              {Op, Op});                        \
     ASSERT_TRUE(isa<VPIntrinsic>(I));                                          \
@@ -272,8 +272,9 @@ TEST_F(VectorBuilderTest, TestFail_ReportAndAbort) {
   auto *VoidTy = Builder.getVoidTy();
   VectorBuilder VBuild(Builder, VectorBuilder::Behavior::ReportAndAbort);
   VBuild.setMask(Mask).setEVL(EVL);
-  ASSERT_DEATH({ VBuild.createVectorInstruction(Instruction::Br, VoidTy, {}); },
-               "No VPIntrinsic for this opcode");
+  ASSERT_DEATH(
+      { VBuild.createVectorInstruction(Instruction::Br, VoidTy, {}); },
+      "No VPIntrinsic for this opcode");
 }
 
 } // end anonymous namespace

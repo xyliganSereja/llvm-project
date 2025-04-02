@@ -285,7 +285,7 @@ bool AArch64SpeculationHardening::instrumentControlFlow(
   RegScavenger RS;
   RS.enterBasicBlockEnd(MBB);
 
-  for (MachineBasicBlock::iterator I = MBB.end(); I != MBB.begin(); ) {
+  for (MachineBasicBlock::iterator I = MBB.end(); I != MBB.begin();) {
     MachineInstr &MI = *--I;
     if (!MI.isReturn() && !MI.isCall())
       continue;

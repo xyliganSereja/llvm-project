@@ -505,7 +505,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *ScalarTC = State.get(getOperand(0), VPLane(0));
     Value *Step = createStepForVF(Builder, ScalarTC->getType(), State.VF, UF);
     Value *Sub = Builder.CreateSub(ScalarTC, Step);
-    Value *Cmp = Builder.CreateICmp(CmpInst::Predicate::ICMP_UGT, ScalarTC, Step);
+    Value *Cmp =
+        Builder.CreateICmp(CmpInst::Predicate::ICMP_UGT, ScalarTC, Step);
     Value *Zero = ConstantInt::get(ScalarTC->getType(), 0);
     return Builder.CreateSelect(Cmp, Sub, Zero);
   }
@@ -723,7 +724,7 @@ InstructionCost VPInstruction::computeCost(ElementCount VF,
   // TODO: Compute cost other VPInstructions once the legacy cost model has
   // been retired.
   assert(!getUnderlyingValue() &&
-          "unexpected VPInstruction witht underlying value");
+         "unexpected VPInstruction witht underlying value");
   return 0;
 }
 
@@ -2468,7 +2469,6 @@ void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   assert(State.Lane && "Branch on Mask works only on single instance.");
 
-
   Value *ConditionBit = nullptr;
   VPValue *BlockInMask = getMask();
   if (BlockInMask)
@@ -3032,8 +3032,8 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       assert(InterleaveFactor == 2 &&
              "Unsupported deinterleave factor for scalable vectors");
 
-        // Scalable vectors cannot use arbitrary shufflevectors (only splats),
-        // so must use intrinsics to deinterleave.
+      // Scalable vectors cannot use arbitrary shufflevectors (only splats),
+      // so must use intrinsics to deinterleave.
       Value *DI = State.Builder.CreateIntrinsic(
           Intrinsic::vector_deinterleave2, VecTy, NewLoad,
           /*FMFSource=*/nullptr, "strided.vec");

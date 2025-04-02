@@ -147,8 +147,7 @@ Constant *ConstantFoldExtractValueInstruction(Constant *Agg,
 /// Attempt to constant fold an insertelement instruction with the
 /// specified operands and indices.  The constant result is returned if
 /// successful; if not, null is returned.
-Constant *ConstantFoldInsertElementInstruction(Constant *Val,
-                                               Constant *Elt,
+Constant *ConstantFoldInsertElementInstruction(Constant *Val, Constant *Elt,
                                                Constant *Idx);
 
 /// Attempt to constant fold an extractelement instruction with the
@@ -216,6 +215,6 @@ Constant *ConstantFoldLoadThroughBitcast(Constant *C, Type *DestTy,
 bool isMathLibCallNoop(const CallBase *Call, const TargetLibraryInfo *TLI);
 
 Constant *ReadByteArrayFromGlobal(const GlobalVariable *GV, uint64_t Offset);
-}
+} // namespace llvm
 
 #endif

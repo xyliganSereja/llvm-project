@@ -68,9 +68,7 @@ public:
   /// (e.g. getSubRegFromChannel(0) -> AMDGPU::sub0)
   static unsigned getSubRegFromChannel(unsigned Channel, unsigned NumRegs = 1);
 
-  bool spillSGPRToVGPR() const {
-    return SpillSGPRToVGPR;
-  }
+  bool spillSGPRToVGPR() const { return SpillSGPRToVGPR; }
 
   /// Return the largest available SGPR aligned to \p Align for the register
   /// class \p RC.
@@ -104,9 +102,7 @@ public:
 
   // Stack access is very expensive. CSRs are also the high registers, and we
   // want to minimize the number of used registers.
-  unsigned getCSRFirstUseCost() const override {
-    return 100;
-  }
+  unsigned getCSRFirstUseCost() const override { return 100; }
 
   const TargetRegisterClass *
   getLargestLegalSuperClass(const TargetRegisterClass *RC,
@@ -122,7 +118,7 @@ public:
 
   bool requiresFrameIndexScavenging(const MachineFunction &MF) const override;
   bool requiresFrameIndexReplacementScavenging(
-    const MachineFunction &MF) const override;
+      const MachineFunction &MF) const override;
   bool requiresVirtualBaseRegisters(const MachineFunction &Fn) const override;
 
   int64_t getScratchInstrOffset(const MachineInstr *MI) const;
@@ -141,8 +137,9 @@ public:
   bool isFrameOffsetLegal(const MachineInstr *MI, Register BaseReg,
                           int64_t Offset) const override;
 
-  const TargetRegisterClass *getPointerRegClass(
-    const MachineFunction &MF, unsigned Kind = 0) const override;
+  const TargetRegisterClass *
+  getPointerRegClass(const MachineFunction &MF,
+                     unsigned Kind = 0) const override;
 
   /// Returns a legal register class to copy a register in the specified class
   /// to or from. If it is possible to copy the register directly without using
@@ -320,12 +317,9 @@ public:
   ArrayRef<int16_t> getRegSplitParts(const TargetRegisterClass *RC,
                                      unsigned EltSize) const;
 
-  bool shouldCoalesce(MachineInstr *MI,
-                      const TargetRegisterClass *SrcRC,
-                      unsigned SubReg,
-                      const TargetRegisterClass *DstRC,
-                      unsigned DstSubReg,
-                      const TargetRegisterClass *NewRC,
+  bool shouldCoalesce(MachineInstr *MI, const TargetRegisterClass *SrcRC,
+                      unsigned SubReg, const TargetRegisterClass *DstRC,
+                      unsigned DstSubReg, const TargetRegisterClass *NewRC,
                       LiveIntervals &LIS) const override;
 
   unsigned getRegPressureLimit(const TargetRegisterClass *RC,
@@ -346,13 +340,11 @@ public:
     return getRegClassForSizeOnBank(Ty.getSizeInBits(), Bank);
   }
 
-  const TargetRegisterClass *
-  getConstrainedRegClassForOperand(const MachineOperand &MO,
-                                 const MachineRegisterInfo &MRI) const override;
+  const TargetRegisterClass *getConstrainedRegClassForOperand(
+      const MachineOperand &MO, const MachineRegisterInfo &MRI) const override;
 
   const TargetRegisterClass *getBoolRC() const {
-    return isWave32 ? &AMDGPU::SReg_32RegClass
-                    : &AMDGPU::SReg_64RegClass;
+    return isWave32 ? &AMDGPU::SReg_32RegClass : &AMDGPU::SReg_64RegClass;
   }
 
   const TargetRegisterClass *getWaveMaskRegClass() const {
@@ -372,8 +364,7 @@ public:
 
   // Find reaching register definition
   MachineInstr *findReachingDef(Register Reg, unsigned SubReg,
-                                MachineInstr &Use,
-                                MachineRegisterInfo &MRI,
+                                MachineInstr &Use, MachineRegisterInfo &MRI,
                                 LiveIntervals *LIS) const;
 
   const uint32_t *getAllVGPRRegMask() const;

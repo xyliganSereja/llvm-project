@@ -52,8 +52,8 @@ class HexagonTTIImpl : public BasicTTIImplBase<HexagonTTIImpl> {
 
 public:
   explicit HexagonTTIImpl(const HexagonTargetMachine *TM, const Function &F)
-      : BaseT(TM, F.getDataLayout()),
-        ST(*TM->getSubtargetImpl(F)), TLI(*ST.getTargetLowering()) {}
+      : BaseT(TM, F.getDataLayout()), ST(*TM->getSubtargetImpl(F)),
+        TLI(*ST.getTargetLowering()) {}
 
   /// \name Scalar TTI Implementations
   /// @{
@@ -69,8 +69,8 @@ public:
                              TTI::PeelingPreferences &PP);
 
   /// Bias LSR towards creating post-increment opportunities.
-  TTI::AddressingModeKind
-    getPreferredAddressingMode(const Loop *L, ScalarEvolution *SE) const;
+  TTI::AddressingModeKind getPreferredAddressingMode(const Loop *L,
+                                                     ScalarEvolution *SE) const;
 
   // L1 cache prefetch.
   unsigned getPrefetchDistance() const override;
@@ -93,15 +93,9 @@ public:
   }
   bool supportsEfficientVectorElementLoadStore() { return false; }
   bool hasBranchDivergence(const Function *F = nullptr) { return false; }
-  bool enableAggressiveInterleaving(bool LoopHasReductions) {
-    return false;
-  }
-  bool prefersVectorizedAddressing() {
-    return false;
-  }
-  bool enableInterleavedAccessVectorization() {
-    return true;
-  }
+  bool enableAggressiveInterleaving(bool LoopHasReductions) { return false; }
+  bool prefersVectorizedAddressing() { return false; }
+  bool enableInterleavedAccessVectorization() { return true; }
 
   InstructionCost getCallInstrCost(Function *F, Type *RetTy,
                                    ArrayRef<Type *> Tys,
@@ -110,11 +104,11 @@ public:
                                         TTI::TargetCostKind CostKind);
   InstructionCost getAddressComputationCost(Type *Tp, ScalarEvolution *SE,
                                             const SCEV *S);
-  InstructionCost
-  getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                  unsigned AddressSpace, TTI::TargetCostKind CostKind,
-                  TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
-                  const Instruction *I = nullptr);
+  InstructionCost getMemoryOpCost(
+      unsigned Opcode, Type *Src, MaybeAlign Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind,
+      TTI::OperandValueInfo OpInfo = {TTI::OK_AnyValue, TTI::OP_None},
+      const Instruction *I = nullptr);
   InstructionCost getMaskedMemoryOpCost(unsigned Opcode, Type *Src,
                                         Align Alignment, unsigned AddressSpace,
                                         TTI::TargetCostKind CostKind);

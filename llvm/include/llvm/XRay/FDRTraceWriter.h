@@ -12,8 +12,8 @@
 #ifndef LLVM_XRAY_FDRTRACEWRITER_H
 #define LLVM_XRAY_FDRTRACEWRITER_H
 
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/EndianStream.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/XRay/FDRRecords.h"
 #include "llvm/XRay/XRayRecord.h"
 

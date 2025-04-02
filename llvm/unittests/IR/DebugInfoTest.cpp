@@ -375,8 +375,8 @@ TEST(DIBuilder, CreateFortranArrayTypeWithAttributes) {
   std::unique_ptr<Module> M(new Module("MyModule", Ctx));
   DIBuilder DIB(*M);
 
-  DISubrange *Subrange = DIB.getOrCreateSubrange(1,1);
-  SmallVector<Metadata*, 4> Subranges;
+  DISubrange *Subrange = DIB.getOrCreateSubrange(1, 1);
+  SmallVector<Metadata *, 4> Subranges;
   Subranges.push_back(Subrange);
   DINodeArray Subscripts = DIB.getOrCreateArray(Subranges);
 
@@ -399,9 +399,8 @@ TEST(DIBuilder, CreateFortranArrayTypeWithAttributes) {
   DIExpression *Allocated = getDIExpression(2);
   DIExpression *Rank = DIB.createConstantValueExpression(3);
 
-  DICompositeType *ArrayType = DIB.createArrayType(0, 0, nullptr, Subscripts,
-                                                   DataLocation, Associated,
-                                                   Allocated, Rank);
+  DICompositeType *ArrayType = DIB.createArrayType(
+      0, 0, nullptr, Subscripts, DataLocation, Associated, Allocated, Rank);
 
   EXPECT_TRUE(isa_and_nonnull<DICompositeType>(ArrayType));
   EXPECT_EQ(ArrayType->getRawDataLocation(), DataLocation);
@@ -950,7 +949,8 @@ TEST(MetadataTest, ConvertDbgToDbgVariableRecord) {
   EXPECT_NE(DVR1->getRawLocation(), DVR2->getRawLocation());
 
   // Try manipulating DbgVariableRecords and markers in the exit block.
-  BasicBlock *ExitBlock = &*std::next(M->getFunction("f")->getEntryBlock().getIterator());
+  BasicBlock *ExitBlock =
+      &*std::next(M->getFunction("f")->getEntryBlock().getIterator());
   Instruction *FirstInst = &ExitBlock->front();
   Instruction *RetInst = &*std::next(FirstInst->getIterator());
 
@@ -975,8 +975,8 @@ TEST(MetadataTest, ConvertDbgToDbgVariableRecord) {
                                            false);
   EXPECT_EQ(RetInst->DebugMarker->StoredDbgRecords.size(), 2u);
   ItCount = 0;
-  // Check these things store the same information; but that they're not the same
-  // objects.
+  // Check these things store the same information; but that they're not the
+  // same objects.
   for (DbgVariableRecord &Item :
        filterDbgVars(RetInst->DebugMarker->getDbgRecordRange())) {
     EXPECT_TRUE(

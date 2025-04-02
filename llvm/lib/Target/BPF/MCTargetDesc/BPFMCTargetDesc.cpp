@@ -117,8 +117,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBPFTargetMC() {
     TargetRegistry::RegisterMCRegInfo(*T, createBPFMCRegisterInfo);
 
     // Register the MC subtarget info.
-    TargetRegistry::RegisterMCSubtargetInfo(*T,
-                                            createBPFMCSubtargetInfo);
+    TargetRegistry::RegisterMCSubtargetInfo(*T, createBPFMCSubtargetInfo);
 
     // Register the object streamer
     TargetRegistry::RegisterELFStreamer(*T, createBPFMCStreamer);
@@ -153,5 +152,4 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBPFTargetMC() {
     TargetRegistry::RegisterMCAsmBackend(getTheBPFTarget(),
                                          createBPFbeAsmBackend);
   }
-
 }

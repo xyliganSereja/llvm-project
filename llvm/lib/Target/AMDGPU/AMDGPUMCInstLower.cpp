@@ -39,8 +39,8 @@ using namespace llvm;
 
 AMDGPUMCInstLower::AMDGPUMCInstLower(MCContext &ctx,
                                      const TargetSubtargetInfo &st,
-                                     const AsmPrinter &ap):
-  Ctx(ctx), ST(st), AP(ap) { }
+                                     const AsmPrinter &ap)
+    : Ctx(ctx), ST(st), AP(ap) {}
 
 static MCSymbolRefExpr::VariantKind getVariantKind(unsigned MOFlags) {
   switch (MOFlags) {
@@ -84,11 +84,11 @@ bool AMDGPUMCInstLower::lowerOperand(const MachineOperand &MO,
     AP.getNameWithPrefix(SymbolName, GV);
     MCSymbol *Sym = Ctx.getOrCreateSymbol(SymbolName);
     const MCExpr *Expr =
-      MCSymbolRefExpr::create(Sym, getVariantKind(MO.getTargetFlags()),Ctx);
+        MCSymbolRefExpr::create(Sym, getVariantKind(MO.getTargetFlags()), Ctx);
     int64_t Offset = MO.getOffset();
     if (Offset != 0) {
-      Expr = MCBinaryExpr::createAdd(Expr,
-                                     MCConstantExpr::create(Offset, Ctx), Ctx);
+      Expr = MCBinaryExpr::createAdd(Expr, MCConstantExpr::create(Offset, Ctx),
+                                     Ctx);
     }
     MCOp = MCOperand::createExpr(Expr);
     return true;
@@ -115,7 +115,7 @@ bool AMDGPUMCInstLower::lowerOperand(const MachineOperand &MO,
 
 void AMDGPUMCInstLower::lower(const MachineInstr *MI, MCInst &OutMI) const {
   unsigned Opcode = MI->getOpcode();
-  const auto *TII = static_cast<const SIInstrInfo*>(ST.getInstrInfo());
+  const auto *TII = static_cast<const SIInstrInfo *>(ST.getInstrInfo());
 
   // FIXME: Should be able to handle this with lowerPseudoInstExpansion. We
   // need to select it to the subtarget specific version, and there's no way to
@@ -142,7 +142,8 @@ void AMDGPUMCInstLower::lower(const MachineInstr *MI, MCInst &OutMI) const {
   if (MCOpcode == -1) {
     LLVMContext &C = MI->getParent()->getParent()->getFunction().getContext();
     C.emitError("AMDGPUMCInstLower::lower - Pseudo instruction doesn't have "
-                "a target-specific version: " + Twine(MI->getOpcode()));
+                "a target-specific version: " +
+                Twine(MI->getOpcode()));
   }
 
   OutMI.setOpcode(MCOpcode);
@@ -287,8 +288,8 @@ void AMDGPUAsmPrinter::emitInstruction(const MachineInstr *MI) {
       SmallVector<MCFixup, 4> Fixups;
       SmallVector<char, 16> CodeBytes;
 
-      std::unique_ptr<MCCodeEmitter> InstEmitter(createAMDGPUMCCodeEmitter(
-          *STI.getInstrInfo(), OutContext));
+      std::unique_ptr<MCCodeEmitter> InstEmitter(
+          createAMDGPUMCCodeEmitter(*STI.getInstrInfo(), OutContext));
       InstEmitter->encodeInstruction(TmpInst, CodeBytes, Fixups, STI);
 
       assert(CodeBytes.size() == STI.getInstrInfo()->getInstSizeInBytes(*MI));
