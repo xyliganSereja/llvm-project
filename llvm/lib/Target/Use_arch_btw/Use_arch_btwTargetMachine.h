@@ -1,4 +1,4 @@
-extern pragma once
+#pragma once
 
 #include "llvm/CodeGen/CodeGenTargetMachineImpl.h"
 #include <optional>

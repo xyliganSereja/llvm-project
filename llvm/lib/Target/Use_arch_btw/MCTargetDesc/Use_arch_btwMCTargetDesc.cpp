@@ -1,6 +1,7 @@
 #include "MCTargetDesc/Use_arch_btwInfo.h"
 #include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "Use_arch_btw.h"
+#include "Use_arch_btwInsrPrinter.h"
 #include "Use_arch_btwMCAsmOnfo.h"
 #include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCRegisterInfo.h"
@@ -51,6 +52,14 @@ static MCAsmInfo *createUse_arch_btwMCAsmInfo(const MCRegisterInfo &MRI,
   return MAI;
 }
 
+static MCInstPrinter *
+createUse_arch_btwMCInstPrinter(const Triple &T, unsigned SyntaxVariant,
+                                const MCAsmInfo &MAI, const MCInstrInfo &MII,
+                                const MCRegisterInfo &MRI) {
+  USE_ARCH_BTW_DUMP_MAGENTA
+  return new Use_arch_btwInstPrinter(MAI, MII, MRI);
+}
+
 // We need to define this function for linking succeed
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwTargetMC() {
   USE_ARCH_BTW_DUMP_MAGENTA
@@ -63,4 +72,8 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwTargetMC() {
                                       createUse_arch_btwMCInstrInfo);
   TargetRegistry::RegisterMCSubtargetInfo(TheUse_arch_btwTarget,
                                           createUse_arch_btwMCSubtargetInfo);
+
+  // Register the MCInstPrinter
+  TargetRegistry::RegisterMCInstPrinter(TheUse_arch_btwTarget,
+                                        createUse_arch_btwMCInstPrinter);
 }
