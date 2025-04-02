@@ -1,11 +1,13 @@
 add_llvm_component_library(LLVMUse_arch_btwDesc
-Use_arch_btwMCTargetDesc.cpp
+    Use_arch_btwMCTargetDesc.cpp
+    Use_arch_btwMCAsmInfo.cpp
+    Use_arch_btwInstPrinter.cpp
 
-LINK_COMPONENTS
-MC
-Use_arch_btwInfo
-Support
+    LINK_COMPONENTS
+    MC
+    Use_arch_btwInfo
+    Support
 
-ADD_TO_COMPONENT
-Use_arch_btw
+    ADD_TO_COMPONENT
+    Use_arch_btw
 )
