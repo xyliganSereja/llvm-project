@@ -41,6 +41,7 @@
 #include "Targets/X86.h"
 #include "Targets/XCore.h"
 #include "Targets/Xtensa.h"
+#include "Targets/Use_arch_btw.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/DiagnosticFrontend.h"
 #include "llvm/ADT/StringExtras.h"
@@ -480,6 +481,8 @@ std::unique_ptr<TargetInfo> AllocateTarget(const llvm::Triple &Triple,
     case llvm::Triple::NetBSD:
       return std::make_unique<NetBSDTargetInfo<SparcV8TargetInfo>>(Triple,
                                                                    Opts);
+    case llvm::Triple::use_arch_btw:
+      return std::make_unique<Use_arch_btwTargetInfo>(Triple, Opts);
     case llvm::Triple::RTEMS:
       return std::make_unique<RTEMSTargetInfo<SparcV8TargetInfo>>(Triple, Opts);
     default:
