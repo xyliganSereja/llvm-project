@@ -31,7 +31,8 @@ class Use_arch_btwDAGToDAGISel : public SelectionDAGISel {
 public:
   static char ID;
   Use_arch_btwDAGToDAGISel() = delete;
-  explicit Use_arch_btwDAGToDAGISel(Use_arch_btwTargetMachine &TM, CodeGenOptLevel OptLevel)
+  explicit Use_arch_btwDAGToDAGISel(Use_arch_btwTargetMachine &TM,
+                                    CodeGenOptLevel OptLevel)
       : SelectionDAGISel(TM, OptLevel) {
     USE_ARCH_BTW_DUMP_RED
   }
@@ -50,9 +51,10 @@ class Use_arch_btwDAGToDAGISelLegacy : public SelectionDAGISelLegacy {
 public:
   static char ID;
 
-  Use_arch_btwDAGToDAGISelLegacy(Use_arch_btwTargetMachine &TM, CodeGenOptLevel OptLevel)
-      : SelectionDAGISelLegacy(
-            ID, std::make_unique<Use_arch_btwDAGToDAGISel>(TM, OptLevel)){USE_ARCH_BTW_DUMP_RED}
+  Use_arch_btwDAGToDAGISelLegacy(Use_arch_btwTargetMachine &TM,
+                                 CodeGenOptLevel OptLevel)
+      : SelectionDAGISelLegacy(ID, std::make_unique<Use_arch_btwDAGToDAGISel>(
+                                       TM, OptLevel)){USE_ARCH_BTW_DUMP_RED}
 
         StringRef getPassName() const override {
     return "Use_arch_btw DAG->DAG Pattern Instruction Selection";
@@ -62,10 +64,10 @@ public:
 
 char Use_arch_btwDAGToDAGISelLegacy::ID = 0;
 
-/// This pass converts a legalized DAG into a Use_arch_btw-specific DAG, ready for
-/// instruction scheduling.
+/// This pass converts a legalized DAG into a Use_arch_btw-specific DAG, ready
+/// for instruction scheduling.
 FunctionPass *llvm::createUse_arch_btwISelDag(Use_arch_btwTargetMachine &TM,
-                                     CodeGenOptLevel OptLevel) {
+                                              CodeGenOptLevel OptLevel) {
   USE_ARCH_BTW_DUMP_RED
   return new Use_arch_btwDAGToDAGISelLegacy(TM, OptLevel);
 }

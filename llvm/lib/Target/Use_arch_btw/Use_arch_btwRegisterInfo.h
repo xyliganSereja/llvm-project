@@ -8,7 +8,7 @@ namespace llvm {
 
 struct Use_arch_btwRegisterInfo : public Use_arch_btwGenRegisterInfo {
 public:
-Use_arch_btwRegisterInfo();
+  Use_arch_btwRegisterInfo();
 };
 
 } // end namespace llvm

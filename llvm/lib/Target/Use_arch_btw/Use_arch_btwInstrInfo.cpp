@@ -14,4 +14,6 @@ using namespace llvm;
 
 #define DEBUG_TYPE "Use_arch_btw-inst-info"
 
-Use_arch_btwInstrInfo::Use_arch_btwInstrInfo() : Use_arch_btwGenInstrInfo() { USE_ARCH_BTW_DUMP_GREEN }
+Use_arch_btwInstrInfo::Use_arch_btwInstrInfo() : Use_arch_btwGenInstrInfo() {
+  USE_ARCH_BTW_DUMP_GREEN
+}

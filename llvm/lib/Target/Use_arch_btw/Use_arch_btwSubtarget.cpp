@@ -10,8 +10,10 @@ using namespace llvm;
 #define GET_SUBTARGETINFO_CTOR
 #include "Use_arch_btwGenSubtargetInfo.inc"
 
-Use_arch_btwSubtarget::Use_arch_btwSubtarget(const StringRef &CPU, const StringRef &TuneCPU,
-                        const StringRef &FS, const TargetMachine &TM)
+Use_arch_btwSubtarget::Use_arch_btwSubtarget(const StringRef &CPU,
+                                             const StringRef &TuneCPU,
+                                             const StringRef &FS,
+                                             const TargetMachine &TM)
     : Use_arch_btwGenSubtargetInfo(TM.getTargetTriple(), CPU, TuneCPU, FS) {
-USE_ARCH_BTW_DUMP_CYAN
+  USE_ARCH_BTW_DUMP_CYAN
 }

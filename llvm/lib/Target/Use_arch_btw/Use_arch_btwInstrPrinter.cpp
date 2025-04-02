@@ -1,8 +1,8 @@
 #include "MCTargetDesc/Use_arch_btwInstPrinter.h"
+#include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "Use_arch_btw.h"
 #include "Use_arch_btwSubtarget.h"
 #include "Use_arch_btwTargetMachine.h"
-#include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/CodeGen/AsmPrinter.h"
 #include "llvm/CodeGen/MachineConstantPool.h"
@@ -24,38 +24,41 @@ using namespace llvm;
 namespace {
 
 class Use_arch_btwAsmPrinter : public AsmPrinter {
-const MCSubtargetInfo *STI;
+  const MCSubtargetInfo *STI;
 
 public:
-explicit Use_arch_btwAsmPrinter(TargetMachine &TM,
-                        std::unique_ptr<MCStreamer> Streamer)
-    : AsmPrinter(TM, std::move(Streamer)), STI(TM.getMCSubtargetInfo()) {
+  explicit Use_arch_btwAsmPrinter(TargetMachine &TM,
+                                  std::unique_ptr<MCStreamer> Streamer)
+      : AsmPrinter(TM, std::move(Streamer)), STI(TM.getMCSubtargetInfo()) {
     USE_ARCH_BTW_DUMP_GREEN
-}
+  }
 
-void emitInstruction(const MachineInstr *MI) override;
+  void emitInstruction(const MachineInstr *MI) override;
 
-StringRef getPassName() const override { return "Use_arch_btw Assembly Printer"; }
+  StringRef getPassName() const override {
+    return "Use_arch_btw Assembly Printer";
+  }
 
-bool lowerPseudoInstExpansion(const MachineInstr *MI, MCInst &Inst);
+  bool lowerPseudoInstExpansion(const MachineInstr *MI, MCInst &Inst);
 };
 
 } // end anonymous namespace
 
-// Use_arch_btwple pseudo-instructions have their lowering (with expansion to real
-// instructions) auto-generated.
+// Use_arch_btwple pseudo-instructions have their lowering (with expansion to
+// real instructions) auto-generated.
 #include "Use_arch_btwGenMCPseudoLowering.inc"
 
 void Use_arch_btwAsmPrinter::emitInstruction(const MachineInstr *MI) {
-    USE_ARCH_BTW_DUMP_GREEN
-// Do any auto-generated pseudo lowerings.
-if (MCInst OutInst; lowerPseudoInstExpansion(MI, OutInst)) {
+  USE_ARCH_BTW_DUMP_GREEN
+  // Do any auto-generated pseudo lowerings.
+  if (MCInst OutInst; lowerPseudoInstExpansion(MI, OutInst)) {
     EmitToStreamer(*OutStreamer, OutInst);
     return;
-}
+  }
 }
 
 // Force static initialization.
-extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwAsmPrinter() {
-RegisterAsmPrinter<Use_arch_btwAsmPrinter> X(getTheUse_arch_btwTarget());
+extern "C" LLVM_EXTERNAL_VISIBILITY void
+LLVMInitializeUse_arch_btwAsmPrinter() {
+  RegisterAsmPrinter<Use_arch_btwAsmPrinter> X(getTheUse_arch_btwTarget());
 }

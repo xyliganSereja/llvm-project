@@ -4,7 +4,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 
-#define USE_ARCH_BTW_DUMP(Color)                                                        \
+#define USE_ARCH_BTW_DUMP(Color)                                               \
   {                                                                            \
     llvm::errs().changeColor(Color)                                            \
         << __func__ << "\n\t\t" << __FILE__ << ":" << __LINE__ << "\n";        \
@@ -20,9 +20,10 @@
 #define USE_ARCH_BTW_DUMP_WHITE USE_ARCH_BTW(llvm::raw_ostream::WHITE)
 
 namespace llvm {
-  class Use_arch_btwTargetMachine;
-  class FunctionPass;
-  
-  FunctionPass *createUse_arch_btwISelDag(Use_arch_btwTargetMachine &TM, CodeGenOptLevel OptLevel);
-  
+class Use_arch_btwTargetMachine;
+class FunctionPass;
+
+FunctionPass *createUse_arch_btwISelDag(Use_arch_btwTargetMachine &TM,
+                                        CodeGenOptLevel OptLevel);
+
 } // namespace llvm
