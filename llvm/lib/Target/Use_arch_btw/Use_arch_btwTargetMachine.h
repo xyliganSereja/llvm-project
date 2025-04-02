@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Use_arch_btwSubtarget.h"
 #include "llvm/CodeGen/CodeGenTargetMachineImpl.h"
+
 #include <optional>
 
 namespace llvm {
@@ -14,11 +16,18 @@ public:
                             std::optional<CodeModel::Model> CM,
                             CodeGenOptLevel OL, bool JIT);
 
+  const Use_arch_btwSubtarget *
+  getSubtargetImpl(const Function &) const override {
+    USE_ARCH_BTW_DUMP_CYAN
+    return &Subtarget;
+  }
+
   // Pass Pipeline Configuration
   TargetPassConfig *createPassConfig(PassManagerBase &PM) override;
   TargetLoweringObjectFile *getObjFileLowering() const override;
 
 private:
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
+  Use_arch_btwSubtarget Subtarget;
 };
 } // end namespace llvm

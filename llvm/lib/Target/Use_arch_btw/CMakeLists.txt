@@ -17,6 +17,7 @@ add_llvm_target(Use_arch_btwCodeGen
   Use_arch_btwSubtarget.cpp
   Use_arch_btwMCAsmInfo.cpp
   Use_arch_btwISelDagToDag.cpp
+  Use_arch_btwISelLowering.cpp
 
   LINK_COMPONENTS
   CodeGen

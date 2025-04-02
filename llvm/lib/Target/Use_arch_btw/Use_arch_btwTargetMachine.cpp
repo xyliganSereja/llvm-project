@@ -23,7 +23,8 @@ Use_arch_btwTargetMachine::Use_arch_btwTargetMachine(
     : CodeGenTargetMachineImpl(T, "e-m:e-p:32:32-i8:8:32-i16:16:32-i64:64-n32",
                                TT, CPU, FS, Options, Reloc::Static,
                                getEffectiveCodeModel(CM, CodeModel::Small), OL),
-      TLOF(std::make_unique<TargetLoweringObjectFileELF>()) {
+      TLOF(std::make_unique<TargetLoweringObjectFileELF>()),
+      Subtarget(TT, std::string(CPU), std::string(FS), *this) {
   USE_ARCH_BTW_DUMP_CYAN
   initAsmInfo();
 }
@@ -55,7 +56,8 @@ Use_arch_btwTargetMachine::createPassConfig(PassManagerBase &PM) {
   return new Use_arch_btwPassConfig(*this, PM);
 }
 
-TargetLoweringObjectFile *SimTargetMachine::getObjFileLowering() const {
-  SIM_DUMP_CYAN
+TargetLoweringObjectFile *
+Use_arch_btwTargetMachine::getObjFileLowering() const {
+  USE_ARCH_BTW_DUMP_CYAN
   return TLOF.get();
 }
