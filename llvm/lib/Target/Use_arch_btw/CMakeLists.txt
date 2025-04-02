@@ -13,6 +13,7 @@ add_llvm_target(Use_arch_btwCodeGen
   Use_arch_btwRegisterInfo.cpp
   Use_arch_btwInstr.cpp
   Use_arch_btwSubtarget.cpp
+  Use_arch_btwMCAsmInfo.cpp
 
   LINK_COMPONENTS
   CodeGen

@@ -1,10 +1,12 @@
 #include "MCTargetDesc/Use_arch_btwInfo.h"
 #include "TargetInfo/Use_arch_btwTargetInfo.h"
 #include "Use_arch_btw.h"
+#include "Use_arch_btwMCAsmOnfo.h"
 #include "llvm/MC/MCInstrInfo.h"
 #include "llvm/MC/MCRegisterInfo.h"
 #include "llvm/MC/SubtargerInfo.h"
 #include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/ErrorHandling.h"
 
 using namespace llvm;
 
@@ -38,10 +40,22 @@ static MCSubtargetInfo *createUse_arch_btwMCSubtargetInfo(const Triple &TT,
   return createUse_arch_btwMCSubtargetInfoImpl(TT, CPU, /*TuneCPU*/ CPU, FS);
 }
 
+static MCAsmInfo *createUse_arch_btwMCAsmInfo(const MCRegisterInfo &MRI,
+                                              const Triple &TT,
+                                              const MCTargetOptions &Options) {
+  USE_ARCH_BTW_DUMP_MAGENTA
+  MCAsmInfo *MAI = new Use_arch_btwELFMCAsmInfo(TT);
+  unsigned SP = MRI.getDwarfRegNum(Use_arch_btw::R1, true);
+  MCCFIInstruction Inst = MCCFIInstruction::cfiDefCfa(nullptr, SP, 0);
+  MAI->addInitialFrameState(Inst);
+  return MAI;
+}
+
 // We need to define this function for linking succeed
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwTargetMC() {
   USE_ARCH_BTW_DUMP_MAGENTA
   Target &TheUse_arch_btwTarget = getTheUse_arch_btwTarget();
+  RegisterMCAsmInfoFn X(TheUse_arch_btwTarget, createUse_arch_btwMCAsmInfo);
   // Register the MC register info.
   TargetRegistry::RegisterMCRegInfo(TheUse_arch_btwTarget,
                                     createUse_arch_btwMCRegisterInfo);
