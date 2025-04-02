@@ -79,4 +79,8 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeUse_arch_btwTargetMC() {
   // Register the MC Code Emitter.
   TargetRegistry::RegisterMCCodeEmitter(TheUse_arch_btwTarget,
                                         createUse_arch_btwMCCodeEmitter);
+
+  // Register the asm backend.
+  TargetRegistry::RegisterMCAsmBackend(TheUse_arch_btwTarget,
+                                       createUse_arch_btwAsmBackend);
 }

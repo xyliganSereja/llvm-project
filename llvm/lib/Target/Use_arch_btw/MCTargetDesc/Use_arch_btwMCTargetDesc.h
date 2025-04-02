@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <memory>
+
 namespace llvm {
 class MCCodeEmitter;
 class MCContext;
@@ -18,6 +20,11 @@ MCAsmBackend *createUse_arch_btwAsmBackend(const Target &T,
                                            const MCSubtargetInfo &STI,
                                            const MCRegisterInfo &MRI,
                                            const MCTargetOptions &Options);
+MCAsmBackend *createSimAsmBackend(const Target &T, const MCSubtargetInfo &STI,
+                                  const MCRegisterInfo &MRI,
+                                  const MCTargetOptions &Options);
+std::unique_ptr<MCObjectTargetWriter> createSimELFObjectWriter(bool Is64Bit,
+                                                               uint8_t OSABI);
 } // namespace llvm
 
 // Defines symbolic names for Use_arch_btw registers.  This defines a mapping
