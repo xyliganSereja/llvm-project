@@ -36,3 +36,11 @@ let isAsCheapAsAMove = 1, isCodeGenOnly = 1, isReMaterializable = 1, r2 = 0 in
 def MOVLI : Use_arch_btwInst<0xAA, (outs GPR:$r1), (ins simm16:$r3_imm),
                     "MOVli $r1 $r3_imm",
                     [(set GPR:$r1, simm16:$r3_imm)]>;
+
+// flush
+let r1 = 0, r2 = 0, r3_imm = 0 in
+def FLUSH : Use_arch_btwInst<0xFF, (outs), (ins), "FLUSH", [(int_use_arch_btw_flush)]>;
+
+// putpixel
+def PUTPIXEL : Use_arch_btwInst<0xEE, (outs), (ins GPR:$r1, GPR:$r2, GPR:$r3_imm),
+                    "PUTPIXEL $r1 $r2 $r3_imm", [(int_use_arch_btw_putpixel GPR:$r1, GPR:$r2, GPR:$r3_imm)]>;
