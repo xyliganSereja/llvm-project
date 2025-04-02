@@ -3,6 +3,7 @@ add_llvm_component_library(LLVMUse_arch_btwDesc
     Use_arch_btwMCAsmInfo.cpp
     Use_arch_btwInstPrinter.cpp
     Use_arch_btwMCCodeEmitter.cpp
+    Use_arch_btwAsmBackend.cpp
 
     LINK_COMPONENTS
     MC
